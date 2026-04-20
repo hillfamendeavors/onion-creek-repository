@@ -264,10 +264,13 @@
     /* ── LISTINGS TABLE ── */
     .listings-table {
       width: 100%;
-      overflow: hidden;
-      max-height: 2000px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 700px;
       transition: max-height 0.35s ease, opacity 0.25s ease;
       opacity: 1;
+      scrollbar-width: thin;
+      overscroll-behavior: contain;
     }
 
     .listings-table.collapsed { max-height: 0; opacity: 0; pointer-events: none; }
@@ -888,19 +891,25 @@
     container.innerHTML = '';
     let anyVisible = false;
 
-    groups.forEach(g => {
+    const sortedGroups = [...groups].sort((a, b) => a.label.localeCompare(b.label));
+
+    sortedGroups.forEach(g => {
       if (activeGroup !== 'all' && activeGroup !== g.id) return;
 
-      const filteredSubs = g.subcategories.map(sub => ({
+      const sortedSubs = [...g.subcategories].sort((a, b) => a.name.localeCompare(b.name));
+
+      const filteredSubs = sortedSubs.map(sub => ({
         ...sub,
-        listings: sub.listings.filter(l =>
-          !searchQuery ||
-          l.name.toLowerCase().includes(searchQuery) ||
-          l.phone.includes(searchQuery) ||
-          l.note.toLowerCase().includes(searchQuery) ||
-          sub.name.toLowerCase().includes(searchQuery) ||
-          g.label.toLowerCase().includes(searchQuery)
-        )
+        listings: [...sub.listings]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .filter(l =>
+            !searchQuery ||
+            l.name.toLowerCase().includes(searchQuery) ||
+            l.phone.includes(searchQuery) ||
+            l.note.toLowerCase().includes(searchQuery) ||
+            sub.name.toLowerCase().includes(searchQuery) ||
+            g.label.toLowerCase().includes(searchQuery)
+          )
       })).filter(sub => sub.listings.length > 0);
 
       if (!filteredSubs.length) return;
@@ -929,6 +938,8 @@
 
         const tableEl = document.createElement('div');
         tableEl.className = 'listings-table';
+        const visibleRows = Math.min(10, sub.listings.length);
+        tableEl.style.maxHeight = `${visibleRows * 70}px`;
         tableEl.innerHTML = sub.listings.map(l => `
           <div class="listing-row${l.featured ? ' featured' : ''}">
             <div>
