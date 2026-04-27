@@ -266,14 +266,29 @@
       width: 100%;
       overflow-y: auto;
       overflow-x: hidden;
-      max-height: 700px;
+      max-height: 400px;
       transition: max-height 0.35s ease, opacity 0.25s ease;
       opacity: 1;
       scrollbar-width: thin;
-      overscroll-behavior: contain;
+      scrollbar-color: var(--masters-green-light) transparent;
     }
 
-    .listings-table.collapsed { max-height: 0; opacity: 0; pointer-events: none; }
+    .listings-table::-webkit-scrollbar {
+      width: 5px;
+    }
+    .listings-table::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .listings-table::-webkit-scrollbar-thumb {
+      background: var(--masters-green-light);
+      border-radius: 10px;
+    }
+
+    @media (min-height: 800px) {
+      .listings-table { max-height: 600px; }
+    }
+
+    .listings-table.collapsed { max-height: 0 !important; opacity: 0; pointer-events: none; }
 
     .listing-row {
       display: grid;
@@ -614,46 +629,37 @@
       { name:"Electricians", icon:"⚡", listings:[
         { name:"Sparks Right Electric", phone:"(512) 555-0471", note:"Did our panel upgrade — clean work, passed inspection first try." },
         { name:"Tommy Reyes Electric", phone:"(512) 555-0829", note:"Very responsive. Installed ceiling fans and outdoor lighting for us." },
-        { name:"Daniel Martinez", phone:"(512) 968-4954", note:"Community Verified." },
-        { name:"Sonny Martinez", phone:"(512) 202-4080", note:"Community Verified." },
       ]},
       { name:"Roofers", icon:"🏗️", listings:[
-        { name:"Lone Star Roofing", phone:"(512) 555-0391", note:"Replaced our roof after hail damage. Fast, clean, handled the insurance claim too." },
-        { name:"Peak Pro Roofing", phone:"(512) 555-0742", note:"Fair estimates, quality shingles. No pressure sales tactics." },
-        { name:"A&W Roofing", phone:"(512) 902-4000", note:"People Over Profit" },
         { name:"Christian Family Guttering", phone:"(512) 589-9173", note:"Quality You Can Trust, Service You Can Count On" },
         { name:"Good News Roofing", phone:"(512) 630-1440", note:"Expert Roofing in Austin, Most Trusted by Central Texas Residents" },
-        { name:"Holden Roofing", phone:"(737) 701 2288", note:"Holden Roofing Has You Covered" },
-        { name:"Infinity Roofing", phone:"(512) 576 4845", note:"A Job Done Right—In Every Home, Every City, Every Time." },
-        { name:"JB Contracting & Property Services", phone:"(512) 587-3914", note:"Making every house feel like home." },
-        { name:"Linear Roofing", phone:"(888) 424-8280", note:"Elevated to Excellence." },
-        { name:"Patriot Fencing & Roofing", phone:"(512) 300-1000", note:"Quality Fence and Roofing Services." },
         { name:"Titan Pros Roofing", phone:"(210) 391-7434", note:"We Roof Texas." },
         { name:"Top Dog Roofing", phone:"(512) 571-8787", note:"Put Your Roof In Skilled Hands." },
+        { name:"Infinity Roofing", phone:"(512) 576 4845", note:"A Job Done Right—In Every Home, Every City, Every Time." },
+        { name:"JB Contracting & Property Services", phone:"(512) 587-3914", note:"Making every house feel like home." },
+        { name:"A&W Roofing", phone:"(512) 902-4000", note:"People Over Profit" },
+        { name:"Holden Roofing", phone:"(737) 701 2288", note:"Holden Roofing Has You Covered" },
+        { name:"Linear Roofing", phone:"(888) 424-8280", note:"Elevated to Excellence." },
+        { name:"Patriot Fencing & Roofing", phone:"(512) 300-1000", note:"Quality Fence and Roofing Services." },
         { name:"TTP Roofing", phone:"(512) 909-2660", note:"Award Winning, Family Owned and Operated." },
-        { name:"Jonathan Blanchard", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Jordan Burnham", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Brad", phone:"(512) 947-7167", note:"Community Verified." },
         { name:"Texan Handyman Services LLC", phone:"(512) 825-7631", note:"Quality Work. Honest Service. Built to Last." },
+        { name:"Lone Star Roofing", phone:"(512) 555-0391", note:"Replaced our roof after hail damage. Fast, clean, handled the insurance claim too." },
+        { name:"Peak Pro Roofing", phone:"(512) 555-0742", note:"Fair estimates, quality shingles. No pressure sales tactics." },
       ]},
       { name:"Handyman", icon:"🛠️", listings:[
         { name:"Bob's Fix-It Services", phone:"(512) 555-0703", note:"No job too small. Fixed our fence, patched drywall, installed a door — all in one visit." },
         { name:"Creek Side Repairs", phone:"(512) 555-0561", note:"Honest estimates. Great with decks and wood repairs." },
-        { name:"Alex Moran", phone:"(512) 960-5894", note:"Community Verified." },
-        { name:"Mark Castillo", phone:"(512) 945-0673", note:"Community Verified." },
-        { name:"James Bland", phone:"(214) 577-5200", note:"Community Verified." },
-        { name:"Richard", phone:"(512) 798-1478", note:"Community Verified." },
       ]},
       { name:"Fencing & Decks", icon:"🪵", listings:[
-        { name:"Fence Masters TX", phone:"(512) 555-0678", note:"Built our cedar privacy fence on time and on budget. Solid workmanship." },
-        { name:"Deck & Beyond", phone:"(512) 555-0413", note:"Beautiful deck build, treated wood, great attention to detail." },
         { name:"JB Contracting & Property Services", phone:"(512) 587-3914", note:"Making every house feel like home." },
         { name:"Patriot Fencing & Roofing", phone:"(512) 300-1000", note:"Quality Fence and Roofing Services" },
+        { name:"Fence Masters TX", phone:"(512) 555-0678", note:"Built our cedar privacy fence on time and on budget. Solid workmanship." },
+        { name:"Deck & Beyond", phone:"(512) 555-0413", note:"Beautiful deck build, treated wood, great attention to detail." },
       ]},
       { name:"AC & Heating", icon:"❄️", listings:[
+        { name:"Firemen Dryerman", phone:"(512) 731-5299", note:"Dryer vent and dryer cleaning service provided by professional firefighters." },
         { name:"CoolBreeze HVAC", phone:"(512) 555-0395", note:"Serviced our unit quickly during a heat wave. Saved us! Great pricing." },
         { name:"Lone Star Air", phone:"(512) 555-0812", note:"Installed a new system for us. Very professional and clean." },
-        { name:"Firemen Dryerman", phone:"(512) 731-5299", note:"Dryer vent and dryer cleaning service provided by professional firefighters." },
       ]},
       { name:"Painters", icon:"🎨", listings:[
         { name:"Brushstroke Painting Co.", phone:"(512) 555-0423", note:"Interior and exterior. Clean, detailed work. Finished our whole house in 3 days." },
@@ -662,15 +668,15 @@
     ]},
     { id:"outdoor", label:"Outdoor & Lawn", icon:"🌿", subcategories:[
       { name:"Landscaping", icon:"🌱", listings:[
+        { name:"H.O.W. Foundation Inc", phone:"(512) 476-9919", note:"The H.O.W. Foundation is a unique tree trimming company made up of individuals overcoming addiction struggles." },
+        { name:"Empire Home and Lawn Services", phone:"(830) 888-0726", note:"Because every home and lawn deserves royal treatment." },
         { name:"Adrian G Lawn Services", phone:"(512) 576-1845", note:"Your friend in the tree service business." },
         { name:"AG Mowing", phone:"(512) 667-1554", note:"Reliable. Professional. Local." },
         { name:"Amigos Tree Service", phone:"(512) 740-0211", note:"Free estimates, No job too big or small." },
         { name:"Cutters Landscaping & Pools", phone:"(512) 560-1968", note:"Using innovative design concepts, eco-friendly construction practices, and unmatched customer service, our mission is to create extraordinary landscapes." },
-        { name:"Empire Home and Lawn Services", phone:"(830) 888-0726", note:"Because every home and lawn deserves royal treatment." },
         { name:"Electric Lawn Care", phone:"(000) 000-0000", note:"The Quietest Lawn Crew in Austin." },
-        { name:"Julio Rita Limon", phone:"(512) 698-3170", note:"Community Verified." },
-        { name:"Lance Barnes", phone:"(713) 822-8300", note:"Community Verified." },
-        { name:"Sabino", phone:"(512) 938-2335", note:"Community Verified." },
+        { name:"Green Thumb Landscaping", phone:"(512) 555-0235", note:"Transformed our backyard. Knows Texas-friendly plants well." },
+        { name:"Reyes Lawn Care", phone:"(512) 555-0614", note:"Weekly mowing and edging. Always on time, very reliable." },
       ]},
       { name:"Mosquito & Pest Control", icon:"🦟", listings:[
         { name:"Creek Shield Pest Control", phone:"(512) 555-0486", note:"Monthly mosquito treatments — huge difference in our backyard. Very thorough." },
@@ -679,22 +685,25 @@
     ]},
     { id:"auto", label:"Auto & Transport", icon:"🚗", subcategories:[
       { name:"Mechanics & Auto Repair", icon:"🔩", listings:[
-        { name:"Buda Auto Care", phone:"(512) 555-0517", note:"Honest mechanic — told us we didn't need a repair another shop recommended. Trust them." },
-        { name:"Creek Side Garage", phone:"(512) 555-0863", note:"Quick oil changes and diagnostics. Family-owned, great prices." },
         { name:"DC Customs", phone:"(512) 504-6606", note:"Custom Work, Done Right" },
         { name:"Fresh Automotive Services", phone:"(512) 429-9125", note:"Fresh start for all your automotive needs" },
+        { name:"Buda Auto Care", phone:"(512) 555-0517", note:"Honest mechanic — told us we didn't need a repair another shop recommended. Trust them." },
+        { name:"Creek Side Garage", phone:"(512) 555-0863", note:"Quick oil changes and diagnostics. Family-owned, great prices." },
       ]},
       { name:"Golf Cart Sales & Repair", icon:"🏌️", listings:[
+        { name:"Golf Carts of ATX", phone:"(844) 844 4280", note:"Full warranty, delivered to your driveway, and arrives ready to ride." },
+        { name:"High Tech Golf Cart Repair", phone:"(512) 444 6851", note:"GOLF CART REPAIR AND SELL" },
+        { name:"Creek Cart Co.", phone:"(512) 555-0284", note:"Sold us a great used cart and serviced it same week. Very knowledgeable." },
         { name:"Austin Golf Carts", phone:"(512) 555-0637", note:"New and used carts, plus repairs. Fast turnaround on battery work." },
       ]},
     ]},
     { id:"professional", label:"Professional Services", icon:"💼", subcategories:[
       { name:"Accounting & Tax Services", icon:"📊", listings:[
+        { name:"Texas Pro Tax", phone:"(512) 339-6671", note:"Lower your property tax appraised value and save time, stress, and money." },
+        { name:"Fivestone", phone:"(512) 833-5829", note:"Expert tax representation backed by world-class experience and a commitment to peace of mind." },
+        { name:"Hoag & Roberts", phone:"(512) 695-0999", note:"..." },
         { name:"Creek Side Accounting", phone:"(512) 555-0184", note:"Handles personal and small business taxes. Very thorough and easy to work with." },
         { name:"Sandra Mills, CPA", phone:"(512) 555-0629", note:"Local CPA, great with self-employed folks and LLCs. Saves our family money every year." },
-        { name:"Texas Pro Tax", phone:"(512) 339-6671", note:"Lower your property tax appraised value and save time, stress, and money." },
-        { name:"Hoag & Roberts", phone:"(512) 695-0999", note:"..." },
-        { name:"Fivestone", phone:"(512) 833-5829", note:"Expert tax representation backed by world-class experience and a commitment to peace of mind." },
       ]},
       { name:"Real Estate Agents", icon:"🏡", listings:[
         { name:"Jennifer Moss, Realtor", phone:"(512) 555-0163", note:"Helped us sell in 9 days over asking. Knows the Austin/Kyle market inside out." },
@@ -726,43 +735,21 @@
       { name:"House Cleaning", icon:"✨", listings:[
         { name:"Maria's Cleaning Co.", phone:"(512) 555-0947", note:"Reliable, trustworthy, and very thorough. Highly recommended by multiple neighbors." },
         { name:"Spotless Home Cleaning", phone:"(512) 555-0182", note:"Deep cleans are incredible. Uses eco-friendly products." },
-        { name:"Carol Brown", phone:"(407) 966-9074", note:"Community Verified." },
-        { name:"Natale Valentina", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Sarah Maya", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Rachael Tevis Jordahl", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Margaret Anjelica", phone:"(000) 000-0000", note:"Community Verified." },
       ]},
       { name:"Childcare & Babysitting", icon:"👶", listings:[
         { name:"Sarah T. (Babysitter)", phone:"(512) 555-0267", note:"CPR certified, great with kids of all ages. Very responsible neighbor." },
         { name:"Little Sprouts Daycare", phone:"(512) 555-0533", note:"Small home daycare run by a neighbor. Warm and nurturing environment." },
-        { name:"María José Ortiz", phone:"(737) 333-9218", note:"Community Verified." },
-        { name:"Ellie Winters", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Angie Vargas", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Margaret Anjelica", phone:"(000) 000-0000", note:"Community Verified." },
       ]},
       { name:"Pet Services", icon:"🐾", listings:[
-        { name:"Keep Austin Groomed", phone:"(512) 784-3998", note:"Keep Austin Groomed" },
+        { name:"Keep Austin Groomed", phone:"(512) 784-3998", note:"Caring for Your Best Friends, One Paw at a Time!" },
+        { name:"Whiskers & Wags", phone:"(512) 757 5158", note:"Keep Austin Groomed" },
         { name:"Paws & Stay (Dog Sitting)", phone:"(512) 555-0748", note:"Watched our dogs for two weeks. Sent daily photos. Total peace of mind." },
         { name:"Creek Walk Dog Walking", phone:"(512) 555-0319", note:"Afternoon walks, very dependable. Dogs love her!" },
-        { name:"Ellie Winters", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Angie Vargas", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Margery Sue Taylor McAlister", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Mom’s Many Minis", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Kaleigh Kathleen Wenzloff", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Stephanie Bratz Moore", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Kristina Kennedy", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Nydia Garcia Castellanos", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Charlotte Pickett", phone:"(512) 965-2304", note:"Community Verified." },
-        { name:"Gina Butcher", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Ursula Geiger", phone:"(000) 000-0000", note:"Community Verified." },
-        { name:"Mare Pom", phone:"(000) 000-0000", note:"Community Verified." },
       ]},
       { name:"Junk Removal", icon:"🗑️", listings:[
+        { name:"Three Brothers Moving ATX", phone:"(512) 994-0334", note:"You Ring, We Bring." },
         { name:"Creek Clean Junk Removal", phone:"(512) 555-0347", note:"Same-day service available. They donate and recycle what they can." },
         { name:"Haul It Away ATX", phone:"(512) 555-0592", note:"Cleared out our whole garage in two hours. Affordable and very professional." },
-        { name:"Three Brothers Moving ATX", phone:"(512) 994-0334", note:"You Ring, We Bring." },
-        { name:"Christopher Anthony", phone:"(830) 351 0769", note:"Community Verified." },
-        { name:"Sergio Plascencia", phone:"(737) 221-9298", note:"Community Verified." },
       ]},
     ]},
   ];
@@ -798,17 +785,12 @@
     container.innerHTML = '';
     let anyVisible = false;
 
-    const sortedGroups = [...groups].sort((a, b) => a.label.localeCompare(b.label));
-
-    sortedGroups.forEach(g => {
+    groups.forEach(g => {
       if (activeGroup !== 'all' && activeGroup !== g.id) return;
 
-      const sortedSubs = [...g.subcategories].sort((a, b) => a.name.localeCompare(b.name));
-
-      const filteredSubs = sortedSubs.map(sub => ({
+      const filteredSubs = g.subcategories.map(sub => ({
         ...sub,
-        listings: [...sub.listings]
-          .sort((a, b) => a.name.localeCompare(b.name))
+        listings: sub.listings
           .filter(l =>
             !searchQuery ||
             l.name.toLowerCase().includes(searchQuery) ||
@@ -845,8 +827,6 @@
 
         const tableEl = document.createElement('div');
         tableEl.className = 'listings-table';
-        const visibleRows = Math.min(10, sub.listings.length);
-        tableEl.style.maxHeight = `${visibleRows * 70}px`;
         tableEl.innerHTML = sub.listings.map(l => `
           <div class="listing-row${l.featured ? ' featured' : ''}">
             <div>
@@ -861,8 +841,15 @@
         `).join('');
 
         header.addEventListener('click', () => {
+          const isOpening = tableEl.classList.contains('collapsed');
           tableEl.classList.toggle('collapsed');
           header.querySelector('.subcat-arrow').classList.toggle('open');
+          
+          if (isOpening) {
+            setTimeout(() => {
+              header.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+          }
         });
 
         subEl.appendChild(header);
