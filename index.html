@@ -500,7 +500,7 @@
   <div class="logo-wrap">
     <h1>Onion Creek <span>Directory</span></h1>
     <p class="header-sub">Trusted Neighbors · Austin, Texas</p>
-    <button class="order-btn" id="openOrderModal">Order a Directory</button>
+    <!-- <button class="order-btn" id="openOrderModal">Order a Directory</button> -->
   </div>
 
   <nav class="nav-tabs" id="groupPills">
@@ -533,7 +533,7 @@
       </div>
       <div class="form-group">
         <label>Phone Number *</label>
-        <input type="tel" id="f-phone" placeholder="(512) 555-0000"/>
+        <input type="tel" id="f-phone" placeholder="(512) 555-0000" inputmode="tel" maxlength="14" pattern="\\(\\d{3}\\) \\d{3}-\\d{4}" />
       </div>
       <div class="form-group">
         <label>Category <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
@@ -581,7 +581,7 @@
   </div>
 </div>
 
-<!-- Order Modal -->
+<!-- Order Modal
 <div class="modal-overlay" id="orderModalOverlay">
   <div class="modal">
     <button class="modal-close" id="closeOrderModal">✕</button>
@@ -608,6 +608,7 @@
     </div>
   </div>
 </div>
+-->
 
 <footer>
   <strong>Onion Creek YP</strong> &nbsp;·&nbsp; Austin, TX &nbsp;·&nbsp; trustedneighbors.net
@@ -887,17 +888,21 @@
 
   submitBtn.addEventListener('click', async () => {
     const name     = document.getElementById('f-name').value.trim();
-    const phone    = document.getElementById('f-phone').value.trim();
+    let phone      = document.getElementById('f-phone').value.trim();
     const category = document.getElementById('f-category').value;
     const note     = document.getElementById('f-note').value.trim();
 
-    if (!name || !phone || !note) { alert('Please fill in the name, phone, and recommendation fields.'); return; }
+    // Normalize digits and require a 10-digit US phone number
+    const phoneDigits = phone.replace(/\D/g,'');
+    if (!name || !phoneDigits || !note) { alert('Please fill in the name, phone, and recommendation fields.'); return; }
+    if (phoneDigits.length !== 10) { alert('Please enter a 10-digit phone number in the format (512) 555-0000.'); return; }
+    phone = formatUSPhone(phoneDigits);
 
     submitBtn.textContent = 'Submitting…';
     submitBtn.disabled = true;
 
     try {
-      await fetch('https://formspree.io/f/xyknkrrq', {
+      await fetch('https://formspree.io/f/xqewrzww', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ name, phone, category, note, _subject: `New Onion Creek YP Referral: ${name}` })
@@ -909,6 +914,44 @@
     submitBtn.textContent = 'Submit Referral';
     submitBtn.disabled = false;
   });
+
+  /* Phone input formatting and validation for referrals
+     - Formats as (###) ###-#### while typing/pasting
+     - Enforces 10-digit number on blur/submit
+     To remove: delete this block and restore the original input attributes. */
+  function formatUSPhone(digits) {
+    digits = (digits || '').replace(/\D/g,'').slice(0,10);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6,10)}`;
+  }
+
+  const phoneEl = document.getElementById('f-phone');
+  if (phoneEl) {
+    phoneEl.addEventListener('input', () => {
+      const digits = phoneEl.value.replace(/\D/g,'');
+      phoneEl.value = formatUSPhone(digits);
+    });
+
+    phoneEl.addEventListener('blur', () => {
+      const digits = phoneEl.value.replace(/\D/g,'');
+      if (!digits) return;
+      if (digits.length !== 10) {
+        alert('Please enter a 10-digit phone number (e.g. (512) 555-0000).');
+        phoneEl.focus();
+      } else {
+        phoneEl.value = formatUSPhone(digits);
+      }
+    });
+
+    phoneEl.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text') || '';
+      const digits = paste.replace(/\D/g,'').slice(0,10);
+      phoneEl.value = formatUSPhone(digits);
+    });
+  }
+/*
   // ── ORDER MODAL ──
   const orderOverlay    = document.getElementById('orderModalOverlay');
   const openOrderBtn    = document.getElementById('openOrderModal');
@@ -929,6 +972,7 @@
       ['o-name','o-address'].forEach(id => document.getElementById(id).value = '');
     }, 300);
   }
+*/
 
   orderSubmitBtn.addEventListener('click', async () => {
     const name    = document.getElementById('o-name').value.trim();
@@ -940,7 +984,7 @@
     orderSubmitBtn.disabled = true;
 
     try {
-      await fetch('https://formspree.io/f/xyknkrrq', {
+      await fetch('https://formspree.io/f/xqewrzww', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ name, address, _subject: `Directory Order Request: ${name}` })
