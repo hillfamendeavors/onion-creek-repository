@@ -616,65 +616,75 @@
 <script>
   const groups = [
     { id:"home", label:"Home & Repair", icon:"🏠", subcategories:[
-      { name:"Plumbers", icon:"🔧", listings:[
+      { name:"Plumbers", icon:"", listings:[
         { name:"1st Home & Commercial Services", phone:"(512) 253-8423", note:"Make 1st Home Your 1st Call." },
         { name:"Infinity Plumbing", phone:"(512) 791-8988", note:"Your Trustworthy Local Plumber." },
         { name:"My Plumber is a Nerd", phone:"(512) 882-5206", note:"We’re the Nerds you can trust." },
         { name:"Mike's Plumbing", phone:"(512) 555-0192", note:"Fixed a burst pipe same day. Fair pricing, very honest." },
         { name:"Hill Country Water Works", phone:"(512) 555-0348", note:"Family-owned. Great with older homes. Ask for Carlos." },
       ]},
-      { name:"Electricians", icon:"⚡", listings:[
+      { name:"Electricians", icon:"", listings:[
+        { name:"Moontower Mechanical", phone:"(512) 971-2331", note:"From emergency repairs to full system installs, Moontower Mechanical delivers fast, reliable service you can count on." },
+        { name:"Daniel Martinez", phone:"(512) 968-4954", note:"Community Verified." },
+        { name:"Henry Yanez", phone:"(512) 743-0805", note:"Community Verified." },
         { name:"Sparks Right Electric", phone:"(512) 555-0471", note:"Did our panel upgrade — clean work, passed inspection first try." },
         { name:"Tommy Reyes Electric", phone:"(512) 555-0829", note:"Very responsive. Installed ceiling fans and outdoor lighting for us." },
       ]},
-      { name:"Roofers", icon:"🏗️", listings:[
+      { name:"Roofers", icon:"", listings:[
         { name:"Christian Family Guttering", phone:"(512) 589-9173", note:"Quality You Can Trust, Service You Can Count On" },
         { name:"Good News Roofing", phone:"(512) 630-1440", note:"Expert Roofing in Austin, Most Trusted by Central Texas Residents" },
         { name:"TTP Roofing", phone:"(512) 909-2660", note:"Award Winning, Family Owned and Operated." },
         { name:"Lone Star Roofing", phone:"(512) 555-0391", note:"Replaced our roof after hail damage. Fast, clean, handled the insurance claim too." },
         { name:"Peak Pro Roofing", phone:"(512) 555-0742", note:"Fair estimates, quality shingles. No pressure sales tactics." },
       ]},
-      { name:"Handyman", icon:"🛠️", listings:[
+      { name:"Handyman", icon:"", listings:[
+        { name:"Alex Moran", phone:"(512) 960-5894", note:"Community Verified." },
+        { name:"Mark Castillo", phone:"(512) 945-0673", note:"Community Verified." },
+        { name:"James Bland", phone:"(214) 577-5200", note:"Community Verified." },
         { name:"Bob's Fix-It Services", phone:"(512) 555-0703", note:"No job too small. Fixed our fence, patched drywall, installed a door — all in one visit." },
         { name:"Creek Side Repairs", phone:"(512) 555-0561", note:"Honest estimates. Great with decks and wood repairs." },
       ]},
-      { name:"Fencing & Decks", icon:"🪵", listings:[
+      { name:"Fencing & Decks", icon:"", listings:[
         { name:"JB Contracting & Property Services", phone:"(512) 587-3914", note:"Making every house feel like home." },
+        { name:"Justin Perez", phone:"(512) 744-3117", note:"Community Verified." },
         { name:"Patriot Fencing & Roofing", phone:"(512) 300-1000", note:"Quality Fence and Roofing Services" },
         { name:"Fence Masters TX", phone:"(512) 555-0678", note:"Built our cedar privacy fence on time and on budget. Solid workmanship." },
         { name:"Deck & Beyond", phone:"(512) 555-0413", note:"Beautiful deck build, treated wood, great attention to detail." },
       ]},
-      { name:"AC & Heating", icon:"❄️", listings:[
+      { name:"AC & Heating", icon:"", listings:[
         { name:"Firemen Dryerman", phone:"(512) 731-5299", note:"Dryer vent and dryer cleaning service provided by professional firefighters." },
         { name:"CoolBreeze HVAC", phone:"(512) 555-0395", note:"Serviced our unit quickly during a heat wave. Saved us! Great pricing." },
         { name:"Lone Star Air", phone:"(512) 555-0812", note:"Installed a new system for us. Very professional and clean." },
       ]},
-      { name:"Painters", icon:"🎨", listings:[
+      { name:"Painters", icon:"", listings:[
+        { name:"Rolan Mendoza", phone:"(512) 540-2290", note:"Community Verified." },
         { name:"Brushstroke Painting Co.", phone:"(512) 555-0423", note:"Interior and exterior. Clean, detailed work. Finished our whole house in 3 days." },
         { name:"Lopez Painting", phone:"(512) 555-0756", note:"Very affordable and reliable. Great at color matching and trim work." },
       ]},
     ]},
     { id:"outdoor", label:"Outdoor & Lawn", icon:"🌿", subcategories:[
-      { name:"Landscaping", icon:"🌱", listings:[
+      { name:"Landscaping", icon:"", listings:[
+        { name:"Cayse", phone:"(832) 233-0175", note:"Pressure Washing." },
+        { name:"Austex Sprinklers", phone:"(512) 721-8564", note:"#1 Lawn Sprinkler Contractor Austin, TX." },
         { name:"Empire Home and Lawn Services", phone:"(830) 888-0726", note:"Because every home and lawn deserves royal treatment." },
-        { name:"Amigos Tree Service", phone:"(512) 740-0211", note:"Free estimates, No job too big or small." },
-        { name:"Electric Lawn Care", phone:"(000) 000-0000", note:"The Quietest Lawn Crew in Austin." },
         { name:"Green Thumb Landscaping", phone:"(512) 555-0235", note:"Transformed our backyard. Knows Texas-friendly plants well." },
         { name:"Reyes Lawn Care", phone:"(512) 555-0614", note:"Weekly mowing and edging. Always on time, very reliable." },
       ]},
-      { name:"Mosquito & Pest Control", icon:"🦟", listings:[
+      { name:"Mosquito & Pest Control", icon:"", listings:[
+        { name:"Barefoot Mosquito & Pest Control", phone:"(512) 856-7386", note:"Enjoy your home again with friendly pest control." },
         { name:"Creek Shield Pest Control", phone:"(512) 555-0486", note:"Monthly mosquito treatments — huge difference in our backyard. Very thorough." },
         { name:"Lone Star Pest Solutions", phone:"(512) 555-0723", note:"Handles mosquitoes, fire ants, and roaches. Family-safe products, great results." },
       ]},
     ]},
     { id:"auto", label:"Auto & Transport", icon:"🚗", subcategories:[
-      { name:"Mechanics & Auto Repair", icon:"🔩", listings:[
-        { name:"DC Customs", phone:"(512) 504-6606", note:"Custom Work, Done Right" },
+      { name:"Mechanics & Auto Repair", icon:"", listings:[
+        { name:"Hi-Tech Automotive", phone:"(512) 991-3321", note:"We Sell Quality." },
+        { name:"DC Customs", phone:"(512) 504-6606", note:"Custom Work, Done Right." },
         { name:"Fresh Automotive Services", phone:"(512) 429-9125", note:"Fresh start for all your automotive needs" },
         { name:"Buda Auto Care", phone:"(512) 555-0517", note:"Honest mechanic — told us we didn't need a repair another shop recommended. Trust them." },
         { name:"Creek Side Garage", phone:"(512) 555-0863", note:"Quick oil changes and diagnostics. Family-owned, great prices." },
       ]},
-      { name:"Golf Cart Sales & Repair", icon:"🏌️", listings:[
+      { name:"Golf Cart Sales & Repair", icon:"", listings:[
         { name:"Golf Carts of ATX", phone:"(844) 844 4280", note:"Full warranty, delivered to your driveway, and arrives ready to ride." },
         { name:"High Tech Golf Cart Repair", phone:"(512) 444 6851", note:"GOLF CART REPAIR AND SELL" },
         { name:"Creek Cart Co.", phone:"(512) 555-0284", note:"Sold us a great used cart and serviced it same week. Very knowledgeable." },
@@ -682,55 +692,60 @@
       ]},
     ]},
     { id:"professional", label:"Professional Services", icon:"💼", subcategories:[
-      { name:"Accounting & Tax Services", icon:"📊", listings:[
+      { name:"Accounting & Tax Services", icon:"", listings:[
+        { name:"Onion Creek Tax Service", phone:"(512) 292-1040", note:"Professional, high quality bookkeeping and tax preparation." },
         { name:"Texas Pro Tax", phone:"(512) 339-6671", note:"Lower your property tax appraised value and save time, stress, and money." },
         { name:"Fivestone", phone:"(512) 833-5829", note:"Expert tax representation backed by world-class experience and a commitment to peace of mind." },
-        { name:"Hoag & Roberts", phone:"(512) 695-0999", note:"..." },
         { name:"Creek Side Accounting", phone:"(512) 555-0184", note:"Handles personal and small business taxes. Very thorough and easy to work with." },
         { name:"Sandra Mills, CPA", phone:"(512) 555-0629", note:"Local CPA, great with self-employed folks and LLCs. Saves our family money every year." },
       ]},
-      { name:"Real Estate Agents", icon:"🏡", listings:[
-        { name:"Jennifer Moss, Realtor", phone:"(512) 555-0163", note:"Helped us sell in 9 days over asking. Knows the Austin/Kyle market inside out." },
-        { name:"Carlos Vega Real Estate", phone:"(512) 555-0549", note:"Patient, knowledgeable, zero pressure. Great for first-time buyers." },
+      { name:"Real Estate Agents", icon:"", listings:[
+        { name:"Justin Rossi, Realtor", phone:"(512) 587-6577", note:"Austin's top agent at LPT Realty and Host of ADTV’s SelADTV’s Selling Austin | Founder of the 'Everything Austin, TX'." },
+        { name:"Austin Moore, Realtor", phone:"(720) 224-4283", note:"More than transactions- I create strategies that turn real estate into wealth." },
+        { name:"Madison Swanson, Realtor", phone:"(205) 765-3872", note:"Austin local and real estate advisor helping buyers, sellers, and relocators confidently navigate the Austin market." },
+        { name:"Joanne Friesen, Realtor", phone:"(206) 883-7997", note:"Community Verified." },
       ]},
-      { name:"Insurance Agents", icon:"🛡️", listings:[
+      { name:"Insurance Agents", icon:"", listings:[
         { name:"Hill Country Insurance", phone:"(512) 555-0837", note:"Helped us bundle home and auto and saved us $600/year. Very responsive." },
         { name:"David Chen - State Farm", phone:"(512) 555-0224", note:"Local agent, easy to reach, great at explaining coverage options." },
       ]},
     ]},
     { id:"health", label:"Health & Wellness", icon:"🩺", subcategories:[
-      { name:"Doctors & Healthcare", icon:"👨‍⚕️", listings:[
+      { name:"Doctors & Healthcare", icon:"", listings:[
         { name:"Dr. Rivera Family Medicine", phone:"(512) 555-0356", note:"Takes time with patients, easy to get appointments. Great bedside manner." },
         { name:"Kyle Urgent Care", phone:"(512) 555-0691", note:"Fast and professional. Good for when you can't wait on a regular appointment." },
       ]},
-      { name:"Veterinarians", icon:"🐕‍🦺", listings:[
+      { name:"Veterinarians", icon:"", listings:[
         { name:"Onion Creek Animal Clinic", phone:"(512) 555-0274", note:"Caring staff, great with anxious pets. Our dogs actually like going here." },
         { name:"Buda Vet Center", phone:"(512) 555-0938", note:"Full-service clinic. Reasonable rates and very thorough checkups." },
       ]},
     ]},
     { id:"kids", label:"Kids & Education", icon:"🎒", subcategories:[
-      { name:"Kids Activities", icon:"🎨", listings:[
+      { name:"Kids Activities", icon:"", listings:[
+        { name:"Ashley VanGilder", phone:"(708) 250-8891", note:"Party Decorating & Pinatas." },
+        { name:"Foam Party Just Got Better", phone:"(512) 666-0649", note:"Fun, mess-free foam experiences." },
         { name:"Buda Youth Sports League", phone:"(512) 555-0162", note:"Soccer, baseball, and flag football for ages 4–14. Great coaches, very organized." },
         { name:"Creek Side Art Studio", phone:"(512) 555-0489", note:"After-school and weekend art classes for kids. Highly creative environment." },
         { name:"Onion Creek Dance Academy", phone:"(512) 555-0731", note:"Ballet, hip hop, and tumbling. Wonderful instructors, kids absolutely love it." },
       ]},
     ]},
     { id:"homelife", label:"Home Life", icon:"🏡", subcategories:[
-      { name:"House Cleaning", icon:"✨", listings:[
+      { name:"House Cleaning", icon:"", listings:[
+        { name:"Carol Brown", phone:"(407) 966-9074", note:"Community Verified." },
         { name:"Maria's Cleaning Co.", phone:"(512) 555-0947", note:"Reliable, trustworthy, and very thorough. Highly recommended by multiple neighbors." },
         { name:"Spotless Home Cleaning", phone:"(512) 555-0182", note:"Deep cleans are incredible. Uses eco-friendly products." },
       ]},
-      { name:"Childcare & Babysitting", icon:"👶", listings:[
+      { name:"Childcare & Babysitting", icon:"", listings:[
         { name:"Sarah T. (Babysitter)", phone:"(512) 555-0267", note:"CPR certified, great with kids of all ages. Very responsible neighbor." },
         { name:"Little Sprouts Daycare", phone:"(512) 555-0533", note:"Small home daycare run by a neighbor. Warm and nurturing environment." },
       ]},
-      { name:"Pet Services", icon:"🐾", listings:[
+      { name:"Pet Services", icon:"", listings:[
         { name:"Keep Austin Groomed", phone:"(512) 784-3998", note:"Caring for Your Best Friends, One Paw at a Time!" },
         { name:"Whiskers & Wags", phone:"(512) 757 5158", note:"Keep Austin Groomed" },
         { name:"Paws & Stay (Dog Sitting)", phone:"(512) 555-0748", note:"Watched our dogs for two weeks. Sent daily photos. Total peace of mind." },
         { name:"Creek Walk Dog Walking", phone:"(512) 555-0319", note:"Afternoon walks, very dependable. Dogs love her!" },
       ]},
-      { name:"Junk Removal", icon:"🗑️", listings:[
+      { name:"Junk Removal", icon:"", listings:[
         { name:"Three Brothers Moving ATX", phone:"(512) 994-0334", note:"You Ring, We Bring." },
         { name:"Creek Clean Junk Removal", phone:"(512) 555-0347", note:"Same-day service available. They donate and recycle what they can." },
         { name:"Haul It Away ATX", phone:"(512) 555-0592", note:"Cleared out our whole garage in two hours. Affordable and very professional." },
