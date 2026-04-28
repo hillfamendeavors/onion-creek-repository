@@ -541,7 +541,7 @@
           <option value="">— Select a category —</option>
           <optgroup label="Home &amp; Repair">
             <option>Plumbers</option><option>Electricians</option><option>Roofers</option>
-            <option>Handyman</option><option>Fencing &amp; Decks</option>
+            <option>Handyman</option><option>Construction</option><option>Fencing &amp; Decks</option>
             <option>AC &amp; Heating</option><option>Painters</option>
           </optgroup>
           <optgroup label="Outdoor &amp; Lawn">
@@ -639,12 +639,16 @@
         { name:"Peak Pro Roofing", phone:"(512) 555-0742", note:"Fair estimates, quality shingles. No pressure sales tactics." },
       ]},
       { name:"Handyman", icon:"", listings:[
-        { name:"Absolute Stucco & Stone", phone:"(512) 784-6603", note:"They came out and fixed a crack in our stucco and did some caulking around our stone and windows after we moved in. Great pricing and communication , highly reliable and excellent results." },
+        { name:"Alex Moran", phone:"(512) 960-5894", note:"Community Verified." },
         { name:"Mark Castillo", phone:"(512) 945-0673", note:"Community Verified." },
         { name:"James Bland", phone:"(214) 577-5200", note:"Community Verified." },
         { name:"Bob's Fix-It Services", phone:"(512) 555-0703", note:"No job too small. Fixed our fence, patched drywall, installed a door — all in one visit." },
         { name:"Creek Side Repairs", phone:"(512) 555-0561", note:"Honest estimates. Great with decks and wood repairs." },
       ]},
+      { name:"Construction", icon:"", listings:[
+        { name:"Absolute Stucco & Stone", phone:"(512) 784-6603", note:"They came out and fixed a crack in our stucco and did some caulking around our stone and windows after we moved in. Great pricing and communication , highly reliable and excellent results." },
+      ]},
+      
       { name:"Fencing & Decks", icon:"", listings:[
         { name:"JB Contracting & Property Services", phone:"(512) 587-3914", note:"Making every house feel like home." },
         { name:"Justin Perez", phone:"(512) 744-3117", note:"Community Verified." },
@@ -790,16 +794,15 @@
 
       const filteredSubs = g.subcategories.map(sub => ({
         ...sub,
-        listings: sub.listings
-          .filter(l =>
-            !searchQuery ||
-            l.name.toLowerCase().includes(searchQuery) ||
-            l.phone.includes(searchQuery) ||
-            l.note.toLowerCase().includes(searchQuery) ||
-            sub.name.toLowerCase().includes(searchQuery) ||
-            g.label.toLowerCase().includes(searchQuery)
-          )
-      })).filter(sub => sub.listings.length > 0);
+        listings: sub.listings.filter(l =>
+          !searchQuery ||
+          l.name.toLowerCase().includes(searchQuery) ||
+          l.phone.includes(searchQuery) ||
+          l.note.toLowerCase().includes(searchQuery) ||
+          sub.name.toLowerCase().includes(searchQuery) ||
+          g.label.toLowerCase().includes(searchQuery)
+        )
+      })).filter(sub => sub.listings.length > 0 || !searchQuery || sub.name.toLowerCase().includes(searchQuery) || g.label.toLowerCase().includes(searchQuery));
 
       if (!filteredSubs.length) return;
       anyVisible = true;
@@ -827,7 +830,8 @@
 
         const tableEl = document.createElement('div');
         tableEl.className = 'listings-table';
-        tableEl.innerHTML = sub.listings.map(l => `
+        tableEl.innerHTML = sub.listings.length
+          ? sub.listings.map(l => `
           <div class="listing-row${l.featured ? ' featured' : ''}">
             <div>
               <div class="listing-name">
@@ -838,7 +842,15 @@
             </div>
             <a class="listing-phone" href="tel:${l.phone.replace(/\D/g,'')}">${l.phone}</a>
           </div>
-        `).join('');
+        `).join('')
+          : `
+          <div class="listing-row">
+            <div>
+              <div class="listing-name">No listings yet</div>
+              <div class="listing-note">This category has been added and is ready for referrals.</div>
+            </div>
+          </div>
+        `;
 
         header.addEventListener('click', () => {
           const isOpening = tableEl.classList.contains('collapsed');
