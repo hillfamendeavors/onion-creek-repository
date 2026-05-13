@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sunfield Directory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Chronicles&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      /* Calmer, elegant Sunfield-inspired palette */
+      --masters-green: #0b2238;        /* deep navy for header */
+      --masters-green-mid: #214f5a;    /* softer mid tone for bars */
+      --masters-green-light: #6fb1a6;  /* muted teal accent */
+      --masters-yellow: #d8b86e;       /* warm, desaturated gold accent */
+      --masters-yellow-pale: #fbf6ea;  /* very pale cream */
+      --white: #ffffff;
+      --off-white: #fbf7f2;            /* page background */
+      --light-gray: #f1f4f5;
+      --mid-gray: #9aa7ad;
+      --dark-gray: #162226;
+      --text: #0b1719;                 /* very dark teal for text */
+      --border: #e6eaeb;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: var(--off-white);
+      color: var(--text);
+      min-height: 100vh;
+      font-weight: 300;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      background: var(--masters-green-mid);
+      color: var(--white);
+      text-align: center;
+      padding: 6px 20px;
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--masters-green);
+      padding: 32px 24px 0;
+      text-align: center;
+      border-bottom: 3px solid var(--masters-yellow);
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .logo-icon {
+      width: 52px;
+      height: 52px;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 400;
+      color: var(--white);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    header h1 span {
+      color: var(--masters-yellow);
+    }
+
+    .header-sub {
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 28px;
+      font-weight: 400;
+    }
+
+    .order-btn {
+      background: transparent;
+      border: 1.5px solid var(--masters-yellow);
+      color: var(--masters-yellow);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 9px 20px;
+      border-radius: 2px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      transition: all 0.15s;
+    }
+
+    .order-btn:hover {
+      background: var(--masters-yellow);
+      color: var(--masters-green);
+    }
+
+    /* ── NAV TABS ── */
+    .nav-tabs {
+      display: flex;
+      gap: 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .nav-tabs::-webkit-scrollbar { display: none; }
+
+    .nav-tab {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 12px 20px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .nav-tab:hover { color: var(--white); }
+    .nav-tab.active {
+      color: var(--masters-yellow);
+      border-bottom-color: var(--masters-yellow);
+    }
+
+    /* ── SEARCH BAR ── */
+    .search-bar {
+      background: var(--masters-green-mid);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .search-bar input {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 3px;
+      color: white;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      padding: 7px 14px;
+      width: 100%;
+      max-width: 360px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .search-bar input::placeholder { color: rgba(255,255,255,0.4); }
+    .search-bar input:focus { border-color: var(--masters-yellow); }
+
+    .search-bar span { color: rgba(255,255,255,0.4); font-size: 14px; }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 16px 100px;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* ── GROUP BLOCK ── */
+    .group-block {
+      margin-bottom: 32px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      animation: fadeIn 0.3s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .group-header-row {
+      background: var(--masters-green);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .group-header-row span {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--masters-yellow);
+    }
+
+    .group-header-row .gicon { font-size: 14px; }
+
+    /* ── SUBCATEGORY ── */
+    .subcategory { border-bottom: 1px solid var(--light-gray); }
+    .subcategory:last-child { border-bottom: none; }
+
+    .subcat-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 18px;
+      cursor: pointer;
+      background: var(--off-white);
+      border-bottom: 1px solid var(--light-gray);
+      transition: background 0.12s;
+      user-select: none;
+    }
+
+    .subcat-header:hover { background: var(--masters-yellow-pale); }
+
+    .subcat-icon { font-size: 13px; margin-right: 8px; }
+
+    .subcat-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--masters-green);
+      flex: 1;
+    }
+
+    .subcat-count {
+      font-size: 0.7rem;
+      color: var(--mid-gray);
+      margin-right: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .subcat-arrow {
+      font-size: 0.6rem;
+      color: var(--mid-gray);
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+
+    .subcat-arrow.open { transform: rotate(180deg); }
+
+    /* ── LISTINGS TABLE ── */
+    .listings-table {
+      width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 3000px;
+      transition: max-height 0.35s ease, opacity 0.25s ease;
+      opacity: 1;
+      scrollbar-width: thin;
+      scrollbar-color: var(--masters-green-light) transparent;
+    }
+
+    body.all-tab-active .listings-table {
+      max-height: 350px;
+    }
+
+    .listings-table::-webkit-scrollbar {
+      width: 5px;
+    }
+    .listings-table::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .listings-table::-webkit-scrollbar-thumb {
+      background: var(--masters-green-light);
+      border-radius: 10px;
+    }
+
+    @media (min-height: 800px) {
+      body.all-tab-active .listings-table { max-height: 380px; }
+    }
+
+    .listings-table.collapsed { max-height: 0 !important; opacity: 0; pointer-events: none; }
+
+    .listing-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      padding: 12px 18px 12px 38px;
+      border-bottom: 1px solid var(--light-gray);
+      transition: background 0.12s;
+      gap: 12px;
+    }
+
+    .listing-row:last-child { border-bottom: none; }
+    .listing-row:hover { background: var(--masters-yellow-pale); }
+
+    .listing-row.featured {
+      background: #fffdf5;
+      border-left: 3px solid var(--masters-yellow);
+      padding-left: 35px;
+    }
+
+    .listing-row.featured:hover { background: #fffbea; }
+
+    .listing-name {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.05rem;
+      color: var(--masters-green);
+      font-weight: 600;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .featured-badge {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: var(--masters-yellow);
+      color: var(--masters-green);
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+
+    .listing-note {
+      font-size: 0.82rem;
+      color: var(--mid-gray);
+      font-style: italic;
+      font-family: 'EB Garamond', serif;
+      line-height: 1.4;
+    }
+
+    .listing-phone {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cc2200;
+      text-decoration: none;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+      text-align: right;
+      padding-top: 3px;
+    }
+
+    .listing-phone:hover {
+      color: #991a00;
+      text-decoration: underline;
+    }
+
+    /* ── NO RESULTS ── */
+    #no-results {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--mid-gray);
+      font-family: 'EB Garamond', serif;
+      font-size: 1.1rem;
+      font-style: italic;
+    }
+
+    /* ── FLOATING BUTTON ── */
+    .fab {
+      position: fixed;
+      bottom: 24px; right: 20px;
+      background: var(--masters-green);
+      color: var(--masters-yellow);
+      border: 2px solid var(--masters-yellow);
+      border-radius: 2px;
+      padding: 11px 20px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 900;
+      transition: all 0.15s;
+    }
+
+    .fab:hover {
+      background: var(--masters-yellow);
+      color: var(--masters-green);
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 1000;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border-top: 4px solid var(--masters-green);
+      border-radius: 2px;
+      padding: 36px 32px;
+      max-width: 460px; width: 100%;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: modalIn 0.2s ease;
+      max-height: 90vh; overflow-y: auto;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-close {
+      position: absolute; top: 14px; right: 16px;
+      background: none; border: none; font-size: 1.2rem;
+      cursor: pointer; color: var(--mid-gray);
+    }
+
+    .modal h3 {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.5rem; font-weight: 600;
+      color: var(--masters-green); margin-bottom: 4px;
+      letter-spacing: 1px;
+    }
+
+    .modal-sub { font-size: 0.85rem; color: var(--mid-gray); margin-bottom: 24px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--masters-green); margin-bottom: 6px;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1px solid var(--border); border-radius: 2px;
+      font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem;
+      color: var(--text); background: var(--off-white); outline: none;
+      transition: border-color 0.15s;
+      font-weight: 300;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--masters-green); background: white;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .submit-btn {
+      width: 100%; padding: 11px;
+      background: var(--masters-green); color: var(--masters-yellow);
+      border: none; border-radius: 2px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; margin-top: 8px; transition: background 0.15s;
+    }
+    .submit-btn:hover { background: var(--masters-green-mid); }
+
+    .thank-you { display: none; text-align: center; padding: 24px 0; }
+    .thank-you .ty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .thank-you h4 {
+      font-family: 'EB Garamond', serif; font-size: 1.4rem;
+      color: var(--masters-green); margin-bottom: 8px;
+    }
+    .thank-you p { font-size: 0.85rem; color: var(--mid-gray); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--masters-green);
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      padding: 24px 20px;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    footer strong { color: var(--masters-yellow); }
+
+    @media (max-width: 540px) {
+      .nav-tab { padding: 10px 10px; font-size: 0.65rem; letter-spacing: 1px; }
+      .listing-row { grid-template-columns: 1fr; }
+      .listing-phone { text-align: left; }
+      .modal { padding: 28px 18px; }
+    }
+  </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QE75YFJ2ZL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-QE75YFJ2ZL');
+  </script>
+</head>
+<body>
+
+<div class="top-bar">Buda, Texas &nbsp;·&nbsp; Neighbor-Sourced Referrals</div>
+
+<header>
+  <div class="logo-wrap">
+    <h1>Sunfield, Buda <span>Directory</span></h1>
+    <p class="header-sub">Trusted Neighbors · Buda, Texas</p>
+    <a class="order-btn" href="/">Back Home</a>
+    <!-- <button class="order-btn" id="openOrderModal">Order a Directory</button> -->
+  </div>
+
+  <nav class="nav-tabs" id="groupPills">
+    <button class="nav-tab active" data-gid="all">All</button>
+  </nav>
+</header>
+
+<div class="search-bar">
+  <input type="text" id="search" placeholder="Search by name, service, or keyword…"/>
+</div>
+
+<main>
+  <div id="listingsContainer"></div>
+  <div id="no-results">No listings found — try a different search.</div>
+</main>
+
+<button class="fab" id="openModal">+ Suggest a Referral</button>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="closeModal">✕</button>
+    <div id="formView">
+      <h3>Suggest a Referral</h3>
+      <p class="modal-sub">Know a great local business? Share them with the community.</p>
+      <div class="form-group">
+        <label>Business or Person Name *</label>
+        <input type="text" id="f-name" placeholder="e.g. Mike's Plumbing"/>
+      </div>
+      <div class="form-group">
+        <label>Phone Number *</label>
+        <input type="tel" id="f-phone" placeholder="(512) 555-0000" inputmode="tel" maxlength="14" pattern="\\(\\d{3}\\) \\d{3}-\\d{4}" />
+      </div>
+      <div class="form-group">
+        <label>Category <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <select id="f-category">
+          <option value="">— Select a category —</option>
+          <optgroup label="Home &amp; Repair">
+            <option>Plumbers</option><option>Electricians</option><option>Roofers</option>
+            <option>Handyman</option><option>Construction</option><option>Fencing &amp; Decks</option>
+            <option>AC &amp; Heating</option><option>Painters</option>
+          </optgroup>
+          <optgroup label="Outdoor &amp; Lawn">
+            <option>Landscaping</option><option>Mosquito &amp; Pest Control</option>
+          </optgroup>
+          <optgroup label="Auto &amp; Transport">
+            <option>Mechanics &amp; Auto Repair</option><option>Golf Cart Sales &amp; Repair</option>
+          </optgroup>
+          <optgroup label="Professional Services">
+            <option>Accounting &amp; Tax Services</option>
+            <option>Real Estate Agents</option><option>Insurance Agents</option>
+          </optgroup>
+          <optgroup label="Health &amp; Wellness">
+            <option>Doctors &amp; Healthcare</option><option>Veterinarians</option>
+          </optgroup>
+          <optgroup label="Kids &amp; Education">
+            <option>Kids Activities</option>
+          </optgroup>
+          <optgroup label="Home Life">
+            <option>House Cleaning</option><option>Childcare &amp; Babysitting</option>
+            <option>Pet Services</option><option>Junk Removal</option><option>Tailors &amp; Alterations</option><option>Movers</option>
+          </optgroup>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Why do you recommend them? *</label>
+        <textarea id="f-note" placeholder="e.g. Fixed our water heater same day, very honest pricing…"></textarea>
+      </div>
+      <button class="submit-btn" id="submitBtn">Submit Referral</button>
+    </div>
+    <div class="thank-you" id="thankYouView">
+      <div class="ty-icon">🌿</div>
+      <h4>Thank you, neighbor.</h4>
+      <p>Your referral has been submitted and will be reviewed before being added to the directory.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Order Modal
+<div class="modal-overlay" id="orderModalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="closeOrderModal">✕</button>
+    <div id="orderFormView">
+      <h3>Order a Directory</h3>
+      <p class="modal-sub">Fill out the form below and we'll be in touch.</p>
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="o-name" placeholder="e.g. Jane Smith"/>
+      </div>
+      <div class="form-group">
+        <label>Street Address *</label>
+        <input type="text" id="o-address" placeholder="e.g. 123 Creekside Dr, Buda, TX"/>
+      </div>
+      <p style="font-size:0.8rem; color:var(--mid-gray); font-style:italic; margin-bottom:20px; line-height:1.5; border-top:1px solid var(--border); padding-top:16px;">
+        Physical copies of the Sunfield, Buda Directory can be purchased for <strong style="color:var(--masters-green); font-style:normal;">$15</strong> by cash, check, Venmo, or Zelle.
+      </p>
+      <button class="submit-btn" id="orderSubmitBtn">Submit Order</button>
+    </div>
+    <div class="thank-you" id="orderThankYouView">
+      <div class="ty-icon">📖</div>
+      <h4>Order Received</h4>
+      <p>Thank you! We'll be in touch shortly with delivery details.</p>
+    </div>
+  </div>
+</div>
+-->
+
+<footer>
+  <strong>Sunfield, Buda YP</strong> &nbsp;·&nbsp; Buda, TX &nbsp;·&nbsp; trustedneighbors.net
+</footer>
+
+<script>
+  const groups = [
+    { id:"home", label:"Home & Repair", icon:"🏠", subcategories:[
+      { name:"Plumbers", icon:"", listings:[
+        { name:"Call My Plumber", phone:"(512) 699-0617", note:"When you Call-My-Plumber, you’re choosing peace of mind, professionalism, and plumbing done right." },
+        { name:"Hernandez Remodeling", phone:"(737) 291-7701", note:"Our priority is your satisfaction." },
+        { name:"Abundant Plumbing LLC", phone:"(512) 201-9978", note:"Experience Abundance through our Service." },
+        { name:"Creative Comfort Solutions", phone:"(512) 757-2366", note:"HVAC Services Built Around You." },
+        { name:"Hill Country Carpenters", phone:"(512) 659-4956", note:"Elevating Interiors, Exceeding Expectations." },
+      ]},
+      { name:"Electricians", icon:"", listings:[
+        { name:"Hill Country Carpenters", phone:"(512) 659-4956", note:"Elevating Interiors, Exceeding Expectations." },
+        { name:"ABRC Electrical Services LLC", phone:"(512) 812-8525", note:"A legacy of excellence in the electrical world." },
+        { name:"Mathew Ellzey", phone:"(512) 924-6787", note:"Knowledgeable & Trustworthy." },
+        { name:"AMP Electric", phone:"(737) 373-2870", note:"No Job too SHOCKING!" },
+        { name:"PROTECHS Appliance Repair", phone:"(512) 705-6910", note:"We can help you move forward." },
+      ]},
+      { name:"Roofers", icon:"", listings:[
+        { name:"Hill Country Carpenters", phone:"(512) 659-4956", note:"Elevating Interiors, Exceeding Expectations." },
+        { name:"4M Roofing Co. LLC", phone:"(512) 299-8949", note:"Complete Roofing Solutions." },
+        { name:"Lone Star Renovation & Design, INC", phone:"(512) 758-0128", note:"Making the Lone Star State Shine One Renovation at a Time." },
+        { name:"Nichole at Priority Roofing", phone:"(512) 540-4884", note:"Roofing is our heritage, Quality is our tradition." },
+        { name:"Roof Royale", phone:"(512) 379-7933", note:"When Life Gives You Hail." },
+
+      ]},
+      { name:"Handyman", icon:"", listings:[
+        { name:"Hill Country Carpenters", phone:"(512) 659-4956", note:"Elevating Interiors, Exceeding Expectations." },
+        { name:"Olson Handyman Services, LLC", phone:"(361) 212-0115", note:"From small fixes to major projects, we handle it all with skill, care, and a neighborly touch." },
+        { name:"Lone Star Renovation & Design, INC", phone:"(512) 758-0128", note:"Making the Lone Star State Shine One Renovation at a Time" },
+        { name:"Hernandez Remodeling", phone:"(737) 291-7701", note:"Our priority is your satisfaction." },
+        { name:"JD TILE and MORE", phone:"(512) 939-0157", note:"We provide quality tile installation and repair services." },
+      ]},
+      { name:"Construction", icon:"", listings:[
+        { name:"Absolute Stucco & Stone", phone:"(512) 784-6603", note:"They came out and fixed a crack in our stucco and did some caulking around our stone and windows after we moved in. Great pricing and communication , highly reliable and excellent results." },
+      ]},
+      
+      { name:"Fencing & Decks", icon:"", listings:[
+        { name:"Hill Country Carpenters", phone:"(512) 659-4956", note:"Elevating Interiors, Exceeding Expectations." },
+        { name:"Olson Handyman Services, LLC", phone:"(361) 212-0115", note:"Experience the fusion of imagination and expertise." },
+        { name:"Big Brown Fence LLC", phone:"(737) 268-0639", note:"Your Trusted Fence Installation Experts." },
+        { name:"Creative Landscape & Fencing LLC", phone:"(512) 884-1788", note:"We Create: You Enjoy!" },
+        { name:"True Built Fence", phone:"(512) 297-3481", note:"Building Fences That Fit Every Purpose." },
+      ]},
+      { name:"AC & Heating", icon:"", listings:[
+        { name:"Hill Country Carpenters", phone:"(512) 659-4956", note:"Elevating Interiors, Exceeding Expectations." },
+        { name:"Creative Comfort Solutions", phone:"(512) 757-2366", note:"Providing Comfortable Living Spaces." },
+        { name:"JC's AC Heating & Cooling", phone:"(512) 712-6763", note:"Your Trusted HVAC Experts." },
+        { name:"Northwest Services ATX LLC", phone:"(512) 921-4497", note:"Our priority is your indoor clean air quality & comfort." },
+      ]},
+      { name:"Painters", icon:"", listings:[
+        { name:"Piitsburgh Paints Co.", phone:"(512) 771-78744", note:"Priming you for success." },
+        { name:"Lone Star Renovation & Design, INC", phone:"(512) 758-0128", note:"Making the Lone Star State Shine One Renovation at a Time" },
+        { name:"Swatch Exterior Painting", phone:"(512) 400-4010", note:"Experience Quality, Integrity, and Attention to Detail." },
+        { name:"EDM Painting & Construction", phone:"(512) 326-9225", note:"Integrity, honesty and commitment are essential to each job big or small." },
+      ]},
+    ]},
+    { id:"outdoor", label:"Outdoor & Lawn", icon:"🌿", subcategories:[
+      { name:"Landscaping", icon:"", listings:[
+        { name:"Hill Country Carpenters", phone:"(512) 659-4956", note:"Elevating Interiors, Exceeding Expectations." },
+        { name:"Muchacho Alegre", phone:"(512) 749-5372", note:"Authentic Mexican Cuisine." },
+        { name:"Mabrasu LLC", phone:"(512) 750-7401", note:"Dedicated to Professional Excellence." },
+        { name:"CRC Concrete Raising & Repair - Central Texas", phone:"(512) 410-7378", note:"Specializing in concrete raising and repair services across Central Texas." },
+        { name:"Green Lawn", phone:"(512) 590-1845", note:"Providing a green approach since 1989; well before 'Green' was cool." },
+        { name:"CamRock Lawn Service", phone:"(512) 822-6097", note:"We're Lawn and Order." },
+        { name:"Texas Green Lawn Landscape & Maintenance", phone:"(512) 590-1845", note:"Mow lawn landscape flower bed cleanup - FREE ESTIMATE!" },
+      ]},
+      { name:"Mosquito & Pest Control", icon:"", listings:[
+        { name:"EnviroGuard Pest Control", phone:"(737) 387-3774", note:"Experience the EnviroGuard Difference." },
+        { name:"HomeTeam Pest Defense", phone:"(512) 268-2572", note:"A Different Kind of Pest Control." },
+        { name:"Domain Pest Control", phone:"(512) 813-7378", note:"Protecting Your Domain." },
+        { name:"Absolute Pest Management", phone:"(512) 444-0262", note:"Our goal is simple: to protect your home like it’s our own." },
+        { name:"Real Green", phone:"(512) 852-0345", note:"Providing a green approach since 1989; well before 'Green' was cool." },
+      ]},
+    ]},
+    { id:"auto", label:"Auto & Transport", icon:"🚗", subcategories:[
+      { name:"Mechanics & Auto Repair", icon:"", listings:[
+        { name:"South Side Hays Repair", phone:"(512) 400-5132", note:"Mobile Mechanic Service, complete auto care, most makes and models, light, medium, and heavy duty." },
+        { name:"Corridor Window Tint", phone:"(512) 361-0034", note:"Tinting service." },
+        { name:"5G Auto Tint LLC", phone:"(512) 803-3034", note:"Premium window film to help reduce light/sun glare, 99% UV Protection & Heat Rejection." },
+        { name:"Hoods Up Diagnostics", phone:"(512) 293-5872", note:"Automobile Diagnostics and Repair." },
+      ]},
+      { name:"Golf Cart Sales & Repair", icon:"", listings:[
+        { name:"Golf Carts of ATX", phone:"(844) 844 4280", note:"Full warranty, delivered to your driveway, and arrives ready to ride." },
+        { name:"High Tech Golf Cart Repair", phone:"(512) 444 6851", note:"GOLF CART REPAIR AND SELL." },
+        { name:"Creek Cart Co.", phone:"(512) 555-0284", note:"Sold us a great used cart and serviced it same week. Very knowledgeable." },
+        { name:"Austin Golf Carts", phone:"(512) 555-0637", note:"New and used carts, plus repairs. Fast turnaround on battery work." },
+      ]},
+    ]},
+    { id:"professional", label:"Professional Services", icon:"💼", subcategories:[
+      { name:"Accounting & Tax Services", icon:"", listings:[
+        { name:"Onion Creek Tax Service", phone:"(512) 292-1040", note:"Professional, high quality bookkeeping and tax preparation." },
+        { name:"Texas Pro Tax", phone:"(512) 339-6671", note:"Lower your property tax appraised value and save time, stress, and money." },
+        { name:"Fivestone", phone:"(512) 833-5829", note:"Expert tax representation backed by world-class experience and a commitment to peace of mind." },
+        { name:"Creek Side Accounting", phone:"(512) 555-0184", note:"Handles personal and small business taxes. Very thorough and easy to work with." },
+        { name:"Sandra Mills, CPA", phone:"(512) 555-0629", note:"Local CPA, great with self-employed folks and LLCs. Saves our family money every year." },
+      ]},
+      { name:"Real Estate Agents", icon:"", listings:[
+        { name:"Justin Rossi, Realtor", phone:"(512) 587-6577", note:"Austin's top agent at LPT Realty and Host of ADTV’s SelADTV’s Selling Austin | Founder of the 'Everything Austin, TX'." },
+        { name:"Norma Perez, Realtor", phone:"(210) 380-8781", note:"" },
+        { name:"Deanna Skelliter Carrico, Realtor", phone:"(512) 203-9566", note:"Meritage Homes builds life. Built Better." },
+        { name:"Austin Moore, Realtor", phone:"(720) 224-4283", note:"More than transactions- I create strategies that turn real estate into wealth." },
+        { name:"Madison Swanson, Realtor", phone:"(205) 765-3872", note:"Austin local and real estate advisor helping buyers, sellers, and relocators confidently navigate the Austin market." },
+        { name:"Liz Jones, Realtor", phone:"(408) 440-9421", note:"Deeply rooted in the Onion Creek community, Liz brings a personal touch, sharp eye for detail, and genuine care to every real estate transaction." },
+        { name:"Texas Farm Burea Pete Welma, Realtor", phone:"(512) 504-9484", note:"He genuinely cares for the best interests of his clients. Trusworthy and honest." },
+      ]},
+      { name:"Insurance Agents", icon:"", listings:[
+        { name:"Eric Baker", phone:"(737) 900-6914", note:"Eric is an insurance agent with Farmers." },
+        { name:"Hill Country Insurance", phone:"(512) 555-0837", note:"Helped us bundle home and auto and saved us $600/year. Very responsive." },
+        { name:"David Chen - State Farm", phone:"(512) 555-0224", note:"Local agent, easy to reach, great at explaining coverage options." },
+      ]},
+    ]},
+    { id:"health", label:"Health & Wellness", icon:"🩺", subcategories:[
+      { name:"Doctors & Healthcare", icon:"", listings:[
+        { name:"Hill Country Water Systems", phone:"(830) 216-3318", note:"Providing Top Quality Products and Service." },
+        { name:"Dr. Rivera Family Medicine", phone:"(512) 555-0356", note:"Takes time with patients, easy to get appointments. Great bedside manner." },
+        { name:"Kyle Urgent Care", phone:"(512) 555-0691", note:"Fast and professional. Good for when you can't wait on a regular appointment." },
+      ]},
+      { name:"Veterinarians", icon:"", listings:[
+        { name:"Apollo Veterinary", phone:"(512) 648-6477", note:"Central Texas’ first ever Open Concept Vet Practice | Companion Animal Vet | Open-Concept Care with a Focus on Transparency | Prioritizing Vet Clinic Culture." },
+        { name:"South Austin Cat Hospital", phone:"(512) 910-2287", note:"Next to the neighborhood, wonderful service and care. We won’t take our cats anywhere else." },
+        { name:"Buda Vet Center", phone:"(512) 555-0938", note:"Full-service clinic. Reasonable rates and very thorough checkups." },
+        { name:"Onion Creek Animal Clinic", phone:"(512) 555-0274", note:"Caring staff, great with anxious pets. Our dogs actually like going here." },
+      ]},
+    ]},
+    { id:"kids", label:"Kids & Education", icon:"🎒", subcategories:[
+      { name:"Kids Activities", icon:"", listings:[
+        { name:"The Party Rentals", phone:"(512) 787-2616", note:"Providing the best Water Slides for rent in Kyle, Buda, Lockhart, San Marcos and greater Austin region." },
+        { name:"Austin Submission Fighting", phone:"(512) 431-2458", note:"One week of Jiu Jitsu, Mixed Martial Arts, fitness, games and FUN." },
+        { name:"Ashley VanGilder", phone:"(708) 250-8891", note:"Party Decorating & Pinatas." },
+        { name:"FOAMISTA", phone:"(195) 634-0521", note:"Foam Party Just Got Better." },
+        { name:"Buda Youth Sports League", phone:"(512) 555-0162", note:"Soccer, baseball, and flag football for ages 4–14. Great coaches, very organized." },
+        { name:"Creek Side Art Studio", phone:"(512) 555-0489", note:"After-school and weekend art classes for kids. Highly creative environment." },
+        { name:"Onion Creek Dance Academy", phone:"(512) 555-0731", note:"Ballet, hip hop, and tumbling. Wonderful instructors, kids absolutely love it." },
+      ]},
+    ]},
+    { id:"homelife", label:"Home Life", icon:"🏡", subcategories:[
+      { name:"House Cleaning", icon:"", listings:[
+        { name:"Quality Family Cleaning Services", phone:"(512) 650-7359", note:"I Don’t Cut Corners — I Clean Them." },
+        { name:"Melody Caluori Cipriano", phone:"(516) 297-0460", note:"" },
+        { name:"Mena’s Sparkle & Shine", phone:"(512) 781-9399", note:"" },
+        { name:"Dawn's Sparkle", phone:"(512) 970-6905", note:"Dawn cleans my home weekly and does a phenomenal job." },
+        { name:"Maria's Cleaning Co.", phone:"(512) 555-0947", note:"Reliable, trustworthy, and very thorough. Highly recommended by multiple neighbors." },
+        { name:"Spotless Home Cleaning", phone:"(512) 555-0182", note:"Deep cleans are incredible. Uses eco-friendly products." },
+      ]},
+      { name:"Childcare & Babysitting", icon:"", listings:[
+        { name:"Sarah T. (Babysitter)", phone:"(512) 555-0267", note:"CPR certified, great with kids of all ages. Very responsible neighbor." },
+        { name:"Little Sprouts Daycare", phone:"(512) 555-0533", note:"Small home daycare run by a neighbor. Warm and nurturing environment." },
+      ]},
+      { name:"Pet Services", icon:"", listings:[
+        { name:"Keep Austin Groomed", phone:"(512) 784-3998", note:"Caring for Your Best Friends, One Paw at a Time!" },
+        { name:"Whiskers & Wags", phone:"(512) 757 5158", note:"Keeping Austin Groomed" },
+        { name:"Paws & Stay (Dog Sitting)", phone:"(512) 555-0748", note:"Watched our dogs for two weeks. Sent daily photos. Total peace of mind." },
+        { name:"Creek Walk Dog Walking", phone:"(512) 555-0319", note:"Afternoon walks, very dependable. Dogs love her!" },
+      ]},
+      { name:"Junk Removal", icon:"", listings:[
+        { name:"Christopher Doyle", phone:"(512) 413-2324", note:"Get that spring cleaning out of the way!" },
+        { name:"1-800-Got-Junk", phone:"(512) 287-7996", note:"Excellent same day customer service!" },
+        { name:"Three Brothers Moving ATX", phone:"(512) 994-0334", note:"You Ring, We Bring." },
+        { name:"Creek Clean Junk Removal", phone:"(512) 555-0347", note:"Same-day service available. They donate and recycle what they can." },
+        { name:"Haul It Away ATX", phone:"(512) 555-0592", note:"Cleared out our whole garage in two hours. Affordable and very professional." },
+      ]},
+      { name:"Tailors & Alterations", icon:"", listings:[
+        { name:"Judy Thornhill", phone:"(512) 789-8617", note:"She lives in Onion Creek and does OUTSTANDING Work!" },
+        { name:"Couture Tailors", phone:"(512) 769-1486", note:"Tiffany altered my Wedding Gown and I have brought several pieces since then." },
+        { name:"Hope Tailor Shop & Alterations", phone:"(512) 447-4673", note:"They do AMAZING work." },
+        { name:"Soco Cleaner & Alterations", phone:"(512) 462-0048", note:"He's reasonable and amazing at what he does." },
+        { name:"AA Alterations", phone:"(512) 328-1766", note:"Very happy with their work, it’s in the HEB shopping center at Slaughter/Menchaca." },
+      ]},
+      { name:"Movers", icon:"", listings:[
+        { name:"Christopher Doyle", phone:"(512) 413-2324", note:"Get that spring cleaning out of the way!" },
+        { name:"Three Brothers Moving ATX", phone:"(512) 994-0334", note:"You Ring, We Bring." },
+        { name:"Haul It Away ATX", phone:"(512) 555-0592", note:"Cleared out our whole garage in two hours. Affordable and very professional." },
+      ]},
+    ]},
+  ];
+
+  const pillsEl   = document.getElementById('groupPills');
+  const container = document.getElementById('listingsContainer');
+  const searchEl  = document.getElementById('search');
+  const noResults = document.getElementById('no-results');
+  let activeGroup = 'all';
+  let searchQuery = '';
+
+  // Build nav tabs
+  groups.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-tab';
+    btn.dataset.gid = g.id;
+    btn.textContent = g.label;
+    pillsEl.appendChild(btn);
+  });
+
+  pillsEl.addEventListener('click', e => {
+    const tab = e.target.closest('.nav-tab');
+    if (!tab) return;
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeGroup = tab.dataset.gid;
+    render();
+  });
+
+  searchEl.addEventListener('input', () => { searchQuery = searchEl.value.toLowerCase(); render(); });
+
+  function render() {
+    if (activeGroup === 'all') {
+      document.body.classList.add('all-tab-active');
+    } else {
+      document.body.classList.remove('all-tab-active');
+    }
+
+    container.innerHTML = '';
+    let anyVisible = false;
+
+    groups.forEach(g => {
+      if (activeGroup !== 'all' && activeGroup !== g.id) return;
+
+      const filteredSubs = g.subcategories.map(sub => ({
+        ...sub,
+        listings: sub.listings.filter(l =>
+          !searchQuery ||
+          l.name.toLowerCase().includes(searchQuery) ||
+          l.phone.includes(searchQuery) ||
+          l.note.toLowerCase().includes(searchQuery) ||
+          sub.name.toLowerCase().includes(searchQuery) ||
+          g.label.toLowerCase().includes(searchQuery)
+        )
+      })).filter(sub => sub.listings.length > 0 || !searchQuery || sub.name.toLowerCase().includes(searchQuery) || g.label.toLowerCase().includes(searchQuery));
+
+      if (!filteredSubs.length) return;
+      anyVisible = true;
+
+      const block = document.createElement('div');
+      block.className = 'group-block';
+
+      const groupHead = document.createElement('div');
+      groupHead.className = 'group-header-row';
+      groupHead.innerHTML = `<span class="gicon">${g.icon}</span><span>${g.label}</span>`;
+      block.appendChild(groupHead);
+
+      filteredSubs.forEach(sub => {
+        const subEl = document.createElement('div');
+        subEl.className = 'subcategory';
+
+        const header = document.createElement('div');
+        header.className = 'subcat-header';
+        header.innerHTML = `
+          <span class="subcat-icon">${sub.icon}</span>
+          <span class="subcat-name">${sub.name}</span>
+          <span class="subcat-count">${sub.listings.length} listing${sub.listings.length !== 1 ? 's' : ''}</span>
+          <span class="subcat-arrow open">▼</span>
+        `;
+
+        const tableEl = document.createElement('div');
+        tableEl.className = 'listings-table';
+        tableEl.innerHTML = sub.listings.length
+          ? sub.listings.map(l => `
+          <div class="listing-row${l.featured ? ' featured' : ''}">
+            <div>
+              <div class="listing-name">
+                ${l.name}
+                ${l.featured ? '<span class="featured-badge">Preferred</span>' : ''}
+              </div>
+              <div class="listing-note">${l.note}</div>
+            </div>
+            <a class="listing-phone" href="tel:${l.phone.replace(/\D/g,'')}">${l.phone}</a>
+          </div>
+        `).join('')
+          : `
+          <div class="listing-row">
+            <div>
+              <div class="listing-name">No listings yet</div>
+              <div class="listing-note">This category has been added and is ready for referrals.</div>
+            </div>
+          </div>
+        `;
+
+        header.addEventListener('click', () => {
+          const isOpening = tableEl.classList.contains('collapsed');
+          tableEl.classList.toggle('collapsed');
+          header.querySelector('.subcat-arrow').classList.toggle('open');
+          
+          if (isOpening) {
+            setTimeout(() => {
+              header.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+          }
+        });
+
+        subEl.appendChild(header);
+        subEl.appendChild(tableEl);
+        block.appendChild(subEl);
+      });
+
+      container.appendChild(block);
+    });
+
+    noResults.style.display = anyVisible ? 'none' : 'block';
+  }
+
+  render();
+
+  // ── MODAL ──
+  const overlay   = document.getElementById('modalOverlay');
+  const openBtn   = document.getElementById('openModal');
+  const closeBtn  = document.getElementById('closeModal');
+  const submitBtn = document.getElementById('submitBtn');
+  const formView  = document.getElementById('formView');
+  const thankYou  = document.getElementById('thankYouView');
+
+  openBtn.addEventListener('click', () => overlay.classList.add('open'));
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    setTimeout(() => {
+      formView.style.display = 'block';
+      thankYou.style.display = 'none';
+      ['f-name','f-phone','f-category','f-note'].forEach(id => document.getElementById(id).value = '');
+    }, 300);
+  }
+
+  submitBtn.addEventListener('click', async () => {
+    const name     = document.getElementById('f-name').value.trim();
+    let phone      = document.getElementById('f-phone').value.trim();
+    const category = document.getElementById('f-category').value;
+    const note     = document.getElementById('f-note').value.trim();
+
+    // Normalize digits and require a 10-digit US phone number
+    const phoneDigits = phone.replace(/\D/g,'');
+    if (!name || !phoneDigits || !note) { alert('Please fill in the name, phone, and recommendation fields.'); return; }
+    if (phoneDigits.length !== 10) { alert('Please enter a 10-digit phone number in the format (512) 555-0000.'); return; }
+    phone = formatUSPhone(phoneDigits);
+
+    submitBtn.textContent = 'Submitting…';
+    submitBtn.disabled = true;
+
+    try {
+      await fetch('https://formspree.io/f/mwvyajvb', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name, phone, category, note, _subject: `New Sunfield, Buda YP Referral: ${name}` })
+      });
+    } catch(e) {}
+
+    formView.style.display = 'none';
+    thankYou.style.display = 'block';
+    submitBtn.textContent = 'Submit Referral';
+    submitBtn.disabled = false;
+  });
+
+  /* Phone input formatting and validation for referrals
+     - Formats as (###) ###-#### while typing/pasting
+     - Enforces 10-digit number on blur/submit
+     To remove: delete this block and restore the original input attributes. */
+  function formatUSPhone(digits) {
+    digits = (digits || '').replace(/\D/g,'').slice(0,10);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6,10)}`;
+  }
+
+  const phoneEl = document.getElementById('f-phone');
+  if (phoneEl) {
+    phoneEl.addEventListener('input', () => {
+      const digits = phoneEl.value.replace(/\D/g,'');
+      phoneEl.value = formatUSPhone(digits);
+    });
+
+    phoneEl.addEventListener('blur', () => {
+      const digits = phoneEl.value.replace(/\D/g,'');
+      if (!digits) return;
+      if (digits.length !== 10) {
+        alert('Please enter a 10-digit phone number (e.g. (512) 555-0000).');
+        phoneEl.focus();
+      } else {
+        phoneEl.value = formatUSPhone(digits);
+      }
+    });
+
+    phoneEl.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text') || '';
+      const digits = paste.replace(/\D/g,'').slice(0,10);
+      phoneEl.value = formatUSPhone(digits);
+    });
+  }
+/*
+  // ── ORDER MODAL ──
+  const orderOverlay    = document.getElementById('orderModalOverlay');
+  const openOrderBtn    = document.getElementById('openOrderModal');
+  const closeOrderBtn   = document.getElementById('closeOrderModal');
+  const orderSubmitBtn  = document.getElementById('orderSubmitBtn');
+  const orderFormView   = document.getElementById('orderFormView');
+  const orderThankYou   = document.getElementById('orderThankYouView');
+
+  openOrderBtn.addEventListener('click', () => orderOverlay.classList.add('open'));
+  closeOrderBtn.addEventListener('click', closeOrderModal);
+  orderOverlay.addEventListener('click', e => { if (e.target === orderOverlay) closeOrderModal(); });
+
+  function closeOrderModal() {
+    orderOverlay.classList.remove('open');
+    setTimeout(() => {
+      orderFormView.style.display = 'block';
+      orderThankYou.style.display = 'none';
+      ['o-name','o-address'].forEach(id => document.getElementById(id).value = '');
+    }, 300);
+  }
+*/
+
+</script>
+</body>
+</html>
