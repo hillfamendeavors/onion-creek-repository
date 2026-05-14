@@ -4,43 +4,54 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Neighborhood Directory Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Chronicles&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --masters-green: #1a3a2a;
-      --masters-green-mid: #2d5a3d;
-      --masters-green-light: #3d7a52;
-      --masters-yellow: #f5d06e;
-      --masters-yellow-pale: #fdf6e3;
-      --white: #ffffff;
-      --off-white: #f8f8f6;
-      --light-gray: #e8e8e4;
-      --mid-gray: #999990;
-      --dark-gray: #333330;
-      --text: #1a1a18;
-      --border: #d0d0c8;
+      --va-red: #A65646; /* Visit Austin Terracotta */
+      --va-red-dark: #8F493B;
+      --va-black: #000000;
+      --va-white: #ffffff;
+      --va-off-white: #f8f8f8;
+      --va-gray: #e5e5e5;
+      --va-text: #222222;
+      --va-text-light: #555555;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Source Sans 3', sans-serif;
-      background: var(--off-white);
-      color: var(--text);
+      font-family: 'Montserrat', sans-serif;
+      background: var(--va-off-white);
+      color: var(--va-text);
       min-height: 100vh;
-      font-weight: 300;
+      font-weight: 400;
       display: flex;
       flex-direction: column;
     }
 
+    /* TOP UTILITY BAR */
+    .top-bar {
+      background: var(--va-black);
+      color: var(--va-white);
+      padding: 8px 40px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: flex-start;
+      gap: 24px;
+    }
+
+    /* MAIN NAV BAR */
     .main-nav {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(10px);
-      padding: 16px 40px;
+      padding: 12px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(208, 208, 200, 0.5);
+      border-bottom: 1px solid var(--va-gray);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -49,38 +60,47 @@
     }
 
     .main-nav-logo {
-      font-family: 'EB Garamond', serif;
-      font-size: 1.8rem;
-      font-weight: 400;
-      color: var(--masters-green);
+      font-size: 2rem;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -1px;
+      color: var(--va-black);
       text-decoration: none;
-      letter-spacing: 1px;
+    }
+    
+    .main-nav-logo span {
+      color: var(--va-red);
     }
 
-    .main-nav-logo span {
-      color: var(--masters-yellow);
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex: 1;
+      justify-content: center;
     }
 
     .nav-links {
       display: flex;
+      align-items: center;
       gap: 32px;
     }
 
     .nav-links a {
-      font-family: 'Source Sans 3', sans-serif;
-      font-weight: 600;
-      font-size: 0.85rem;
+      font-weight: 800;
+      font-size: 0.8rem;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: var(--text);
+      color: var(--va-text);
       text-decoration: none;
       transition: color 0.2s ease;
     }
 
     .nav-links a:hover {
-      color: var(--masters-green-light);
+      color: var(--va-red);
     }
 
+    /* DROPDOWN */
     .dropdown {
       position: relative;
       display: inline-block;
@@ -91,28 +111,15 @@
       position: absolute;
       top: 100%;
       left: 0;
-      background-color: var(--white);
+      background-color: var(--va-white);
       min-width: 220px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      border: 1px solid var(--va-gray);
+      border-top: 3px solid var(--va-red);
       z-index: 200;
       padding: 12px 0;
-      margin-top: 24px;
+      margin-top: 18px;
       animation: fadeIn 0.2s ease;
-    }
-    
-    .dropdown-menu::before {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: 24px;
-      width: 10px;
-      height: 10px;
-      background: var(--white);
-      border-top: 1px solid var(--border);
-      border-left: 1px solid var(--border);
-      transform: rotate(45deg);
     }
 
     .dropdown:hover .dropdown-menu {
@@ -122,22 +129,18 @@
     .dropdown-menu a {
       display: block;
       padding: 10px 24px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
     }
 
     .dropdown-menu a:hover {
-      background-color: var(--off-white);
-      color: var(--masters-green);
-    }
-
-    .menu-toggle {
-      display: none;
+      background-color: var(--va-off-white);
+      color: var(--va-red);
     }
 
     .menu-btn {
       display: none;
       cursor: pointer;
-      color: var(--text);
+      color: var(--va-black);
     }
 
     .menu-btn svg {
@@ -145,6 +148,12 @@
       height: 28px;
     }
 
+    /* MOBILE TOGGLE */
+    .menu-toggle {
+      display: none;
+    }
+
+    /* HERO */
     header {
       position: relative;
       height: 70vh;
@@ -160,7 +169,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: url('assets/wallpapersden.com_austin-texas-bridge_1680x1050.jpg') no-repeat center center;
+      background: url('assets/Downtown_Skyline_Upscale_Paulina_Skarbowska_Wiewior_bateyes_atx_Lifetime_Usage__4469f6fe-40d5-4df8-8fee-22b3b75c9862.jpg') no-repeat center center;
       background-size: cover;
       z-index: 0;
       animation: slowZoom 20s ease-in-out infinite alternate;
@@ -184,11 +193,11 @@
 
     .eyebrow {
       display: inline-block;
-      font-size: 1rem;
-      font-weight: 600;
+      font-size: 1.2rem;
+      font-weight: 800;
       letter-spacing: 4px;
       text-transform: uppercase;
-      color: var(--masters-yellow);
+      color: var(--va-red);
       margin-bottom: 12px;
       text-shadow: 0 2px 4px rgba(0,0,0,0.5);
       animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -203,7 +212,7 @@
       letter-spacing: 2px;
       text-transform: uppercase;
       line-height: 1;
-      color: var(--white);
+      color: var(--va-white);
       margin-bottom: 24px;
       text-shadow: 0 4px 12px rgba(0,0,0,0.4);
       animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
@@ -217,10 +226,9 @@
 
     .subtitle {
       max-width: 800px;
-      color: var(--dark-gray);
-      font-family: 'Source Sans 3', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 300;
+      color: var(--va-text-light);
+      font-size: 1.1rem;
+      font-weight: 600;
       line-height: 1.6;
       animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards;
       opacity: 0;
@@ -247,7 +255,7 @@
     .selector-card {
       display: flex;
       flex-direction: column;
-      background: var(--white);
+      background: var(--va-white);
       border-radius: 4px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
       overflow: hidden;
@@ -266,28 +274,28 @@
 
     .card-top {
       padding: 40px 30px;
-      background: var(--white);
+      background: var(--va-white);
       flex: 1;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--va-gray);
     }
 
     .card-tag {
       display: inline-block;
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 800;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--masters-green-light);
+      color: var(--va-red);
       margin-bottom: 12px;
     }
 
     .card-title {
-      font-family: 'EB Garamond', serif;
       font-size: 2.2rem;
-      font-weight: 400;
-      color: var(--masters-green);
+      font-weight: 900;
+      color: var(--va-black);
       line-height: 1.1;
       text-transform: uppercase;
+      letter-spacing: -0.5px;
     }
 
     .coming-soon-card {
@@ -296,7 +304,7 @@
       align-items: center;
       justify-content: center;
       background: rgba(255, 255, 255, 0.8);
-      border: 2px dashed var(--mid-gray);
+      border: 3px dashed var(--va-gray);
       border-radius: 4px;
       padding: 40px;
       text-align: center;
@@ -305,10 +313,9 @@
     }
 
     .coming-soon-text {
-      font-family: 'EB Garamond', serif;
       font-size: 1.5rem;
-      font-weight: 400;
-      color: var(--mid-gray);
+      font-weight: 800;
+      color: var(--va-text-light);
       line-height: 1.2;
       text-transform: uppercase;
     }
@@ -318,26 +325,26 @@
       align-items: center;
       justify-content: space-between;
       padding: 24px 30px;
-      background: var(--off-white);
+      background: var(--va-off-white);
     }
 
     .cta-label {
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 800;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--mid-gray);
+      color: var(--va-text-light);
     }
 
     .cta-button {
       display: inline-block;
       padding: 10px 24px;
       background: transparent;
-      color: var(--masters-green);
-      border: 1.5px solid var(--masters-green);
+      color: var(--va-red);
+      border: 2px solid var(--va-red);
       border-radius: 4px;
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
       text-align: center;
@@ -345,12 +352,12 @@
     }
     
     .selector-card:hover .cta-button {
-      background: var(--masters-green);
-      color: var(--masters-yellow);
+      background: var(--va-red);
+      color: var(--va-white);
     }
 
     footer {
-      background: var(--masters-green);
+      background: var(--va-black);
       color: rgba(255,255,255,0.8);
       text-align: center;
       padding: 40px 20px;
@@ -358,11 +365,12 @@
       font-weight: 600;
       letter-spacing: 2px;
       text-transform: uppercase;
-      border-top: 3px solid var(--masters-yellow);
+      border-top: 3px solid var(--va-red);
     }
 
-    footer strong { color: var(--masters-yellow); }
+    footer strong { color: var(--va-red); }
 
+    /* ANIMATIONS */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -381,33 +389,36 @@
     }
     
     @keyframes pulseBorder {
-      0% { border-color: var(--mid-gray); box-shadow: 0 0 0 0 rgba(0,0,0,0); }
-      100% { border-color: var(--masters-green-light); box-shadow: 0 0 20px 0 rgba(61,122,82,0.15); }
+      0% { border-color: var(--va-gray); box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+      100% { border-color: var(--va-red); box-shadow: 0 0 20px 0 rgba(166,86,70,0.15); }
     }
 
+    /* RESPONSIVE */
     @media (max-width: 860px) {
-      .panel-grid { grid-template-columns: 1fr; }
-      
+      .top-bar { display: none; }
       .menu-btn { display: block; }
-      
-      .nav-links {
+      .nav-center {
         display: none;
         position: absolute;
         top: 100%;
         left: 0;
         width: 100%;
-        background: var(--white);
-        flex-direction: column;
+        background: var(--va-white);
         padding: 20px;
-        gap: 20px;
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        border-top: 1px solid var(--border);
+        border-top: 1px solid var(--va-gray);
       }
-
-      .menu-toggle:checked ~ .nav-links {
+      .menu-toggle:checked ~ .nav-center {
         display: flex;
+        flex-direction: column;
       }
-
+      .nav-links {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+      }
+      
       .dropdown-menu {
         position: static;
         box-shadow: none;
@@ -416,16 +427,11 @@
         margin-top: 10px;
         display: none;
       }
-
-      .dropdown-menu::before {
-        display: none;
-      }
-
       .dropdown:hover .dropdown-menu {
         display: block;
       }
 
-      .main-nav { padding: 16px 20px; }
+      .panel-grid { grid-template-columns: 1fr; }
       h1 { font-size: 2.8rem; }
       header { padding: 40px 20px 20px; height: 50vh; }
       main { padding: 0 20px; margin-top: 40px; }
@@ -434,25 +440,34 @@
 </head>
 <body>
 
+  <!-- Top Utility Bar -->
+  <div class="top-bar">
+    <span>VISIT</span>
+    <span>MEETINGS</span>
+    <span>INSIDER BLOG</span>
+  </div>
+
   <nav class="main-nav">
     <a href="/" class="main-nav-logo">Trusted<span>Neighbors</span></a>
     
     <input type="checkbox" id="menu-toggle" class="menu-toggle">
     <label for="menu-toggle" class="menu-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
     </label>
 
-    <div class="nav-links">
-      <div class="dropdown">
-        <a href="#neighborhoods">Neighborhoods</a>
-        <div class="dropdown-menu">
-          <a href="/onion-creek">Onion Creek (Austin)</a>
-          <a href="/sunfield">Sunfield (Buda)</a>
-          <a href="#">More Coming Soon...</a>
+    <div class="nav-center">
+      <div class="nav-links">
+        <div class="dropdown">
+          <a href="#neighborhoods">Neighborhoods</a>
+          <div class="dropdown-menu">
+            <a href="/onion-creek">Onion Creek (Austin)</a>
+            <a href="/sunfield">Sunfield (Buda)</a>
+            <a href="#">More Coming Soon...</a>
+          </div>
         </div>
+        <a href="#meet-our-family">Meet Our Family</a>
+        <a href="#about">About</a>
       </div>
-      <a href="#meet-our-family">Meet Our Family</a>
-      <a href="#about">About</a>
     </div>
   </nav>
 
