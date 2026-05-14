@@ -168,11 +168,14 @@
     header::after {
       content: '';
       position: absolute;
-      inset: 0;
+      inset: -5%;
       background: url('assets/Downtown_Skyline_Upscale_Paulina_Skarbowska_Wiewior_bateyes_atx_Lifetime_Usage__4469f6fe-40d5-4df8-8fee-22b3b75c9862.jpg') no-repeat center center;
       background-size: cover;
       z-index: 0;
-      animation: slowZoom 20s ease-in-out infinite alternate;
+      animation: slowZoom 25s ease-in-out infinite alternate;
+      will-change: transform;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     header::before {
@@ -247,7 +250,7 @@
 
     .panel-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 30px;
       align-items: stretch;
     }
@@ -432,8 +435,8 @@
       }
 
       .panel-grid { grid-template-columns: 1fr; }
-      h1 { font-size: 2.8rem; }
-      header { padding: 40px 20px 20px; height: 50vh; }
+      h1 { font-size: clamp(3.5rem, 12vw, 5rem); }
+      header { padding: 40px 20px 20px; height: 60vh; min-height: 400px; }
       main { padding: 0 20px; margin-top: 40px; }
     }
   </style>
