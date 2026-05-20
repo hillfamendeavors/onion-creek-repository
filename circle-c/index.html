@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Circle C Directory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Chronicles&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      /* High-contrast, friendly palette inspired by Circle C Ranch */
+      --masters-green: #0F3B3F;       /* deeper primary for header */
+      --masters-green-mid: #215D60;   /* mid tone for bars */
+      --masters-green-light: #7FB3AD; /* lighter/scrollbar thumb */
+      --masters-yellow: #CFA45C;      /* warm gold accent */
+      --masters-yellow-pale: #FBF7ED; /* very pale warm background */
+      --white: #ffffff;
+      --off-white: #FBFBF9;           /* very light neutral page bg */
+      --light-gray: #EAE7E0;          /* soft borders */
+      --mid-gray: #55544F;            /* readable muted text */
+      --dark-gray: #1F1F1E;           /* deep text for strong contrast */
+      --text: #222221;                /* primary body text */
+      --border: #E4E2DB;              /* soft border */
+      --accent-dark: #9A5C2B;         /* darker warm accent for phone links */
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: var(--off-white);
+      color: var(--text);
+      min-height: 100vh;
+      font-weight: 300;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-bar {
+      background: var(--masters-green);
+      color: var(--masters-yellow);
+      text-align: center;
+      padding: 6px 20px;
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    header {
+      background: var(--masters-green);
+      padding: 32px 24px 0;
+      text-align: center;
+      border-bottom: 3px solid var(--masters-yellow);
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .logo-icon {
+      width: 52px;
+      height: 52px;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 400;
+      color: var(--white);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    header h1 span {
+      color: var(--masters-yellow);
+    }
+
+    .header-sub {
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 18px;
+      font-weight: 400;
+    }
+
+    .order-btn {
+      background: transparent;
+      border: 1.5px solid var(--masters-yellow);
+      color: var(--masters-yellow);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 9px 20px;
+      border-radius: 2px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      transition: all 0.15s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .order-btn:hover {
+      background: var(--masters-yellow);
+      color: var(--masters-green);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .nav-tabs::-webkit-scrollbar { display: none; }
+
+    .nav-tab {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 12px 20px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .nav-tab:hover { color: var(--white); }
+    .nav-tab.active {
+      color: var(--masters-yellow);
+      border-bottom-color: var(--masters-yellow);
+    }
+
+    .search-bar {
+      background: var(--masters-green-mid);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .search-bar input {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 3px;
+      color: white;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      padding: 7px 14px;
+      width: 100%;
+      max-width: 360px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .search-bar input::placeholder { color: rgba(255,255,255,0.4); }
+    .search-bar input:focus { border-color: var(--masters-yellow); }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 16px 100px;
+      flex: 1;
+      width: 100%;
+    }
+
+    .group-block {
+      margin-bottom: 32px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      animation: fadeIn 0.3s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .group-header-row {
+      background: var(--masters-green);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .group-header-row span {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--masters-yellow);
+    }
+
+    .group-header-row .gicon { font-size: 14px; }
+
+    .subcategory { border-bottom: 1px solid var(--light-gray); }
+    .subcategory:last-child { border-bottom: none; }
+
+    .subcat-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 18px;
+      cursor: pointer;
+      background: var(--off-white);
+      border-bottom: 1px solid var(--light-gray);
+      transition: background 0.12s;
+      user-select: none;
+    }
+
+    .subcat-header:hover { background: var(--masters-yellow-pale); }
+
+    .subcat-icon { font-size: 13px; margin-right: 8px; }
+
+    .subcat-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--masters-green);
+      flex: 1;
+    }
+
+    .subcat-count {
+      font-size: 0.7rem;
+      color: var(--mid-gray);
+      margin-right: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .subcat-arrow {
+      font-size: 0.6rem;
+      color: var(--mid-gray);
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+
+    .subcat-arrow.open { transform: rotate(180deg); }
+
+    .listings-table {
+      width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 3000px;
+      transition: max-height 0.35s ease, opacity 0.25s ease;
+      opacity: 1;
+      scrollbar-width: thin;
+      scrollbar-color: var(--masters-green-light) transparent;
+    }
+
+    body.all-tab-active .listings-table { max-height: 350px; }
+
+    .listings-table::-webkit-scrollbar { width: 5px; }
+    .listings-table::-webkit-scrollbar-track { background: transparent; }
+    .listings-table::-webkit-scrollbar-thumb {
+      background: var(--masters-green-light);
+      border-radius: 10px;
+    }
+
+    @media (min-height: 800px) {
+      body.all-tab-active .listings-table { max-height: 380px; }
+    }
+
+    .listings-table.collapsed { max-height: 0 !important; opacity: 0; pointer-events: none; }
+
+    .listing-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      padding: 12px 18px 12px 38px;
+      border-bottom: 1px solid var(--light-gray);
+      transition: background 0.12s;
+      gap: 12px;
+    }
+
+    .listing-row:last-child { border-bottom: none; }
+    .listing-row:hover { background: var(--masters-yellow-pale); }
+
+    .listing-row.featured {
+      background: #fffdf5;
+      border-left: 3px solid var(--masters-yellow);
+      padding-left: 35px;
+    }
+
+    .listing-row.featured:hover { background: #fffbea; }
+
+    .listing-name {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.05rem;
+      color: var(--dark-gray);
+      font-weight: 700;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .featured-badge {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: var(--masters-yellow);
+      color: var(--masters-green);
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+
+    .listing-note {
+      font-size: 0.82rem;
+      color: var(--mid-gray);
+      font-style: italic;
+      font-family: 'EB Garamond', serif;
+      line-height: 1.4;
+    }
+
+    .listing-phone {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent-dark);
+      text-decoration: none;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+      text-align: right;
+      padding-top: 3px;
+    }
+
+    .listing-phone:hover {
+      color: #7a3f20;
+      text-decoration: underline;
+    }
+
+    #no-results {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--mid-gray);
+      font-family: 'EB Garamond', serif;
+      font-size: 1.1rem;
+      font-style: italic;
+    }
+
+    .fab {
+      position: fixed;
+      bottom: 24px; right: 20px;
+      background: var(--masters-green);
+      color: var(--masters-yellow);
+      border: 2px solid var(--masters-yellow);
+      border-radius: 2px;
+      padding: 11px 20px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 900;
+      transition: all 0.15s;
+    }
+
+    .fab:hover {
+      background: var(--masters-yellow);
+      color: var(--masters-green);
+    }
+
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 1000;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border-top: 4px solid var(--masters-green);
+      border-radius: 2px;
+      padding: 36px 32px;
+      max-width: 460px; width: 100%;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: modalIn 0.2s ease;
+      max-height: 90vh; overflow-y: auto;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-close {
+      position: absolute; top: 14px; right: 16px;
+      background: none; border: none; font-size: 1.2rem;
+      cursor: pointer; color: var(--mid-gray);
+    }
+
+    .modal h3 {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.5rem; font-weight: 600;
+      color: var(--masters-green); margin-bottom: 4px;
+      letter-spacing: 1px;
+    }
+
+    .modal-sub { font-size: 0.85rem; color: var(--mid-gray); margin-bottom: 24px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--masters-green); margin-bottom: 6px;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1px solid var(--border); border-radius: 2px;
+      font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem;
+      color: var(--text); background: var(--off-white); outline: none;
+      transition: border-color 0.15s;
+      font-weight: 300;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--masters-green); background: white;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .submit-btn {
+      width: 100%; padding: 11px;
+      background: var(--masters-green); color: var(--masters-yellow);
+      border: none; border-radius: 2px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; margin-top: 8px; transition: background 0.15s;
+    }
+    .submit-btn:hover { background: var(--masters-green-mid); }
+
+    .thank-you { display: none; text-align: center; padding: 24px 0; }
+    .thank-you .ty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .thank-you h4 {
+      font-family: 'EB Garamond', serif; font-size: 1.4rem;
+      color: var(--masters-green); margin-bottom: 8px;
+    }
+    .thank-you p { font-size: 0.85rem; color: var(--mid-gray); }
+
+    footer {
+      background: var(--masters-green);
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      padding: 24px 20px;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    footer strong { color: var(--masters-yellow); }
+
+    @media (max-width: 540px) {
+      .nav-tab { padding: 10px 10px; font-size: 0.65rem; letter-spacing: 1px; }
+      .listing-row { grid-template-columns: 1fr; }
+      .listing-phone { text-align: left; }
+      .modal { padding: 28px 18px; }
+    }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QE75YFJ2ZL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QE75YFJ2ZL');
+  </script>
+</head>
+<body>
+
+<div class="top-bar">Austin, Texas &nbsp;·&nbsp; Neighbor-Sourced Referrals</div>
+
+<header>
+  <div class="logo-wrap">
+    <h1>Circle C <span>Directory</span></h1>
+    <p class="header-sub">Trusted Neighbors · Austin, Texas</p>
+    <a class="order-btn" href="/">Back Home</a>
+  </div>
+
+  <nav class="nav-tabs" id="groupPills">
+    <button class="nav-tab active" data-gid="all">All</button>
+  </nav>
+</header>
+
+<div class="search-bar">
+  <input type="text" id="search" placeholder="Search by name, service, or keyword…"/>
+</div>
+
+<main>
+  <div id="listingsContainer"></div>
+  <div id="no-results">No listings found — try a different search.</div>
+</main>
+
+<button class="fab" id="openModal">+ Suggest a Referral</button>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="closeModal">✕</button>
+    <div id="formView">
+      <h3>Suggest a Referral</h3>
+      <p class="modal-sub">Know a great local business? Share them with the community.</p>
+      <div class="form-group">
+        <label>Business or Person Name *</label>
+        <input type="text" id="f-name" placeholder="e.g. Mike's Plumbing"/>
+      </div>
+      <div class="form-group">
+        <label>Phone Number *</label>
+        <input type="tel" id="f-phone" placeholder="(512) 555-0000" inputmode="tel" maxlength="14" pattern="\(\d{3}\) \d{3}-\d{4}" />
+      </div>
+      <div class="form-group">
+        <label>Category <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <select id="f-category">
+          <option value="">— Select a category —</option>
+          <optgroup label="Home &amp; Repair">
+            <option>Plumbers</option><option>Electricians</option><option>Roofers</option>
+            <option>Handyman</option><option>Construction</option><option>Fencing &amp; Decks</option>
+            <option>AC &amp; Heating</option><option>Painters</option>
+          </optgroup>
+          <optgroup label="Outdoor &amp; Lawn">
+            <option>Landscaping</option><option>Mosquito &amp; Pest Control</option>
+          </optgroup>
+          <optgroup label="Auto &amp; Transport">
+            <option>Mechanics &amp; Auto Repair</option><option>Golf Cart Sales &amp; Repair</option>
+          </optgroup>
+          <optgroup label="Professional Services">
+            <option>Accounting &amp; Tax Services</option>
+            <option>Real Estate Agents</option><option>Insurance Agents</option>
+          </optgroup>
+          <optgroup label="Health &amp; Wellness">
+            <option>Doctors &amp; Healthcare</option><option>Veterinarians</option>
+          </optgroup>
+          <optgroup label="Kids &amp; Education">
+            <option>Kids Activities</option>
+          </optgroup>
+          <optgroup label="Home Life">
+            <option>House Cleaning</option><option>Childcare &amp; Babysitting</option>
+            <option>Pet Services</option><option>Junk Removal</option><option>Tailors &amp; Alterations</option><option>Movers</option>
+          </optgroup>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Why do you recommend them? *</label>
+        <textarea id="f-note" placeholder="e.g. Fixed our water heater same day, very honest pricing…"></textarea>
+      </div>
+      <button class="submit-btn" id="submitBtn">Submit Referral</button>
+    </div>
+    <div class="thank-you" id="thankYouView">
+      <div class="ty-icon">🌿</div>
+      <h4>Thank you, neighbor.</h4>
+      <p>Your referral has been submitted and will be reviewed before being added to the directory.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>Circle C YP</strong> &nbsp;·&nbsp; Austin, TX &nbsp;·&nbsp; trustedneighbors.net
+</footer>
+
+<script>
+  const groups = [
+    { id:"home", label:"Home & Repair", icon:"🏠", subcategories:[
+      { name:"Plumbers", icon:"", listings:[
+        { name:"Nick Union Jack Plumbing", phone:"(512) 786-6803", note:"Community Verified." },
+        { name:"Flint Plumbing LLC", phone:"(512) 971-2445", note:"Flint Plumbing is a family-owned plumbing company that’s been serving Austin for over 40 years." },
+        { name:"American Maintenance Solutions", phone:"(737) 757-6942", note:"No job to big or small. From Plumbing to HVAC and add-ons , emergency service is available. Call for a free quote." },
+        { name:"Mr. Rooter Plumbing of Austin", phone:"(512) 298-4916", note:"Mr. Rooter® Plumbing provides quality plumbing services in Austin and surrounding areas." },
+        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
+        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
+        { name:"Gonzalez Solutions LLC", phone:"(737) 262-0081", note:"Community Verified." },
+      ]},
+      { name:"Electricians", icon:"", listings:[
+        { name:"Robert Lopez", phone:"(512) 906-5892", note:"Community Verified." },
+        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
+        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
+        { name:"Morgan Electrical Service LLC", phone:"(512) 809-4229", note:"Electrical Service upgrades, EV chargers, whole home surge protection, lighting upgrades and so much more." },
+        { name:"PowerPro Electric", phone:"(512) 765-5525", note:"They take great pride in the work they do and are always willing to go the extra mile to ensure that their customers are satisfied." },
+        { name:"Volthouse Electric", phone:"(512) 765-0604", note:"A family owned and operated business that is fully dedicated to providing prompt, affordable, and quality electrical services to the community." },
+      ]},
+      { name:"Roofers", icon:"", listings:[
+        { name:"Holden Roofing", phone:"(512) 839-3117", note:"Will inspect your roof for free. If I find adequate damage, we will file a claim. If you have no damage, then you will get a clean bill of health, for free!" },
+        { name:"Over and Above Contracting", phone:"(737) 230-7099", note:"With a commitment to quality craftsmanship and customer satisfaction, they provide expert solutions for all roofing needs." },
+        { name:"Upright Services", phone:"(737) 336-5115", note:"specialize in fencing, landscaping, roofing, decking, and all of your interior needs." },
+        { name:"DG Roofing and Construction", phone:"(512) 733-4332", note:"Community Verified." },
+        { name:"LOA Construction and Austin Roofing", phone:"(512) 645-1687", note:"We deliver exceptional service and quality roofing services to clients across Texas." },
+        { name:"J-Conn Roofing & Repair Services Inc.", phone:"(512) 479-0510", note:"Always professional, always great work... and they've always been around so you know they'll be around!" },
+        { name:"Go Pro Roofing & Construction", phone:"(737) 278-6116", note:"Affordable, quality workmanship and awesome to work with!" },
+        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
+        { name:"Lone Star Roofing", phone:"(512) 555-0391", note:"Replaced our roof after hail damage. Fast, clean, handled the insurance claim too." },
+      ]},
+      { name:"Handyman", icon:"", listings:[
+        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
+        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
+        { name:"iGottaGuy4That", phone:"(512) 715-4997", note:"Whether it be handyman services, landscaping, fence restoration, a new deck & more, there will ALWAYS be a need to fix or upgrade your home." },
+        { name:"Straight Rail Fencing & Handyman", phone:"(512) 998-4202", note:"specialize in fencing, landscape projects, light construction, Interior remodels, and all around handyman projects." },
+        { name:"Gonzalez Solutions LLC", phone:"(737) 262-0081", note:"Community Verified." },
+        { name:"Luis Landscaping & Handyman Services", phone:"(737) 420-7339", note:"have over 8 years of experience in landscaping and home renovation." },
+        { name:"Phillip Perry", phone:"(512) 657-5582", note:"Community Verified." },
+      ]},
+      { name:"Construction", icon:"", listings:[
+        { name:"LOA Construction and Austin Roofing", phone:"(512) 645-1687", note:"We deliver exceptional service and quality roofing services to clients across Texas." },
+        { name:"DG Roofing and Construction", phone:"(512) 733-4332", note:"Community Verified." },
+        { name:"Go Pro Roofing & Construction", phone:"(737) 278-6116", note:"Affordable, quality workmanship and awesome to work with!" },
+        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
+        { name:"Gonzalez Solutions LLC", phone:"(737) 262-0081", note:"Community Verified." },
+        { name:"Varela's Construction", phone:"(312) 966-1063", note:"Varela Family Construction has been in business for more than 25yrs, delivering high quality services to thousands of satisfied customers." },
+        { name:"TCJ Construction Austin", phone:"(512) 760-4540", note:"always start and finish on time, ensuring that your project stays on schedule." },
+        { name:"Straight Rail Fencing & Handyman", phone:"(512) 998-4202", note:"specialize in fencing, landscape projects, light construction, Interior remodels, and all around handyman projects." },
+      ]},
+      { name:"Fencing & Decks", icon:"", listings:[
+        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
+        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
+        { name:"iGottaGuy4That", phone:"(512) 715-4997", note:"Whether it be handyman services, landscaping, fence restoration, a new deck & more, there will ALWAYS be a need to fix or upgrade your home." },
+        { name:"Straight Rail Fencing & Handyman", phone:"(512) 998-4202", note:"specialize in fencing, landscape projects, light construction, Interior remodels, and all around handyman projects." },
+        { name:"Upright Services", phone:"(737) 336-5115", note:"specialize in fencing, landscaping, roofing, decking, and all of your interior needs." },
+        { name:"Phillip Perry", phone:"(512) 657-5582", note:"Community Verified." },
+      ]},
+      { name:"AC & Heating", icon:"", listings:[
+        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
+        { name:"Austin Cold Air", phone:"(512) 913-1139", note:"Neighborhood company with great value." },
+        { name:"Cooling & Heating Patrol", phone:"(512) 608-7669", note:"Serving with honor, integrity, honesty and ethically." },
+        { name:"iGottaGuy4That", phone:"(512) 715-4997", note:"Whether it be handyman services, landscaping, fence restoration, a new deck & more, there will ALWAYS be a need to fix or upgrade your home." },
+        { name:"Mr Cool HVAC", phone:"(512) 445-0412", note:"Mr Cool is great if your into DIY." },
+        { name:"Fire & Ice Heating and Air Conditioning", phone:"(512) 825-5989", note:"Heating and Cooling service." },
+        { name:"Chuck's Air Conditioning", phone:"(512) 453-2288", note:"have been taking care of our neighbors in all of central Texas for 41 years." },
+      ]},
+      { name:"Painters", icon:"", listings:[
+        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
+        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
+        { name:"Upright Services", phone:"(737) 336-5115", note:"specialize in fencing, landscaping, roofing, decking, and all of your interior needs." },
+        { name:"Vivax Pros House Painting", phone:"(512) 668-9443", note:"They were all very good to work with - honest, true to their word, we knew exactly what to expect and the communication with the team was exceptional." },
+      ]},
+    ]},
+    { id:"outdoor", label:"Outdoor & Lawn", icon:"🌿", subcategories:[
+      { name:"Landscaping", icon:"", listings:[
+        { name:"Emerald Lawns", phone:"(512) 990-2199", note:"GREEN LAWNS & PEST-FREE HOMES" },
+        { name:"Top Choice", phone:"(512) 291-7050", note:"Tired of cheap “cut ‘n run” lawn care services, inexperienced laborers, or companies who won’t call you back? We are too. At Top Choice Lawn Care, we believe everyone deserves quality service and exceptional customer service. It’s just that simple." },
+        { name:"iGottaGuy4That", phone:"(512) 715-4997", note:"Whether it be handyman services, landscaping, fence restoration, a new deck & more, there will ALWAYS be a need to fix or upgrade your home." },
+        { name:"Straight Rail Fencing & Handyman", phone:"(512) 998-4202", note:"specialize in fencing, landscape projects, light construction, Interior remodels, and all around handyman projects." },
+        { name:"Luis Landscaping & Handyman Services", phone:"(737) 420-7339", note:"have over 8 years of experience in landscaping and home renovation." },
+        { name:"Upright Services", phone:"(737) 336-5115", note:"specialize in fencing, landscaping, roofing, decking, and all of your interior needs." },
+        { name:"Homegrown", phone:"(512) 653-9609", note:"Community Verified." },
+        { name:"Tobias Landscaping", phone:"(512) 432-5091", note:"Community Verified." },
+        { name:"Gonzalez Solutions LLC", phone:"(737) 262-0081", note:"Community Verified." },
+        
+      ]},
+      { name:"Mosquito & Pest Control", icon:"", listings:[
+        { name:"King's Pest Control", phone:"(512) 930-7378", note:"specializing in eliminating pests like fire ants, mosquitoes, and rodents." },
+        { name:"Domain Pest Control", phone:"(512) 813-7378", note:"Let Domain help you defend your home, using the most innovative products and techniques." },
+        { name:"Critter Ritters", phone:"(360) 900-6995 ", note:"Family-owned & operated, since 1988." },
+        { name:"White Knight Pest Control", phone:"(866) 585-4167", note:"mission to the customer is to provide each and every customer with the greatest value in the industry." },
+        { name:"Sprague Pest Control", phone:"(512) 814-7378", note:"Family owned and operated, we're devoted to keeping your family free from the insects prevalent in this region." },
+        { name:"Research Pest Control", phone:"(512) 258-5228", note:"team specializes in comprehensive pest management solutions, from routine inspections to advanced rodent exclusions." },
+      ]},
+    ]},
+    { id:"auto", label:"Auto & Transport", icon:"🚗", subcategories:[
+      { name:"Mechanics & Auto Repair", icon:"", listings:[
+        { name:"The Luxurious Detailer", phone:"(702) 706-4150", note:"spotless and professional finish!" },
+        { name:"Pacific Custom Paint & Body", phone:"(512) 292-8899", note:"Committed to providing you excellent service, so you always choose us for your repair needs." },
+        { name:"Bearden Automotive", phone:"(512) 774-6949", note:"Community Verified." },
+        { name:"Superior Automotive", phone:"(512) 445-9644", note:"Superior service and at a price that is not only reasonable, its honest." },
+        { name:"Austin Mobile Mechanic", phone:"(512) 555-0193", note:"Great for on-site repairs and diagnostics. Saves the hassle of towing." },
+        { name:"Circle C Auto Repair", phone:"(512) 555-0234", note:"Local shop with honest mechanics. They fixed our brakes and did a great job." },]},
+      { name:"Golf Cart Sales & Repair", icon:"", listings:[
+        { name:"Golf Carts of ATX", phone:"(844) 844 4280", note:"offer competitive prices and top-notch customer service. Whether you're buying a new cart, or you're in need of mobile golf cart repair services, we have you covered." },
+        { name:"High Tech Golf Cart Repair", phone:"(512) 444 6851", note:"GOLF CART REPAIR AND SELL" },
+        { name:"Creek Cart Co.", phone:"(512) 555-0284", note:"Sold us a great used cart and serviced it same week. Very knowledgeable." },
+        { name:"Austin Golf Carts", phone:"(512) 555-0637", note:"New and used carts, plus repairs. Fast turnaround on battery work." },
+      ]},
+    ]},
+    { id:"professional", label:"Professional Services", icon:"💼", subcategories:[
+      { name:"Accounting & Tax Services", icon:"", listings:[
+        { name:"Real Wealth Planning", phone:"(512) 222-9280", note:"Financial Planning, Investment Management & Tax Strategy for Families, Organizations & Real Estate Professionals." },
+        { name:"Sandra Mills, CPA", phone:"(512) 555-0629", note:"Local CPA, great with self-employed folks and LLCs. Saves our family money every year." },
+        { name:"Fivestone", phone:"(512) 833-5829", note:"Expert tax representation backed by world-class experience and a commitment to peace of mind." },
+        { name:"DLC Financial Service", phone:"(361) 293-4926", note:"financial planning, bookkeeping services, LLC and Corporate formations, loan preparation packaging, quarterly tax payment preparation, and other accounting services that you as a individual or business owner may need." },
+        { name:"Julia Clark, CPA", phone:"(512) 684-8410", note:"Community Verified." },
+        { name:"Spectrum", phone:"(866) 874-2389", note:"Community Verified." },
+      ]},
+      { name:"Real Estate Agents", icon:"", listings:[
+        { name:"Chad Goldwasser, Realtor", phone:"(512) 750-8333", note:"Community Verified." },
+      ]},
+      { name:"Insurance Agents", icon:"", listings:[
+        { name:"Eric Baker", phone:"(737) 900-6914", note:"Eric is an insurance agent with Farmers." },
+        { name:"Hill Country Insurance", phone:"(512) 555-0837", note:"Helped us bundle home and auto and saved us $600/year. Very responsive." },
+        { name:"David Chen - State Farm", phone:"(512) 555-0224", note:"Local agent, easy to reach, great at explaining coverage options." },
+      ]},
+    ]},
+    { id:"health", label:"Health & Wellness", icon:"🩺", subcategories:[
+      { name:"Doctors & Healthcare", icon:"", listings:[
+        { name:"Dr. Richard Chopp", phone:"(512) 231-1444", note:"Richard did mine several years ago. Not good on bedside but he is to point and got the job done." },
+        { name:"Austin Ear, Nose & Throat Clinic", phone:"(512) 580-3097", note:"Relief Starts Here." },
+        { name:"Raymond Brown, MD", phone:"(512) 339-4040", note:"Austin's Most Trusted ENT Specialists." },
+        { name:"Capital Medical Clinic", phone:"(512) 406-7831", note:"Caring for the whole person, for a whole life." },
+        { name:"Circle C Dental", phone:"(512) 301-2483", note:"Circle C Dental has been in Circle C Ranch since 2008 and Dr. Pham has over 14 years of experience." },
+      ]},
+      { name:"Veterinarians", icon:"", listings:[
+        { name:"Brodie Animal Hospital", phone:"(512) 892-3486", note:"Where We Treat Your Pets Like Our Own." },
+        { name:"Star of Texas Veterinary Hospital", phone:"(512) 291-1600", note:"We listen to you and your pet." },
+        { name:"Sunset Canyon Veterinary Clinic", phone:"(512) 894-0266", note:"Mixed Animal Veterinary Clinic in Dripping Springs, TX." },
+        { name:"Dripping Springs Animal Hospital", phone:"(512) 858-4787", note:"We strive to treat your pets with the same care and compassion as if they were our own." },
+        { name:"AVES", phone:"(512) 343-2837", note:"serves as an extension of your family veterinary practice." },
+        { name:"Paz Vet", phone:"(512) 236-8000", note:"Community Verified." },
+        { name:"Woof Gang Bakery & Grooming", phone:"(512) 886-3067", note:"We offer a luxurious sPaw experience for your dogs, offering personalized salon-style grooming, including premium shampoos, precise nail care, and gentle ear cleaning." },
+        { name:"Circle C Animal Hospital", phone:"(512) 288-5888", note:"commitment to provide quality veterinary care throughout the life of your pet." },
+      ]},
+    ]},
+    { id:"kids", label:"Kids & Education", icon:"🎒", subcategories:[
+      { name:"Kids Activities", icon:"", listings:[
+        { name:"Home Court Training Center", phone:"(512) 284-8149", note:"HCTC is a fully equipped strength & conditioning facility with a full-size indoor basketball court." },
+        { name:"Austin Sports Academy", phone:"(512) 382-6952", note:"Indoor, air-conditioned facility for summer camps, elite training, after-school programs and more." },
+        { name:"Lonestar Soccer Club", phone:"(512) 336-5425", note:"The Perfect Place To Start. A Great Place To Stay." },
+        { name:"Circle C Coed Soccer", phone:"(510) 579-0445", note:"Friendly, Fun, Casual and Free." },
+        { name:"Neighborhood Sports", phone:"(512) 918-3524", note:"Neighborhood Sports is a youth sports organization offering all types of sports leagues, camps, and clinics for boys & girls in Austin, TX and the surrounding areas. Let’s play!" },
+        { name:"The Pond Hockey Club", phone:"(512) 924-0090", note:"Ice Rink Facility for Austin & Central Texas hockey players, curlers, and figure skaters." },
+      ]},
+    ]},
+    { id:"homelife", label:"Home Life", icon:"🏡", subcategories:[
+      { name:"House Cleaning", icon:"", listings:[
+        { name:"Fock Cleaning LLC", phone:"(512) 962-0103", note:"Luxury cleaning isn’t just how it looks—it’s how deeply it’s cleaned. We combine high-end cleaning services with science-backed methods to give you a cleaner, healthier home." },
+        { name:"Hill Country Cleaning Service", phone:"(512) 792-6728", note:"Offering Free Estimates." },
+        { name:"ProSpec & Design", phone:"(737) 354-1275", note:"Quality Results with attention to detail. Licensed, insured, and committed to making your space shine." },
+        { name:"Anna’s Cleaning Service", phone:"(512) 507-8045", note:"Community Verified." },
+        { name:"Lissy Cortez", phone:"(737) 354-7787", note:"Community Verified." },
+      ]},
+      { name:"Childcare & Babysitting", icon:"", listings:[
+        { name:"ProSpec & Design", phone:"(737) 354-1275", note:"quality results with attention to detail. Licensed, insured, and committed to making your space shine." },
+        { name:"Hannah Merkel", phone:"(512) 699-8122", note:"CPR Certified and have a reliable form of transportation! 3 years of experience working with kids." },
+        { name:"Jovie Care", phone:"(512) 343-1087", note:"Previously College Nannies + Sitters, Jovie care is here for all of your childcare needs." },
+      ]},
+      { name:"Pet Services", icon:"", listings:[
+        { name:"So Fetch Austin", phone:"(512) 785-9906", note:"We are committed to providing the highest quality care and are confident that your fur baby will leave our home feeling happy, healthy, and showered with love." },
+        { name:"Keep Austin Groomed", phone:"(512) 784-3998", note:"Caring for Your Best Friends, One Paw at a Time!" },
+        { name:"Whiskers & Wags", phone:"(512) 757 5158", note:"Keeping Austin Groomed" },
+        { name:"Paws & Stay (Dog Sitting)", phone:"(512) 555-0748", note:"Watched our dogs for two weeks. Sent daily photos. Total peace of mind." },
+        { name:"Creek Walk Dog Walking", phone:"(512) 555-0319", note:"Afternoon walks, very dependable. Dogs love her!" },
+      ]},
+      { name:"Junk Removal", icon:"", listings:[
+        { name:"1-800-Got-Junk", phone:"(512) 287-7996", note:"Excellent same day customer service!" },
+        { name:"Three Brothers Moving ATX", phone:"(512) 994-0334", note:"You Ring, We Bring." },
+        { name:"Creek Clean Junk Removal", phone:"(512) 555-0347", note:"Same-day service available. They donate and recycle what they can." },
+        { name:"Haul It Away ATX", phone:"(512) 555-0592", note:"Cleared out our whole garage in two hours. Affordable and very professional." },
+      ]},
+      { name:"Tailors & Alterations", icon:"", listings:[
+        { name:"Judy Thornhill", phone:"(512) 789-8617", note:"She lives in Circle C and does OUTSTANDING Work!" },
+        { name:"Couture Tailors", phone:"(512) 769-1486", note:"Tiffany altered my Wedding Gown and I have brought several pieces since then." },
+        { name:"Hope Tailor Shop & Alterations", phone:"(512) 447-4673", note:"They do AMAZING work." },
+        { name:"Soco Cleaner & Alterations", phone:"(512) 462-0048", note:"He's reasonable and amazing at what he does." },
+        { name:"AA Alterations", phone:"(512) 328-1766", note:"Very happy with their work, it’s in the HEB shopping center at Slaughter/Menchaca." },
+      ]},
+      { name:"Movers", icon:"", listings:[
+        { name:"Three Brothers Moving ATX", phone:"(512) 994-0334", note:"You Ring, We Bring." },
+        { name:"Haul It Away ATX", phone:"(512) 555-0592", note:"Cleared out our whole garage in two hours. Affordable and very professional." },
+      ]},
+    ]},
+  ];
+
+  const pillsEl   = document.getElementById('groupPills');
+  const container = document.getElementById('listingsContainer');
+  const searchEl  = document.getElementById('search');
+  const noResults = document.getElementById('no-results');
+  let activeGroup = 'all';
+  let searchQuery = '';
+
+  groups.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-tab';
+    btn.dataset.gid = g.id;
+    btn.textContent = g.label;
+    pillsEl.appendChild(btn);
+  });
+
+  pillsEl.addEventListener('click', e => {
+    const tab = e.target.closest('.nav-tab');
+    if (!tab) return;
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeGroup = tab.dataset.gid;
+    render();
+  });
+
+  searchEl.addEventListener('input', () => { searchQuery = searchEl.value.toLowerCase(); render(); });
+
+  function render() {
+    if (activeGroup === 'all') {
+      document.body.classList.add('all-tab-active');
+    } else {
+      document.body.classList.remove('all-tab-active');
+    }
+
+    container.innerHTML = '';
+    let anyVisible = false;
+
+    groups.forEach(g => {
+      if (activeGroup !== 'all' && activeGroup !== g.id) return;
+
+      const filteredSubs = g.subcategories.map(sub => ({
+        ...sub,
+        listings: sub.listings.filter(l =>
+          !searchQuery ||
+          l.name.toLowerCase().includes(searchQuery) ||
+          l.phone.includes(searchQuery) ||
+          l.note.toLowerCase().includes(searchQuery) ||
+          sub.name.toLowerCase().includes(searchQuery) ||
+          g.label.toLowerCase().includes(searchQuery)
+        )
+      })).filter(sub => sub.listings.length > 0 || !searchQuery || sub.name.toLowerCase().includes(searchQuery) || g.label.toLowerCase().includes(searchQuery));
+
+      if (!filteredSubs.length) return;
+      anyVisible = true;
+
+      const block = document.createElement('div');
+      block.className = 'group-block';
+
+      const groupHead = document.createElement('div');
+      groupHead.className = 'group-header-row';
+      groupHead.innerHTML = `<span class="gicon">${g.icon}</span><span>${g.label}</span>`;
+      block.appendChild(groupHead);
+
+      filteredSubs.forEach(sub => {
+        const subEl = document.createElement('div');
+        subEl.className = 'subcategory';
+
+        const header = document.createElement('div');
+        header.className = 'subcat-header';
+        header.innerHTML = `
+          <span class="subcat-icon">${sub.icon}</span>
+          <span class="subcat-name">${sub.name}</span>
+          <span class="subcat-count">${sub.listings.length} listing${sub.listings.length !== 1 ? 's' : ''}</span>
+          <span class="subcat-arrow open">▼</span>
+        `;
+
+        const tableEl = document.createElement('div');
+        tableEl.className = 'listings-table';
+        tableEl.innerHTML = sub.listings.length
+          ? sub.listings.map(l => `
+          <div class="listing-row${l.featured ? ' featured' : ''}">
+            <div>
+              <div class="listing-name">
+                ${l.name}
+                ${l.featured ? '<span class="featured-badge">Preferred</span>' : ''}
+              </div>
+              <div class="listing-note">${l.note}</div>
+            </div>
+            <a class="listing-phone" href="tel:${l.phone.replace(/\D/g,'')}">${l.phone}</a>
+          </div>
+        `).join('')
+          : `
+          <div class="listing-row">
+            <div>
+              <div class="listing-name">No listings yet</div>
+              <div class="listing-note">This category has been added and is ready for referrals.</div>
+            </div>
+          </div>
+        `;
+
+        header.addEventListener('click', () => {
+          const isOpening = tableEl.classList.contains('collapsed');
+          tableEl.classList.toggle('collapsed');
+          header.querySelector('.subcat-arrow').classList.toggle('open');
+          if (isOpening) {
+            setTimeout(() => {
+              header.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+          }
+        });
+
+        subEl.appendChild(header);
+        subEl.appendChild(tableEl);
+        block.appendChild(subEl);
+      });
+
+      container.appendChild(block);
+    });
+
+    noResults.style.display = anyVisible ? 'none' : 'block';
+  }
+
+  render();
+
+  const overlay   = document.getElementById('modalOverlay');
+  const openBtn   = document.getElementById('openModal');
+  const closeBtn  = document.getElementById('closeModal');
+  const submitBtn = document.getElementById('submitBtn');
+  const formView  = document.getElementById('formView');
+  const thankYou  = document.getElementById('thankYouView');
+
+  openBtn.addEventListener('click', () => overlay.classList.add('open'));
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    setTimeout(() => {
+      formView.style.display = 'block';
+      thankYou.style.display = 'none';
+      ['f-name','f-phone','f-category','f-note'].forEach(id => document.getElementById(id).value = '');
+    }, 300);
+  }
+
+  submitBtn.addEventListener('click', async () => {
+    const name     = document.getElementById('f-name').value.trim();
+    let phone      = document.getElementById('f-phone').value.trim();
+    const category = document.getElementById('f-category').value;
+    const note     = document.getElementById('f-note').value.trim();
+
+    const phoneDigits = phone.replace(/\D/g,'');
+    if (!name || !phoneDigits || !note) { alert('Please fill in the name, phone, and recommendation fields.'); return; }
+    if (phoneDigits.length !== 10) { alert('Please enter a 10-digit phone number in the format (512) 555-0000.'); return; }
+    phone = formatUSPhone(phoneDigits);
+
+    submitBtn.textContent = 'Submitting…';
+    submitBtn.disabled = true;
+
+    try {
+      await fetch('https://formspree.io/f/xqewrzww', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name, phone, category, note, _subject: `New Circle C YP Referral: ${name}` })
+      });
+    } catch(e) {}
+
+    formView.style.display = 'none';
+    thankYou.style.display = 'block';
+    submitBtn.textContent = 'Submit Referral';
+    submitBtn.disabled = false;
+  });
+
+  function formatUSPhone(digits) {
+    digits = (digits || '').replace(/\D/g,'').slice(0,10);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6,10)}`;
+  }
+
+  const phoneEl = document.getElementById('f-phone');
+  if (phoneEl) {
+    phoneEl.addEventListener('input', () => {
+      const digits = phoneEl.value.replace(/\D/g,'');
+      phoneEl.value = formatUSPhone(digits);
+    });
+
+    phoneEl.addEventListener('blur', () => {
+      const digits = phoneEl.value.replace(/\D/g,'');
+      if (!digits) return;
+      if (digits.length !== 10) {
+        alert('Please enter a 10-digit phone number (e.g. (512) 555-0000).');
+        phoneEl.focus();
+      } else {
+        phoneEl.value = formatUSPhone(digits);
+      }
+    });
+
+    phoneEl.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text') || '';
+      const digits = paste.replace(/\D/g,'').slice(0,10);
+      phoneEl.value = formatUSPhone(digits);
+    });
+  }
+</script>
+</body>
+</html>
