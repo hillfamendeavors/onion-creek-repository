@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@300;400;500;600;700;800;900&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
     rel="stylesheet" />
 
   <style>
@@ -49,6 +49,12 @@
       --color-border: #e2dfd5;
       /* Warm light grey border */
 
+      /* Visit Austin Inspired Palette Accents */
+      --color-austin-brown: #ab5744;      /* Terracotta */
+      --color-austin-salmon: #f48a85;     /* Highlight salmon */
+      --color-austin-yellow-tint: #f3f4d6; /* Soft yellow-green tint */
+      --color-austin-brown-tint: #efe3de;  /* Warm cream background tint */
+
       /* Accent colors for neighborhood branding */
       --color-onion: #114d33;
       /* Green identity */
@@ -72,7 +78,7 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Raleway', sans-serif;
       background: var(--color-neutral-light);
       color: var(--color-neutral-dark);
       min-height: 100vh;
@@ -84,24 +90,24 @@
     h2,
     h3,
     h4 {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
+      font-family: 'Lexend Exa', sans-serif;
+      font-weight: 800;
       color: var(--color-primary);
     }
 
     /* TOP UTILITY BAR */
     .top-bar {
-      background: var(--color-primary);
-      color: var(--color-accent);
+      background: var(--color-austin-yellow-tint);
+      color: var(--color-primary);
       padding: 8px 40px;
-      font-size: 0.7rem;
-      font-weight: 700;
+      font-size: 0.65rem;
+      font-weight: 800;
       letter-spacing: 2px;
       text-transform: uppercase;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      border-bottom: 1.5px solid var(--color-primary);
     }
 
     .top-bar-links {
@@ -110,13 +116,13 @@
     }
 
     .top-bar-links a {
-      color: var(--color-neutral-white);
+      color: var(--color-primary);
       text-decoration: none;
       transition: var(--transition-smooth);
     }
 
     .top-bar-links a:hover {
-      color: var(--color-accent);
+      color: var(--color-austin-brown);
     }
 
     /* MAIN NAV BAR (Glassmorphism) */
@@ -128,7 +134,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(15, 46, 34, 0.06);
+      border-bottom: 1.5px solid var(--color-primary);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -143,22 +149,23 @@
     }
 
     .logo-badge {
-      background: var(--color-primary);
-      color: var(--color-accent);
+      background: var(--color-accent);
+      color: var(--color-primary);
       width: 32px;
       height: 32px;
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 1.1rem;
-      border: 1px solid var(--color-accent);
+      font-family: 'Lexend Exa', sans-serif;
+      font-weight: 900;
+      font-size: 1rem;
+      border: 1.5px solid var(--color-primary);
+      box-shadow: 2px 2px 0px var(--color-primary);
     }
 
     .main-nav-logo {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       font-weight: 800;
       letter-spacing: -0.5px;
       color: var(--color-primary);
@@ -175,9 +182,9 @@
     }
 
     .nav-links a {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 600;
-      font-size: 0.85rem;
+      font-family: 'Lexend Exa', sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
       letter-spacing: 1px;
       text-transform: uppercase;
       color: var(--color-primary);
@@ -206,11 +213,12 @@
     }
 
     .nav-cta {
-      background: var(--color-primary);
-      color: var(--color-accent) !important;
+      background: var(--color-accent);
+      color: var(--color-primary) !important;
       padding: 8px 18px;
-      border-radius: 4px;
-      border: 1px solid var(--color-accent);
+      border-radius: 6px;
+      border: 1.5px solid var(--color-primary);
+      box-shadow: 2px 2px 0px var(--color-primary);
     }
 
     .nav-cta::after {
@@ -218,8 +226,10 @@
     }
 
     .nav-cta:hover {
-      background: var(--color-accent) !important;
+      background: var(--color-accent-hover) !important;
       color: var(--color-primary) !important;
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0px var(--color-primary);
     }
 
     /* MOBILE NAVIGATION */
@@ -279,20 +289,21 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.85rem;
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       text-transform: uppercase;
       color: var(--color-accent);
       margin-bottom: 20px;
       background: rgba(212, 175, 55, 0.1);
       padding: 6px 16px;
-      border-radius: 20px;
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 4px;
+      border: 1.5px solid var(--color-accent);
     }
 
     .hero h2 {
-      font-size: clamp(2.5rem, 5vw, 4.2rem);
+      font-size: clamp(2.2rem, 4.5vw, 3.5rem);
       font-weight: 800;
       line-height: 1.1;
       color: var(--color-neutral-white);
@@ -325,14 +336,15 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 14px 28px;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 600;
-      font-size: 0.95rem;
+      padding: 12px 24px;
+      font-family: 'Lexend Exa', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
       letter-spacing: 1px;
       text-transform: uppercase;
       text-decoration: none;
-      border-radius: 4px;
+      border-radius: 6px;
+      border: 1.5px solid var(--color-primary);
       transition: var(--transition-smooth);
       cursor: pointer;
     }
@@ -340,26 +352,27 @@
     .btn-primary {
       background: var(--color-accent);
       color: var(--color-primary);
-      border: 1px solid var(--color-accent);
-      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+      box-shadow: 3px 3px 0px var(--color-primary);
     }
 
     .btn-primary:hover {
       background: var(--color-accent-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px var(--color-primary);
     }
 
     .btn-secondary {
       background: transparent;
       color: var(--color-neutral-white);
-      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.2);
     }
 
     .btn-secondary:hover {
       background: rgba(255, 255, 255, 0.08);
       border-color: var(--color-neutral-white);
-      transform: translateY(-2px);
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px var(--color-neutral-white);
     }
 
     /* HERO IMAGE GRAPHIC (Mockup style) */
@@ -376,12 +389,12 @@
     .hero-image-card {
       background: var(--color-neutral-white);
       padding: 12px;
-      border-radius: 12px;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+      box-shadow: 4px 4px 0px var(--color-primary);
       width: 85%;
       height: 90%;
       transform: rotate(3deg);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1.5px solid var(--color-primary);
       position: relative;
     }
 
@@ -391,38 +404,40 @@
       inset: 12px;
       background: url('assets/Downtown_Skyline_Upscale_Paulina_Skarbowska_Wiewior_bateyes_atx_Lifetime_Usage__4469f6fe-40d5-4df8-8fee-22b3b75c9862.jpg') no-repeat center center;
       background-size: cover;
-      border-radius: 8px;
+      border-radius: 4px;
       filter: saturate(1.1) brightness(0.9);
+      border: 1.5px solid var(--color-primary);
     }
 
     .badge-floating {
       position: absolute;
       top: -20px;
       left: -20px;
-      background: var(--color-primary);
-      color: var(--color-accent);
-      border: 2px solid var(--color-accent);
+      background: var(--color-austin-salmon);
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-primary);
       padding: 12px 18px;
       border-radius: 50%;
-      width: 100px;
-      height: 100px;
+      width: 105px;
+      height: 105px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 0.65rem;
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.6rem;
       font-weight: 800;
       text-transform: uppercase;
       text-align: center;
       line-height: 1.2;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 3px 3px 0px var(--color-primary);
       transform: rotate(-10deg);
       z-index: 10;
     }
 
     .badge-floating strong {
       font-size: 1.1rem;
-      color: var(--color-neutral-white);
+      color: var(--color-primary);
       display: block;
     }
 
@@ -447,17 +462,18 @@
     }
 
     .section-eyebrow {
-      font-size: 0.8rem;
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--color-accent);
+      color: var(--color-austin-brown);
       margin-bottom: 12px;
       display: block;
     }
 
     .section-title {
-      font-size: 2.2rem;
+      font-size: 1.8rem;
       font-weight: 800;
       color: var(--color-primary);
       margin-bottom: 16px;
@@ -471,8 +487,8 @@
 
     /* HOW IT WORKS SECTION */
     .how-it-works {
-      background: var(--color-neutral-white);
-      border-bottom: 1px solid var(--color-border);
+      background: var(--color-austin-brown-tint);
+      border-bottom: 1.5px solid var(--color-primary);
     }
 
     .steps-grid {
@@ -482,25 +498,26 @@
     }
 
     .step-card {
-      background: var(--color-neutral-light);
+      background: var(--color-neutral-white);
       padding: 40px 30px;
-      border-radius: 8px;
-      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      border: 1.5px solid var(--color-primary);
       position: relative;
+      box-shadow: 3px 3px 0px rgba(15, 46, 34, 0.15);
       transition: var(--transition-smooth);
     }
 
     .step-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 16px 30px rgba(15, 46, 34, 0.05);
-      border-color: var(--color-accent);
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0px var(--color-primary);
+      border-color: var(--color-primary);
     }
 
     .step-number {
-      font-family: 'Outfit', sans-serif;
-      font-size: 3.5rem;
-      font-weight: 900;
-      color: rgba(212, 175, 55, 0.2);
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      color: rgba(15, 46, 34, 0.1);
       line-height: 1;
       position: absolute;
       top: 24px;
@@ -540,9 +557,9 @@
       display: flex;
       flex-direction: column;
       background: var(--color-neutral-white);
-      border-radius: 8px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      border: 1.5px solid var(--color-primary);
+      box-shadow: 4px 4px 0px rgba(15, 46, 34, 0.15);
       overflow: hidden;
       text-decoration: none;
       color: inherit;
@@ -550,8 +567,8 @@
     }
 
     .selector-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      transform: translate(-3px, -3px);
+      box-shadow: 7px 7px 0px var(--color-primary);
     }
 
     .card-top {
@@ -595,7 +612,7 @@
       justify-content: space-between;
       padding: 24px 30px;
       background: #faf9f5;
-      border-top: 1px solid var(--color-border);
+      border-top: 1.5px solid var(--color-primary);
     }
 
     .cta-label {
@@ -608,15 +625,17 @@
 
     .cta-button {
       display: inline-block;
-      padding: 10px 20px;
-      background: transparent;
+      padding: 8px 16px;
       border-radius: 4px;
-      font-size: 0.8rem;
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
       text-align: center;
+      border: 1.5px solid var(--color-primary);
       transition: var(--transition-smooth);
+      box-shadow: 2px 2px 0px var(--color-primary);
     }
 
     /* Neighborhood specific theme colors */
@@ -630,7 +649,6 @@
     }
 
     .selector-card.onion .cta-button {
-      border: 2px solid var(--color-accent);
       color: #114D33;
       background: var(--color-accent);
     }
@@ -642,7 +660,9 @@
     .selector-card.onion:hover .cta-button {
       background: var(--color-neutral-white);
       color: #114d33;
-      border-color: var(--color-neutral-white);
+      border-color: var(--color-primary);
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0px var(--color-primary);
     }
 
     .selector-card.sunfield .card-top {
@@ -655,7 +675,6 @@
     }
 
     .selector-card.sunfield .cta-button {
-      border: 2px solid #C86A4A;
       color: #A65646;
       background: #fce8e2;
     }
@@ -667,7 +686,9 @@
     .selector-card.sunfield:hover .cta-button {
       background: var(--color-neutral-white);
       color: #A65646;
-      border-color: var(--color-neutral-white);
+      border-color: var(--color-primary);
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0px var(--color-primary);
     }
 
     .selector-card.circlec .card-top {
@@ -680,7 +701,6 @@
     }
 
     .selector-card.circlec .cta-button {
-      border: 2px solid #0F3B3F;
       color: #0F3B3F;
       background: #e2f1f2;
     }
@@ -692,7 +712,9 @@
     .selector-card.circlec:hover .cta-button {
       background: var(--color-neutral-white);
       color: #0F3B3F;
-      border-color: var(--color-neutral-white);
+      border-color: var(--color-primary);
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0px var(--color-primary);
     }
 
     /* COMING SOON CARD */
@@ -702,17 +724,34 @@
       align-items: center;
       justify-content: center;
       background: rgba(255, 255, 255, 0.7);
-      border: 2.5px dashed var(--color-border);
-      border-radius: 8px;
+      border: 2px dashed var(--color-primary);
+      border-radius: 6px;
       padding: 40px;
       text-align: center;
       min-height: 290px;
+      box-shadow: 4px 4px 0px rgba(15, 46, 34, 0.05);
       transition: var(--transition-smooth);
     }
 
     .coming-soon-card:hover {
       border-color: var(--color-accent);
       background: var(--color-accent-pale);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px rgba(15, 46, 34, 0.1);
+    }
+
+    .coming-soon-card .btn-secondary {
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+      box-shadow: 3px 3px 0px var(--color-primary);
+    }
+
+    .coming-soon-card .btn-secondary:hover {
+      background: var(--color-primary);
+      color: var(--color-accent);
+      border-color: var(--color-primary);
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px var(--color-primary);
     }
 
     .coming-soon-icon {
@@ -793,26 +832,27 @@
     }
 
     .about-graphic {
-      background: var(--color-accent-pale);
-      border: 1px solid var(--color-accent);
+      background: var(--color-austin-brown-tint);
+      border: 1.5px solid var(--color-primary);
       padding: 40px;
-      border-radius: 8px;
+      border-radius: 6px;
       position: relative;
-      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.05);
+      box-shadow: 4px 4px 0px var(--color-primary);
     }
 
     .about-graphic-badge {
       background: var(--color-primary);
       color: var(--color-accent);
       padding: 6px 12px;
-      font-size: 0.7rem;
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.65rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
       border-radius: 4px;
       display: inline-block;
       margin-bottom: 16px;
-      border: 1px solid var(--color-accent);
+      border: 1.5px solid var(--color-accent);
     }
 
     .about-graphic h4 {
@@ -861,9 +901,9 @@
     .family-card {
       background: var(--color-neutral-white);
       padding: 40px;
-      border-radius: 8px;
-      border: 1px solid var(--color-border);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+      border-radius: 6px;
+      border: 1.5px solid var(--color-primary);
+      box-shadow: 4px 4px 0px rgba(15, 46, 34, 0.15);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -872,9 +912,8 @@
     }
 
     .family-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 35px rgba(15, 46, 34, 0.06);
-      border-color: var(--color-accent);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px var(--color-primary);
     }
 
     .avatar-wrapper {
@@ -888,13 +927,13 @@
       border-radius: 50%;
       background: var(--color-primary);
       color: var(--color-accent);
-      border: 3px solid var(--color-accent);
+      border: 2px solid var(--color-primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
-      box-shadow: 0 8px 20px rgba(15, 46, 34, 0.15);
-      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      box-shadow: 3px 3px 0px var(--color-accent);
+      font-family: 'Lexend Exa', sans-serif;
       font-weight: 800;
     }
 
@@ -912,8 +951,8 @@
       justify-content: center;
       font-size: 1rem;
       font-weight: 800;
-      border: 2px solid var(--color-neutral-white);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      border: 1.5px solid var(--color-primary);
+      box-shadow: 2px 2px 0px var(--color-primary);
     }
 
     .family-name {
@@ -940,7 +979,7 @@
     /* SUGGEST A NEIGHBORHOOD / CONTACT SECTION */
     .suggest-section {
       background: var(--color-neutral-white);
-      border-top: 1px solid var(--color-border);
+      border-top: 1.5px solid var(--color-primary);
     }
 
     .suggest-grid {
@@ -980,12 +1019,13 @@
       height: 44px;
       border-radius: 50%;
       background: var(--color-accent-pale);
-      border: 1px solid var(--color-accent);
+      border: 1.5px solid var(--color-primary);
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--color-primary);
       font-size: 1.1rem;
+      box-shadow: 2px 2px 0px var(--color-primary);
     }
 
     .contact-detail {
@@ -1008,10 +1048,10 @@
     /* Beautiful Form Styles */
     .form-container {
       background: var(--color-neutral-light);
-      border: 1px solid var(--color-border);
-      border-radius: 8px;
+      border: 1.5px solid var(--color-primary);
+      border-radius: 6px;
       padding: 40px;
-      box-shadow: 0 15px 35px rgba(15, 46, 34, 0.04);
+      box-shadow: 4px 4px 0px rgba(15, 46, 34, 0.15);
     }
 
     .form-group {
@@ -1020,7 +1060,8 @@
 
     .form-group label {
       display: block;
-      font-size: 0.72rem;
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.65rem;
       font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
@@ -1033,9 +1074,9 @@
     .form-group textarea {
       width: 100%;
       padding: 12px 16px;
-      border: 1px solid var(--color-border);
+      border: 1.5px solid var(--color-primary);
       border-radius: 4px;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Raleway', sans-serif;
       font-size: 0.95rem;
       color: var(--color-neutral-dark);
       background: var(--color-neutral-white);
@@ -1047,7 +1088,8 @@
     .form-group select:focus,
     .form-group textarea:focus {
       border-color: var(--color-accent);
-      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+      box-shadow: 3px 3px 0px var(--color-accent);
+      background: var(--color-neutral-white);
     }
 
     .form-group textarea {
@@ -1065,22 +1107,25 @@
       width: 100%;
       background: var(--color-primary);
       color: var(--color-accent);
-      border: 1px solid var(--color-accent);
+      border: 1.5px solid var(--color-primary);
       padding: 14px;
-      font-size: 0.9rem;
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.85rem;
       font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       transition: var(--transition-smooth);
-      box-shadow: 0 4px 10px rgba(15, 46, 34, 0.1);
+      box-shadow: 3px 3px 0px var(--color-accent);
     }
 
     .form-container .btn-submit:hover {
       background: var(--color-accent);
       color: var(--color-primary);
-      box-shadow: 0 6px 16px rgba(212, 175, 55, 0.3);
+      border-color: var(--color-primary);
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px var(--color-primary);
     }
 
     /* FOOTER */
@@ -1089,7 +1134,7 @@
       color: rgba(255, 255, 255, 0.7);
       padding: 60px 40px;
       font-size: 0.9rem;
-      border-top: 3px solid var(--color-accent);
+      border-top: 5px solid var(--color-accent);
     }
 
     .footer-container {
@@ -1109,7 +1154,7 @@
     }
 
     .footer-logo {
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Lexend Exa', sans-serif;
       font-size: 1.6rem;
       font-weight: 800;
       color: var(--color-neutral-white);
@@ -1130,9 +1175,9 @@
     .footer-links a {
       color: rgba(255, 255, 255, 0.7);
       text-decoration: none;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 600;
-      font-size: 0.85rem;
+      font-family: 'Lexend Exa', sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
       letter-spacing: 1px;
       text-transform: uppercase;
       transition: var(--transition-smooth);
@@ -1465,9 +1510,7 @@
           <div class="coming-soon-icon">📍</div>
           <h4 class="coming-soon-text">More Coming Soon</h4>
           <p class="coming-soon-desc">We are continuously reviewing recommendations to launch new neighborhoods.</p>
-          <a href="#suggest-neighborhood" class="btn btn-secondary"
-            style="font-size:0.75rem; padding:8px 16px; color:var(--color-primary); border-color:var(--color-primary-light);">Suggest
-            Yours</a>
+          <a href="#suggest-neighborhood" class="btn btn-secondary">Suggest Yours</a>
         </div>
       </div>
     </div>
