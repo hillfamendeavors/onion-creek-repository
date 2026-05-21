@@ -550,6 +550,10 @@
         <input type="tel" id="f-phone" placeholder="(512) 555-0000" inputmode="tel" maxlength="14" pattern="\\(\\d{3}\\) \\d{3}-\\d{4}" />
       </div>
       <div class="form-group">
+        <label>Your Name (Referrer) *</label>
+        <input type="text" id="f-referrer" placeholder="e.g. Marconi A."/>
+      </div>
+      <div class="form-group">
         <label>Category <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
         <select id="f-category">
           <option value="">— Select a category —</option>
@@ -785,7 +789,7 @@
     setTimeout(() => {
       formView.style.display = 'block';
       thankYou.style.display = 'none';
-      ['f-name','f-phone','f-category','f-note'].forEach(id => document.getElementById(id).value = '');
+      ['f-name','f-phone','f-category','f-note','f-referrer'].forEach(id => document.getElementById(id).value = '');
     }, 300);
   }
 
@@ -794,10 +798,11 @@
     let phone      = document.getElementById('f-phone').value.trim();
     const category = document.getElementById('f-category').value;
     const note     = document.getElementById('f-note').value.trim();
+    const referrer = document.getElementById('f-referrer').value.trim();
 
     // Normalize digits and require a 10-digit US phone number
     const phoneDigits = phone.replace(/\D/g,'');
-    if (!name || !phoneDigits || !note) { alert('Please fill in the name, phone, and recommendation fields.'); return; }
+    if (!name || !phoneDigits || !note || !referrer) { alert('Please fill in your name, the business name, phone, and recommendation fields.'); return; }
     if (phoneDigits.length !== 10) { alert('Please enter a 10-digit phone number in the format (512) 555-0000.'); return; }
     phone = formatUSPhone(phoneDigits);
 
@@ -808,7 +813,7 @@
       await fetch('https://formspree.io/f/mwvyajvb', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ name, phone, category, note, _subject: `New Sunfield, Buda YP Referral: ${name}` })
+        body: JSON.stringify({ name, phone, category, note, referrer, _subject: `New Sunfield, Buda YP Referral: ${name}` })
       });
     } catch(e) {}
 
