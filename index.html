@@ -281,6 +281,62 @@
       box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
     }
 
+    /* Circle C specific styling to make the card stand out and remain readable */
+    .selector-card.circlec .card-top {
+      background: linear-gradient(135deg, #0F3B3F 0%, #215D60 100%);
+      color: #ffffff;
+    }
+    .selector-card.circlec .card-tag {
+      color: rgba(255,255,255,0.9);
+    }
+    .selector-card.circlec .card-title {
+      color: #ffffff;
+    }
+    .selector-card.circlec .card-footer {
+      background: rgba(15,59,63,0.05);
+    }
+    .selector-card.circlec .cta-button {
+      border-color: rgba(15,59,63,0.18);
+      color: #0F3B3F;
+      background: transparent;
+    }
+    .selector-card.circlec:hover .cta-button {
+      background: #CFA45C;
+      color: #0F3B3F;
+      border-color: #CFA45C;
+    }
+
+    /* Onion Creek styling: similar high-contrast card but with a green identity */
+    .selector-card.onion .card-top {
+      background: linear-gradient(135deg, #114D33 0%, #2A6B45 100%);
+      color: #ffffff;
+    }
+    .selector-card.onion .card-tag { color: rgba(255,255,255,0.9); }
+    .selector-card.onion .card-title { color: #ffffff; }
+    .selector-card.onion .card-footer { background: rgba(22,91,102,0.04); }
+    .selector-card.onion .cta-button { color: #114D33; border-color: rgba(17,77,51,0.18); }
+    .selector-card.onion:hover .cta-button { background: #CFA45C; color: #0F3B3F; border-color: #CFA45C; }
+
+    /* Sunfield: give it the same polished card frame but keep the rust accent */
+    .selector-card .card-top { transition: background 0.25s ease, color 0.25s ease; }
+    .selector-card.sunfield .card-top {
+      background: linear-gradient(135deg, #C86A4A 0%, #A65646 100%);
+      color: #ffffff;
+    }
+    .selector-card.sunfield .card-tag { color: rgba(255,255,255,0.9); }
+    .selector-card.sunfield .card-title { color: #ffffff; }
+    .selector-card.sunfield .card-footer { background: rgba(200,106,74,0.04); }
+    .selector-card.sunfield .cta-button {
+      border-color: rgba(166,86,70,0.16);
+      color: #A65646;
+      background: transparent;
+    }
+    .selector-card.sunfield:hover .cta-button {
+      background: #A65646;
+      color: #ffffff;
+      border-color: #A65646;
+    }
+
     .card-top {
       padding: 40px 30px;
       background: var(--va-white);
@@ -499,15 +555,16 @@
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
     </label>
 
-    <div class="nav-center">
+        <div class="nav-center">
       <div class="nav-links">
         <div class="dropdown">
           <a href="#neighborhoods">Neighborhoods</a>
           <div class="dropdown-menu">
-            <a href="/onion-creek">Onion Creek (Austin)</a>
-            <a href="/sunfield">Sunfield (Buda)</a>
-            <a href="#">More Coming Soon...</a>
-          </div>
+              <a href="/onion-creek">Onion Creek (Austin)</a>
+              <a href="/sunfield">Sunfield (Buda)</a>
+              <a href="/circle-c">Circle C (Austin)</a>
+              <a href="#">More Coming Soon...</a>
+            </div>
         </div>
         <a href="#meet-our-family">Meet Our Family</a>
         <a href="#about">About</a>
@@ -528,7 +585,7 @@
     </div>
 
     <section class="panel-grid" aria-label="Neighborhood choices">
-      <a class="selector-card" href="/onion-creek">
+      <a class="selector-card onion" href="/onion-creek">
         <div class="card-top">
           <div class="card-tag">Austin, TX</div>
           <div class="card-title">Onion Creek</div>
@@ -539,10 +596,21 @@
         </div>
       </a>
 
-      <a class="selector-card" href="/sunfield">
+      <a class="selector-card sunfield" href="/sunfield">
         <div class="card-top">
           <div class="card-tag">Buda, TX</div>
           <div class="card-title">Sunfield</div>
+        </div>
+        <div class="card-footer">
+          <div class="cta-label">Referral Network</div>
+          <div class="cta-button">Open Directory</div>
+        </div>
+      </a>
+
+      <a class="selector-card circlec" href="/circle-c">
+        <div class="card-top">
+          <div class="card-tag">Austin, TX</div>
+          <div class="card-title">Circle C</div>
         </div>
         <div class="card-footer">
           <div class="cta-label">Referral Network</div>
