@@ -1301,28 +1301,58 @@
         z-index: 101;
       }
 
+      /* Animated hamburger menu */
+      .menu-btn svg line {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        transform-origin: center;
+      }
+
+      .menu-toggle:checked ~ .menu-btn svg line:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+      }
+
+      .menu-toggle:checked ~ .menu-btn svg line:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-toggle:checked ~ .menu-btn svg line:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+      }
+
       .nav-links {
         position: fixed;
         top: 0;
-        left: 100%;
+        left: 0;
         width: 100%;
         height: 100vh;
         background: var(--color-neutral-white);
         flex-direction: column;
         justify-content: center;
-        gap: 32px;
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        align-items: center;
+        gap: 24px;
+        transform: translateX(100%);
+        visibility: hidden;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
         z-index: 100;
         box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
       }
 
-      .menu-toggle:checked~.nav-links {
-        transform: translateX(-100%);
+      .menu-toggle:checked ~ .nav-links {
+        transform: translateX(0);
+        visibility: visible;
       }
 
-      .menu-toggle:checked~.menu-btn svg {
-        /* simple cross icon animation */
-        color: var(--color-primary);
+      .nav-links a {
+        font-size: 1rem;
+        letter-spacing: 1.5px;
+        padding: 8px 20px;
+        transition: var(--transition-smooth);
+      }
+
+      .nav-links a.nav-cta {
+        margin-top: 8px;
+        padding: 12px 30px;
+        font-size: 0.9rem;
       }
 
       section {
@@ -1362,8 +1392,8 @@
     <input type="checkbox" id="menu-toggle" class="menu-toggle">
     <label for="menu-toggle" class="menu-btn" id="menuBtnLabel">
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
     </label>
