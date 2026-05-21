@@ -75,6 +75,7 @@
 
     html {
       scroll-behavior: smooth;
+      overflow-x: hidden;
     }
 
     body {
@@ -84,6 +85,7 @@
       min-height: 100vh;
       line-height: 1.6;
       overflow-x: hidden;
+      width: 100%;
     }
 
     h1,
@@ -549,7 +551,7 @@
 
     .panel-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
       gap: 30px;
     }
 
@@ -1357,6 +1359,11 @@
 
       section {
         padding: 60px 20px;
+      }
+
+      .about-highlights {
+        grid-template-columns: 1fr;
+        gap: 16px;
       }
 
       .form-row {
