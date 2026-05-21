@@ -583,202 +583,7 @@
 </footer>
 
 <script>
-  const groups = [
-    { id:"home", label:"Home & Repair", icon:"🏠", subcategories:[
-      { name:"Plumbers", icon:"", listings:[
-        { name:"Nick Union Jack Plumbing", phone:"(512) 786-6803", note:"Community Verified." },
-        { name:"Flint Plumbing LLC", phone:"(512) 971-2445", note:"Flint Plumbing is a family-owned plumbing company that’s been serving Austin for over 40 years." },
-        { name:"American Maintenance Solutions", phone:"(737) 757-6942", note:"No job to big or small. From Plumbing to HVAC and add-ons , emergency service is available. Call for a free quote." },
-        { name:"Mr. Rooter Plumbing of Austin", phone:"(512) 298-4916", note:"Mr. Rooter® Plumbing provides quality plumbing services in Austin and surrounding areas." },
-        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
-        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
-        { name:"Gonzalez Solutions LLC", phone:"(737) 262-0081", note:"Community Verified." },
-      ]},
-      { name:"Electricians", icon:"", listings:[
-        { name:"Robert Lopez", phone:"(512) 906-5892", note:"Community Verified." },
-        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
-        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
-        { name:"Morgan Electrical Service LLC", phone:"(512) 809-4229", note:"Electrical Service upgrades, EV chargers, whole home surge protection, lighting upgrades and so much more." },
-        { name:"PowerPro Electric", phone:"(512) 765-5525", note:"They take great pride in the work they do and are always willing to go the extra mile to ensure that their customers are satisfied." },
-        { name:"Volthouse Electric", phone:"(512) 765-0604", note:"A family owned and operated business that is fully dedicated to providing prompt, affordable, and quality electrical services to the community." },
-      ]},
-      { name:"Roofers", icon:"", listings:[
-        { name:"Holden Roofing", phone:"(512) 839-3117", note:"Will inspect your roof for free. If I find adequate damage, we will file a claim. If you have no damage, then you will get a clean bill of health, for free!" },
-        { name:"Over and Above Contracting", phone:"(737) 230-7099", note:"With a commitment to quality craftsmanship and customer satisfaction, they provide expert solutions for all roofing needs." },
-        { name:"Upright Services", phone:"(737) 336-5115", note:"specialize in fencing, landscaping, roofing, decking, and all of your interior needs." },
-        { name:"DG Roofing and Construction", phone:"(512) 733-4332", note:"Community Verified." },
-        { name:"LOA Construction and Austin Roofing", phone:"(512) 645-1687", note:"We deliver exceptional service and quality roofing services to clients across Texas." },
-        { name:"J-Conn Roofing & Repair Services Inc.", phone:"(512) 479-0510", note:"Always professional, always great work... and they've always been around so you know they'll be around!" },
-        { name:"Go Pro Roofing & Construction", phone:"(737) 278-6116", note:"Affordable, quality workmanship and awesome to work with!" },
-        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
-        { name:"Lone Star Roofing", phone:"(512) 555-0391", note:"Replaced our roof after hail damage. Fast, clean, handled the insurance claim too." },
-      ]},
-      { name:"Handyman", icon:"", listings:[
-        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
-        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
-        { name:"iGottaGuy4That", phone:"(512) 715-4997", note:"Whether it be handyman services, landscaping, fence restoration, a new deck & more, there will ALWAYS be a need to fix or upgrade your home." },
-        { name:"Straight Rail Fencing & Handyman", phone:"(512) 998-4202", note:"specialize in fencing, landscape projects, light construction, Interior remodels, and all around handyman projects." },
-        { name:"Gonzalez Solutions LLC", phone:"(737) 262-0081", note:"Community Verified." },
-        { name:"Luis Landscaping & Handyman Services", phone:"(737) 420-7339", note:"have over 8 years of experience in landscaping and home renovation." },
-        { name:"Phillip Perry", phone:"(512) 657-5582", note:"Community Verified." },
-      ]},
-      { name:"Construction", icon:"", listings:[
-        { name:"LOA Construction and Austin Roofing", phone:"(512) 645-1687", note:"We deliver exceptional service and quality roofing services to clients across Texas." },
-        { name:"DG Roofing and Construction", phone:"(512) 733-4332", note:"Community Verified." },
-        { name:"Go Pro Roofing & Construction", phone:"(737) 278-6116", note:"Affordable, quality workmanship and awesome to work with!" },
-        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
-        { name:"Gonzalez Solutions LLC", phone:"(737) 262-0081", note:"Community Verified." },
-        { name:"Varela's Construction", phone:"(312) 966-1063", note:"Varela Family Construction has been in business for more than 25yrs, delivering high quality services to thousands of satisfied customers." },
-        { name:"TCJ Construction Austin", phone:"(512) 760-4540", note:"always start and finish on time, ensuring that your project stays on schedule." },
-        { name:"Straight Rail Fencing & Handyman", phone:"(512) 998-4202", note:"specialize in fencing, landscape projects, light construction, Interior remodels, and all around handyman projects." },
-      ]},
-      { name:"Fencing & Decks", icon:"", listings:[
-        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
-        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
-        { name:"iGottaGuy4That", phone:"(512) 715-4997", note:"Whether it be handyman services, landscaping, fence restoration, a new deck & more, there will ALWAYS be a need to fix or upgrade your home." },
-        { name:"Straight Rail Fencing & Handyman", phone:"(512) 998-4202", note:"specialize in fencing, landscape projects, light construction, Interior remodels, and all around handyman projects." },
-        { name:"Upright Services", phone:"(737) 336-5115", note:"specialize in fencing, landscaping, roofing, decking, and all of your interior needs." },
-        { name:"Phillip Perry", phone:"(512) 657-5582", note:"Community Verified." },
-      ]},
-      { name:"AC & Heating", icon:"", listings:[
-        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
-        { name:"Austin Cold Air", phone:"(512) 913-1139", note:"Neighborhood company with great value." },
-        { name:"Cooling & Heating Patrol", phone:"(512) 608-7669", note:"Serving with honor, integrity, honesty and ethically." },
-        { name:"iGottaGuy4That", phone:"(512) 715-4997", note:"Whether it be handyman services, landscaping, fence restoration, a new deck & more, there will ALWAYS be a need to fix or upgrade your home." },
-        { name:"Mr Cool HVAC", phone:"(512) 445-0412", note:"Mr Cool is great if your into DIY." },
-        { name:"Fire & Ice Heating and Air Conditioning", phone:"(512) 825-5989", note:"Heating and Cooling service." },
-        { name:"Chuck's Air Conditioning", phone:"(512) 453-2288", note:"have been taking care of our neighbors in all of central Texas for 41 years." },
-      ]},
-      { name:"Painters", icon:"", listings:[
-        { name:"DiamondPoint", phone:"(512) 945-8877", note:"Had an excellent experience with this Handiman service. Highly recommend!" },
-        { name:"Randy Mclerran", phone:"(512) 903-5373", note:"can do most everything to upgrade or repair your home or business from install, repairs, drywall, painting, electrical repairs, plumbing repairs, lawns, or just repairs to your deck." },
-        { name:"Upright Services", phone:"(737) 336-5115", note:"specialize in fencing, landscaping, roofing, decking, and all of your interior needs." },
-        { name:"Vivax Pros House Painting", phone:"(512) 668-9443", note:"They were all very good to work with - honest, true to their word, we knew exactly what to expect and the communication with the team was exceptional." },
-      ]},
-    ]},
-    { id:"outdoor", label:"Outdoor & Lawn", icon:"🌿", subcategories:[
-      { name:"Landscaping", icon:"", listings:[
-        { name:"Emerald Lawns", phone:"(512) 990-2199", note:"GREEN LAWNS & PEST-FREE HOMES" },
-        { name:"Top Choice", phone:"(512) 291-7050", note:"Tired of cheap “cut ‘n run” lawn care services, inexperienced laborers, or companies who won’t call you back? We are too. At Top Choice Lawn Care, we believe everyone deserves quality service and exceptional customer service. It’s just that simple." },
-        { name:"iGottaGuy4That", phone:"(512) 715-4997", note:"Whether it be handyman services, landscaping, fence restoration, a new deck & more, there will ALWAYS be a need to fix or upgrade your home." },
-        { name:"Straight Rail Fencing & Handyman", phone:"(512) 998-4202", note:"specialize in fencing, landscape projects, light construction, Interior remodels, and all around handyman projects." },
-        { name:"Luis Landscaping & Handyman Services", phone:"(737) 420-7339", note:"have over 8 years of experience in landscaping and home renovation." },
-        { name:"Upright Services", phone:"(737) 336-5115", note:"specialize in fencing, landscaping, roofing, decking, and all of your interior needs." },
-        { name:"Homegrown", phone:"(512) 653-9609", note:"Community Verified." },
-        { name:"Tobias Landscaping", phone:"(512) 432-5091", note:"Community Verified." },
-        { name:"Gonzalez Solutions LLC", phone:"(737) 262-0081", note:"Community Verified." },
-        
-      ]},
-      { name:"Mosquito & Pest Control", icon:"", listings:[
-        { name:"King's Pest Control", phone:"(512) 930-7378", note:"specializing in eliminating pests like fire ants, mosquitoes, and rodents." },
-        { name:"Domain Pest Control", phone:"(512) 813-7378", note:"Let Domain help you defend your home, using the most innovative products and techniques." },
-        { name:"Critter Ritters", phone:"(360) 900-6995 ", note:"Family-owned & operated, since 1988." },
-        { name:"White Knight Pest Control", phone:"(866) 585-4167", note:"mission to the customer is to provide each and every customer with the greatest value in the industry." },
-        { name:"Sprague Pest Control", phone:"(512) 814-7378", note:"Family owned and operated, we're devoted to keeping your family free from the insects prevalent in this region." },
-        { name:"Research Pest Control", phone:"(512) 258-5228", note:"team specializes in comprehensive pest management solutions, from routine inspections to advanced rodent exclusions." },
-      ]},
-    ]},
-    { id:"auto", label:"Auto & Transport", icon:"🚗", subcategories:[
-      { name:"Mechanics & Auto Repair", icon:"", listings:[
-        { name:"The Luxurious Detailer", phone:"(702) 706-4150", note:"spotless and professional finish!" },
-        { name:"Pacific Custom Paint & Body", phone:"(512) 292-8899", note:"Committed to providing you excellent service, so you always choose us for your repair needs." },
-        { name:"Bearden Automotive", phone:"(512) 774-6949", note:"Community Verified." },
-        { name:"Superior Automotive", phone:"(512) 445-9644", note:"Superior service and at a price that is not only reasonable, its honest." },
-        { name:"Austin Mobile Mechanic", phone:"(512) 555-0193", note:"Great for on-site repairs and diagnostics. Saves the hassle of towing." },
-        { name:"Circle C Auto Repair", phone:"(512) 555-0234", note:"Local shop with honest mechanics. They fixed our brakes and did a great job." },]},
-      { name:"Golf Cart Sales & Repair", icon:"", listings:[
-        { name:"Golf Carts of ATX", phone:"(844) 844 4280", note:"offer competitive prices and top-notch customer service. Whether you're buying a new cart, or you're in need of mobile golf cart repair services, we have you covered." },
-        { name:"High Tech Golf Cart Repair", phone:"(512) 444 6851", note:"GOLF CART REPAIR AND SELL" },
-        { name:"Creek Cart Co.", phone:"(512) 555-0284", note:"Sold us a great used cart and serviced it same week. Very knowledgeable." },
-        { name:"Austin Golf Carts", phone:"(512) 555-0637", note:"New and used carts, plus repairs. Fast turnaround on battery work." },
-      ]},
-    ]},
-    { id:"professional", label:"Professional Services", icon:"💼", subcategories:[
-      { name:"Accounting & Tax Services", icon:"", listings:[
-        { name:"Real Wealth Planning", phone:"(512) 222-9280", note:"Financial Planning, Investment Management & Tax Strategy for Families, Organizations & Real Estate Professionals." },
-        { name:"Sandra Mills, CPA", phone:"(512) 555-0629", note:"Local CPA, great with self-employed folks and LLCs. Saves our family money every year." },
-        { name:"Fivestone", phone:"(512) 833-5829", note:"Expert tax representation backed by world-class experience and a commitment to peace of mind." },
-        { name:"DLC Financial Service", phone:"(361) 293-4926", note:"financial planning, bookkeeping services, LLC and Corporate formations, loan preparation packaging, quarterly tax payment preparation, and other accounting services that you as a individual or business owner may need." },
-        { name:"Julia Clark, CPA", phone:"(512) 684-8410", note:"Community Verified." },
-        { name:"Spectrum", phone:"(866) 874-2389", note:"Community Verified." },
-      ]},
-      { name:"Real Estate Agents", icon:"", listings:[
-        { name:"Chad Goldwasser, Realtor", phone:"(512) 750-8333", note:"Community Verified." },
-      ]},
-      { name:"Insurance Agents", icon:"", listings:[
-        { name:"Eric Baker", phone:"(737) 900-6914", note:"Eric is an insurance agent with Farmers." },
-        { name:"Hill Country Insurance", phone:"(512) 555-0837", note:"Helped us bundle home and auto and saved us $600/year. Very responsive." },
-        { name:"David Chen - State Farm", phone:"(512) 555-0224", note:"Local agent, easy to reach, great at explaining coverage options." },
-      ]},
-    ]},
-    { id:"health", label:"Health & Wellness", icon:"🩺", subcategories:[
-      { name:"Doctors & Healthcare", icon:"", listings:[
-        { name:"Dr. Richard Chopp", phone:"(512) 231-1444", note:"Richard did mine several years ago. Not good on bedside but he is to point and got the job done." },
-        { name:"Austin Ear, Nose & Throat Clinic", phone:"(512) 580-3097", note:"Relief Starts Here." },
-        { name:"Raymond Brown, MD", phone:"(512) 339-4040", note:"Austin's Most Trusted ENT Specialists." },
-        { name:"Capital Medical Clinic", phone:"(512) 406-7831", note:"Caring for the whole person, for a whole life." },
-        { name:"Circle C Dental", phone:"(512) 301-2483", note:"Circle C Dental has been in Circle C Ranch since 2008 and Dr. Pham has over 14 years of experience." },
-      ]},
-      { name:"Veterinarians", icon:"", listings:[
-        { name:"Brodie Animal Hospital", phone:"(512) 892-3486", note:"Where We Treat Your Pets Like Our Own." },
-        { name:"Star of Texas Veterinary Hospital", phone:"(512) 291-1600", note:"We listen to you and your pet." },
-        { name:"Sunset Canyon Veterinary Clinic", phone:"(512) 894-0266", note:"Mixed Animal Veterinary Clinic in Dripping Springs, TX." },
-        { name:"Dripping Springs Animal Hospital", phone:"(512) 858-4787", note:"We strive to treat your pets with the same care and compassion as if they were our own." },
-        { name:"AVES", phone:"(512) 343-2837", note:"serves as an extension of your family veterinary practice." },
-        { name:"Paz Vet", phone:"(512) 236-8000", note:"Community Verified." },
-        { name:"Woof Gang Bakery & Grooming", phone:"(512) 886-3067", note:"We offer a luxurious sPaw experience for your dogs, offering personalized salon-style grooming, including premium shampoos, precise nail care, and gentle ear cleaning." },
-        { name:"Circle C Animal Hospital", phone:"(512) 288-5888", note:"commitment to provide quality veterinary care throughout the life of your pet." },
-      ]},
-    ]},
-    { id:"kids", label:"Kids & Education", icon:"🎒", subcategories:[
-      { name:"Kids Activities", icon:"", listings:[
-        { name:"Home Court Training Center", phone:"(512) 284-8149", note:"HCTC is a fully equipped strength & conditioning facility with a full-size indoor basketball court." },
-        { name:"Austin Sports Academy", phone:"(512) 382-6952", note:"Indoor, air-conditioned facility for summer camps, elite training, after-school programs and more." },
-        { name:"Lonestar Soccer Club", phone:"(512) 336-5425", note:"The Perfect Place To Start. A Great Place To Stay." },
-        { name:"Circle C Coed Soccer", phone:"(510) 579-0445", note:"Friendly, Fun, Casual and Free." },
-        { name:"Neighborhood Sports", phone:"(512) 918-3524", note:"Neighborhood Sports is a youth sports organization offering all types of sports leagues, camps, and clinics for boys & girls in Austin, TX and the surrounding areas. Let’s play!" },
-        { name:"The Pond Hockey Club", phone:"(512) 924-0090", note:"Ice Rink Facility for Austin & Central Texas hockey players, curlers, and figure skaters." },
-      ]},
-    ]},
-    { id:"homelife", label:"Home Life", icon:"🏡", subcategories:[
-      { name:"House Cleaning", icon:"", listings:[
-        { name:"Fock Cleaning LLC", phone:"(512) 962-0103", note:"Luxury cleaning isn’t just how it looks—it’s how deeply it’s cleaned. We combine high-end cleaning services with science-backed methods to give you a cleaner, healthier home." },
-        { name:"Hill Country Cleaning Service", phone:"(512) 792-6728", note:"Offering Free Estimates." },
-        { name:"ProSpec & Design", phone:"(737) 354-1275", note:"Quality Results with attention to detail. Licensed, insured, and committed to making your space shine." },
-        { name:"Anna’s Cleaning Service", phone:"(512) 507-8045", note:"Community Verified." },
-        { name:"Lissy Cortez", phone:"(737) 354-7787", note:"Community Verified." },
-      ]},
-      { name:"Childcare & Babysitting", icon:"", listings:[
-        { name:"ProSpec & Design", phone:"(737) 354-1275", note:"quality results with attention to detail. Licensed, insured, and committed to making your space shine." },
-        { name:"Hannah Merkel", phone:"(512) 699-8122", note:"CPR Certified and have a reliable form of transportation! 3 years of experience working with kids." },
-        { name:"Jovie Care", phone:"(512) 343-1087", note:"Previously College Nannies + Sitters, Jovie care is here for all of your childcare needs." },
-      ]},
-      { name:"Pet Services", icon:"", listings:[
-        { name:"So Fetch Austin", phone:"(512) 785-9906", note:"We are committed to providing the highest quality care and are confident that your fur baby will leave our home feeling happy, healthy, and showered with love." },
-        { name:"Keep Austin Groomed", phone:"(512) 784-3998", note:"Caring for Your Best Friends, One Paw at a Time!" },
-        { name:"Whiskers & Wags", phone:"(512) 757 5158", note:"Keeping Austin Groomed" },
-        { name:"Paws & Stay (Dog Sitting)", phone:"(512) 555-0748", note:"Watched our dogs for two weeks. Sent daily photos. Total peace of mind." },
-        { name:"Creek Walk Dog Walking", phone:"(512) 555-0319", note:"Afternoon walks, very dependable. Dogs love her!" },
-      ]},
-      { name:"Junk Removal", icon:"", listings:[
-        { name:"1-800-Got-Junk", phone:"(512) 287-7996", note:"Excellent same day customer service!" },
-        { name:"Three Brothers Moving ATX", phone:"(512) 994-0334", note:"You Ring, We Bring." },
-        { name:"Creek Clean Junk Removal", phone:"(512) 555-0347", note:"Same-day service available. They donate and recycle what they can." },
-        { name:"Haul It Away ATX", phone:"(512) 555-0592", note:"Cleared out our whole garage in two hours. Affordable and very professional." },
-      ]},
-      { name:"Tailors & Alterations", icon:"", listings:[
-        { name:"Judy Thornhill", phone:"(512) 789-8617", note:"She lives in Circle C and does OUTSTANDING Work!" },
-        { name:"Couture Tailors", phone:"(512) 769-1486", note:"Tiffany altered my Wedding Gown and I have brought several pieces since then." },
-        { name:"Hope Tailor Shop & Alterations", phone:"(512) 447-4673", note:"They do AMAZING work." },
-        { name:"Soco Cleaner & Alterations", phone:"(512) 462-0048", note:"He's reasonable and amazing at what he does." },
-        { name:"AA Alterations", phone:"(512) 328-1766", note:"Very happy with their work, it’s in the HEB shopping center at Slaughter/Menchaca." },
-      ]},
-      { name:"Movers", icon:"", listings:[
-        { name:"Three Brothers Moving ATX", phone:"(512) 994-0334", note:"You Ring, We Bring." },
-        { name:"Haul It Away ATX", phone:"(512) 555-0592", note:"Cleared out our whole garage in two hours. Affordable and very professional." },
-      ]},
-    ]},
-  ];
+  let groups = [];
 
   const pillsEl   = document.getElementById('groupPills');
   const container = document.getElementById('listingsContainer');
@@ -787,13 +592,26 @@
   let activeGroup = 'all';
   let searchQuery = '';
 
-  groups.forEach(g => {
-    const btn = document.createElement('button');
-    btn.className = 'nav-tab';
-    btn.dataset.gid = g.id;
-    btn.textContent = g.label;
-    pillsEl.appendChild(btn);
-  });
+  async function init() {
+    try {
+      const response = await fetch('./listings.json');
+      groups = await response.json();
+      
+      groups.forEach(g => {
+        const btn = document.createElement('button');
+        btn.className = 'nav-tab';
+        btn.dataset.gid = g.id;
+        btn.textContent = g.label;
+        pillsEl.appendChild(btn);
+      });
+      
+      render();
+    } catch (e) {
+      console.error("Failed to load listings data:", e);
+    }
+  }
+
+  init();
 
   pillsEl.addEventListener('click', e => {
     const tab = e.target.closest('.nav-tab');

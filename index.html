@@ -1,85 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neighborhood Directory Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet"/>
+  <title>Trusted Neighbors | Hyper-Local Neighborhood Directories</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="Authentic, neighbor-recommended business directories for local communities. No sponsored ads, no fake reviews. Sourced directly from neighbors for Onion Creek, Sunfield, and Circle C." />
+  <meta name="keywords"
+    content="neighborhood directory, local recommendations, trusted neighbors, local business referrals, Onion Creek directory, Sunfield, Circle C, Austin local directory" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Trusted Neighbors | Hyper-Local Neighborhood Directories" />
+  <meta property="og:description"
+    content="Skip the sponsored ads and fake online reviews. Find authentic, neighbor-recommended businesses in your community." />
+  <meta property="og:url" content="https://trustedneighbors.net/" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+
   <style>
     :root {
-      --va-red: #A65646; /* Visit Austin Terracotta */
-      --va-red-dark: #8F493B;
-      --va-black: #000000;
-      --va-white: #ffffff;
-      --va-off-white: #f8f8f8;
-      --va-gray: #e5e5e5;
-      --va-text: #222222;
-      --va-text-light: #555555;
+      /* Premium Branding Color System (Forest Green & Gold) */
+      --color-primary: #0f2e22;
+      /* Rich dark forest green */
+      --color-primary-mid: #1b4d3a;
+      /* Medium forest green */
+      --color-primary-light: #2c6e54;
+      /* Light forest green */
+      --color-accent: #d4af37;
+      /* Refined gold */
+      --color-accent-hover: #e5c655;
+      /* Light gold for interactions */
+      --color-accent-pale: #fdfaf2;
+      /* Soft cream gold background */
+      --color-neutral-dark: #202624;
+      /* Warm dark grey/black */
+      --color-neutral-light: #faf9f5;
+      /* Clean warm off-white */
+      --color-neutral-white: #ffffff;
+      --color-border: #e2dfd5;
+      /* Warm light grey border */
+
+      /* Accent colors for neighborhood branding */
+      --color-onion: #114d33;
+      /* Green identity */
+      --color-sunfield: #c86a4a;
+      /* Sienna/rust identity */
+      --color-circlec: #0f3b3f;
+      /* Deep teal identity */
+
+      /* Animation curves */
+      --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
-      font-family: 'Montserrat', sans-serif;
-      background: var(--va-off-white);
-      color: var(--va-text);
+      font-family: 'Inter', sans-serif;
+      background: var(--color-neutral-light);
+      color: var(--color-neutral-dark);
       min-height: 100vh;
-      font-weight: 400;
-      display: flex;
-      flex-direction: column;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: var(--color-primary);
     }
 
     /* TOP UTILITY BAR */
     .top-bar {
-      background: var(--va-black);
-      color: var(--va-white);
+      background: var(--color-primary);
+      color: var(--color-accent);
       padding: 8px 40px;
-      font-size: 0.65rem;
-      font-weight: 800;
-      letter-spacing: 1.5px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
       text-transform: uppercase;
       display: flex;
-      justify-content: flex-start;
-      gap: 24px;
-      animation: navDrop 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
     }
 
-    /* MAIN NAV BAR */
+    .top-bar-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .top-bar-links a {
+      color: var(--color-neutral-white);
+      text-decoration: none;
+      transition: var(--transition-smooth);
+    }
+
+    .top-bar-links a:hover {
+      color: var(--color-accent);
+    }
+
+    /* MAIN NAV BAR (Glassmorphism) */
     .main-nav {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(10px);
-      padding: 12px 40px;
+      background: rgba(250, 249, 245, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 16px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--va-gray);
+      border-bottom: 1px solid rgba(15, 46, 34, 0.06);
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      transition: all 0.3s ease;
-      animation: navDrop 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      background: var(--color-primary);
+      color: var(--color-accent);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      border: 1px solid var(--color-accent);
     }
 
     .main-nav-logo {
-      font-size: 2rem;
-      font-weight: 900;
-      font-style: italic;
-      letter-spacing: -1px;
-      color: var(--va-black);
-      text-decoration: none;
-    }
-    
-    .main-nav-logo span {
-      color: var(--va-red);
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--color-primary);
     }
 
-    .nav-center {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      flex: 1;
-      justify-content: center;
+    .main-nav-logo span {
+      color: var(--color-accent);
     }
 
     .nav-links {
@@ -89,70 +175,58 @@
     }
 
     .nav-links a {
-      font-weight: 800;
-      font-size: 0.8rem;
-      letter-spacing: 1.5px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      color: var(--va-text);
+      color: var(--color-primary);
       text-decoration: none;
-      transition: color 0.2s ease;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background-color: var(--color-accent);
+      transition: var(--transition-smooth);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
     }
 
     .nav-links a:hover {
-      color: var(--va-red);
+      color: var(--color-accent-hover);
     }
 
-    /* DROPDOWN */
-    .dropdown {
-      position: relative;
-      display: inline-block;
+    .nav-cta {
+      background: var(--color-primary);
+      color: var(--color-accent) !important;
+      padding: 8px 18px;
+      border-radius: 4px;
+      border: 1px solid var(--color-accent);
     }
 
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background-color: var(--va-white);
-      min-width: 220px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      border: 1px solid var(--va-gray);
-      border-top: 3px solid var(--va-red);
-      z-index: 200;
-      padding: 12px 0;
-      margin-top: 18px;
-      animation: fadeIn 0.2s ease;
+    .nav-cta::after {
+      display: none !important;
     }
 
-    /* Invisible bridge to prevent hover loss */
-    .dropdown-menu::before {
-      content: '';
-      position: absolute;
-      top: -21px;
-      left: 0;
-      width: 100%;
-      height: 21px;
+    .nav-cta:hover {
+      background: var(--color-accent) !important;
+      color: var(--color-primary) !important;
     }
 
-    .dropdown:hover .dropdown-menu {
-      display: block;
-    }
-
-    .dropdown-menu a {
-      display: block;
-      padding: 10px 24px;
-      font-size: 0.75rem;
-    }
-
-    .dropdown-menu a:hover {
-      background-color: var(--va-off-white);
-      color: var(--va-red);
-    }
-
+    /* MOBILE NAVIGATION */
     .menu-btn {
       display: none;
       cursor: pointer;
-      color: var(--va-black);
+      color: var(--color-primary);
     }
 
     .menu-btn svg {
@@ -160,229 +234,359 @@
       height: 28px;
     }
 
-    /* MOBILE TOGGLE */
     .menu-toggle {
       display: none;
     }
 
-    /* HERO */
-    header {
+    /* HERO SECTION */
+    .hero {
       position: relative;
-      height: 70vh;
-      min-height: 450px;
+      padding: 100px 40px 100px;
+      background: linear-gradient(135deg, #0b2219 0%, #153c2e 100%);
+      color: var(--color-neutral-white);
       display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 60px 40px 40px;
+      justify-content: center;
+      align-items: center;
       overflow: hidden;
     }
 
-    header::after {
-      content: '';
-      position: absolute;
-      inset: -5%;
-      background: url('assets/Downtown_Skyline_Upscale_Paulina_Skarbowska_Wiewior_bateyes_atx_Lifetime_Usage__4469f6fe-40d5-4df8-8fee-22b3b75c9862.jpg') no-repeat center center;
-      background-size: cover;
-      z-index: 0;
-      animation: dramaticPan 30s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite alternate;
-      will-change: transform, filter;
-      transform: translateZ(0);
-      backface-visibility: hidden;
-    }
-
-    header::before {
+    .hero::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.1) 100%);
+      background: url('assets/Downtown_Skyline_Upscale_Paulina_Skarbowska_Wiewior_bateyes_atx_Lifetime_Usage__4469f6fe-40d5-4df8-8fee-22b3b75c9862.jpg') no-repeat center center;
+      background-size: cover;
+      opacity: 0.15;
       z-index: 1;
     }
 
-    .header-content {
+    .hero-container {
       position: relative;
-      z-index: 10;
+      z-index: 2;
       max-width: 1200px;
-      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-content {
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: 20px;
+      background: rgba(212, 175, 55, 0.1);
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .hero h2 {
+      font-size: clamp(2.5rem, 5vw, 4.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--color-neutral-white);
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+
+    .hero h2 span {
+      background: linear-gradient(to right, var(--color-accent), #f3e5ab);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 40px;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: var(--transition-smooth);
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--color-accent);
+      color: var(--color-primary);
+      border: 1px solid var(--color-accent);
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--color-accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--color-neutral-white);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--color-neutral-white);
+      transform: translateY(-2px);
+    }
+
+    /* HERO IMAGE GRAPHIC (Mockup style) */
+    .hero-graphic {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeInRight 1s ease-out;
+    }
+
+    .hero-image-card {
+      background: var(--color-neutral-white);
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+      width: 85%;
+      height: 90%;
+      transform: rotate(3deg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+
+    .hero-image-card::after {
+      content: '';
+      position: absolute;
+      inset: 12px;
+      background: url('assets/Downtown_Skyline_Upscale_Paulina_Skarbowska_Wiewior_bateyes_atx_Lifetime_Usage__4469f6fe-40d5-4df8-8fee-22b3b75c9862.jpg') no-repeat center center;
+      background-size: cover;
+      border-radius: 8px;
+      filter: saturate(1.1) brightness(0.9);
+    }
+
+    .badge-floating {
+      position: absolute;
+      top: -20px;
+      left: -20px;
+      background: var(--color-primary);
+      color: var(--color-accent);
+      border: 2px solid var(--color-accent);
+      padding: 12px 18px;
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.2;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      transform: rotate(-10deg);
+      z-index: 10;
+    }
+
+    .badge-floating strong {
+      font-size: 1.1rem;
+      color: var(--color-neutral-white);
+      display: block;
+    }
+
+    /* SECTION LAYOUTS */
+    section {
+      padding: 100px 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .section-container {
+      max-width: 1200px;
       width: 100%;
     }
 
-    .eyebrow {
-      display: inline-block;
-      font-size: 1.2rem;
-      font-weight: 800;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--va-red);
-      margin-bottom: 12px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-      animation: dramaticEntrance 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(4rem, 10vw, 7rem);
-      font-weight: 400;
+    .section-eyebrow {
+      font-size: 0.8rem;
+      font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
-      line-height: 1;
-      color: var(--va-white);
-      margin-bottom: 24px;
-      text-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      animation: dramaticEntrance 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+      color: var(--color-accent);
+      margin-bottom: 12px;
+      display: block;
     }
 
-    .intro-section {
-      margin-bottom: 40px;
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
     }
 
-    .subtitle {
-      max-width: 800px;
-      color: var(--va-text-light);
-      font-size: 1.1rem;
-      font-weight: 600;
-      line-height: 1.6;
-      animation: dramaticEntrance 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+    .section-desc {
+      font-size: 1.05rem;
+      color: #606664;
     }
 
-    main {
-      max-width: 1200px;
-      margin: 40px auto 100px;
-      padding: 0 40px;
-      flex: 1;
-      width: 100%;
+    /* HOW IT WORKS SECTION */
+    .how-it-works {
+      background: var(--color-neutral-white);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+    }
+
+    .step-card {
+      background: var(--color-neutral-light);
+      padding: 40px 30px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
       position: relative;
-      z-index: 20;
+      transition: var(--transition-smooth);
+    }
+
+    .step-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 30px rgba(15, 46, 34, 0.05);
+      border-color: var(--color-accent);
+    }
+
+    .step-number {
+      font-family: 'Outfit', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: rgba(212, 175, 55, 0.2);
+      line-height: 1;
+      position: absolute;
+      top: 24px;
+      right: 30px;
+    }
+
+    .step-icon {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .step-title {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .step-text {
+      font-size: 0.95rem;
+      color: #555c5a;
+      line-height: 1.5;
+    }
+
+    /* NEIGHBORHOOD DIRECTORIES SECTION */
+    .neighborhoods-section {
+      background: var(--color-neutral-light);
     }
 
     .panel-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 30px;
-      align-items: stretch;
     }
 
     .selector-card {
       display: flex;
       flex-direction: column;
-      background: var(--va-white);
-      border-radius: 4px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      background: var(--color-neutral-white);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--color-border);
       overflow: hidden;
       text-decoration: none;
       color: inherit;
-      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-      animation: cardEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.8s both;
+      transition: var(--transition-smooth);
     }
-
-    .selector-card:nth-child(2) { animation-delay: 0.95s; }
 
     .selector-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
-    }
-
-    /* Circle C specific styling to make the card stand out and remain readable */
-    .selector-card.circlec .card-top {
-      background: linear-gradient(135deg, #0F3B3F 0%, #215D60 100%);
-      color: #ffffff;
-    }
-    .selector-card.circlec .card-tag {
-      color: rgba(255,255,255,0.9);
-    }
-    .selector-card.circlec .card-title {
-      color: #ffffff;
-    }
-    .selector-card.circlec .card-footer {
-      background: rgba(15,59,63,0.05);
-    }
-    .selector-card.circlec .cta-button {
-      border-color: rgba(15,59,63,0.18);
-      color: #0F3B3F;
-      background: transparent;
-    }
-    .selector-card.circlec:hover .cta-button {
-      background: #CFA45C;
-      color: #0F3B3F;
-      border-color: #CFA45C;
-    }
-
-    /* Onion Creek styling: similar high-contrast card but with a green identity */
-    .selector-card.onion .card-top {
-      background: linear-gradient(135deg, #114D33 0%, #2A6B45 100%);
-      color: #ffffff;
-    }
-    .selector-card.onion .card-tag { color: rgba(255,255,255,0.9); }
-    .selector-card.onion .card-title { color: #ffffff; }
-    .selector-card.onion .card-footer { background: rgba(22,91,102,0.04); }
-    .selector-card.onion .cta-button { color: #114D33; border-color: rgba(17,77,51,0.18); }
-    .selector-card.onion:hover .cta-button { background: #CFA45C; color: #0F3B3F; border-color: #CFA45C; }
-
-    /* Sunfield: give it the same polished card frame but keep the rust accent */
-    .selector-card .card-top { transition: background 0.25s ease, color 0.25s ease; }
-    .selector-card.sunfield .card-top {
-      background: linear-gradient(135deg, #C86A4A 0%, #A65646 100%);
-      color: #ffffff;
-    }
-    .selector-card.sunfield .card-tag { color: rgba(255,255,255,0.9); }
-    .selector-card.sunfield .card-title { color: #ffffff; }
-    .selector-card.sunfield .card-footer { background: rgba(200,106,74,0.04); }
-    .selector-card.sunfield .cta-button {
-      border-color: rgba(166,86,70,0.16);
-      color: #A65646;
-      background: transparent;
-    }
-    .selector-card.sunfield:hover .cta-button {
-      background: #A65646;
-      color: #ffffff;
-      border-color: #A65646;
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     }
 
     .card-top {
       padding: 40px 30px;
-      background: var(--va-white);
       flex: 1;
-      border-bottom: 1px solid var(--va-gray);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 200px;
+      transition: var(--transition-smooth);
+      position: relative;
     }
 
     .card-tag {
-      display: inline-block;
       font-size: 0.8rem;
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--va-red);
       margin-bottom: 12px;
     }
 
     .card-title {
       font-size: 2.2rem;
-      font-weight: 900;
-      color: var(--va-black);
-      line-height: 1.1;
+      font-weight: 800;
+      line-height: 1.15;
       text-transform: uppercase;
       letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      color: var(--color-neutral-white);
     }
 
-    .coming-soon-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.8);
-      border: 3px dashed var(--va-gray);
-      border-radius: 4px;
-      padding: 40px;
-      text-align: center;
-      backdrop-filter: blur(5px);
-      animation: pulseBorder 3s infinite alternate;
-    }
-
-    .coming-soon-text {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--va-text-light);
-      line-height: 1.2;
-      text-transform: uppercase;
+    .card-desc {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      font-weight: 300;
     }
 
     .card-footer {
@@ -390,242 +594,1096 @@
       align-items: center;
       justify-content: space-between;
       padding: 24px 30px;
-      background: var(--va-off-white);
+      background: #faf9f5;
+      border-top: 1px solid var(--color-border);
     }
 
     .cta-label {
-      font-size: 0.8rem;
-      font-weight: 800;
-      letter-spacing: 2px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: var(--va-text-light);
+      color: #606664;
     }
 
     .cta-button {
       display: inline-block;
-      padding: 10px 24px;
+      padding: 10px 20px;
       background: transparent;
-      color: var(--va-red);
-      border: 2px solid var(--va-red);
       border-radius: 4px;
       font-size: 0.8rem;
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
       text-align: center;
-      transition: all 0.2s ease;
-    }
-    
-    .selector-card:hover .cta-button {
-      background: var(--va-red);
-      color: var(--va-white);
+      transition: var(--transition-smooth);
     }
 
-    footer {
-      background: var(--va-black);
-      color: rgba(255,255,255,0.8);
+    /* Neighborhood specific theme colors */
+    .selector-card.onion .card-top {
+      background: linear-gradient(135deg, #114D33 0%, #2A6B45 100%);
+      color: var(--color-neutral-white);
+    }
+
+    .selector-card.onion .card-tag {
+      color: var(--color-accent);
+    }
+
+    .selector-card.onion .cta-button {
+      border: 2px solid var(--color-accent);
+      color: #114D33;
+      background: var(--color-accent);
+    }
+
+    .selector-card.onion:hover .card-top {
+      background: linear-gradient(135deg, #0e3e29 0%, #215335 100%);
+    }
+
+    .selector-card.onion:hover .cta-button {
+      background: var(--color-neutral-white);
+      color: #114d33;
+      border-color: var(--color-neutral-white);
+    }
+
+    .selector-card.sunfield .card-top {
+      background: linear-gradient(135deg, #C86A4A 0%, #A65646 100%);
+      color: var(--color-neutral-white);
+    }
+
+    .selector-card.sunfield .card-tag {
+      color: #fce8e2;
+    }
+
+    .selector-card.sunfield .cta-button {
+      border: 2px solid #C86A4A;
+      color: #A65646;
+      background: #fce8e2;
+    }
+
+    .selector-card.sunfield:hover .card-top {
+      background: linear-gradient(135deg, #b05c3f 0%, #8c4739 100%);
+    }
+
+    .selector-card.sunfield:hover .cta-button {
+      background: var(--color-neutral-white);
+      color: #A65646;
+      border-color: var(--color-neutral-white);
+    }
+
+    .selector-card.circlec .card-top {
+      background: linear-gradient(135deg, #0F3B3F 0%, #215D60 100%);
+      color: var(--color-neutral-white);
+    }
+
+    .selector-card.circlec .card-tag {
+      color: #e2f1f2;
+    }
+
+    .selector-card.circlec .cta-button {
+      border: 2px solid #0F3B3F;
+      color: #0F3B3F;
+      background: #e2f1f2;
+    }
+
+    .selector-card.circlec:hover .card-top {
+      background: linear-gradient(135deg, #0a272a 0%, #174547 100%);
+    }
+
+    .selector-card.circlec:hover .cta-button {
+      background: var(--color-neutral-white);
+      color: #0F3B3F;
+      border-color: var(--color-neutral-white);
+    }
+
+    /* COMING SOON CARD */
+    .coming-soon-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.7);
+      border: 2.5px dashed var(--color-border);
+      border-radius: 8px;
+      padding: 40px;
       text-align: center;
-      padding: 40px 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      border-top: 3px solid var(--va-red);
+      min-height: 290px;
+      transition: var(--transition-smooth);
     }
 
-    footer strong { color: var(--va-red); }
+    .coming-soon-card:hover {
+      border-color: var(--color-accent);
+      background: var(--color-accent-pale);
+    }
+
+    .coming-soon-icon {
+      font-size: 2rem;
+      color: var(--color-primary-light);
+      margin-bottom: 12px;
+    }
+
+    .coming-soon-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .coming-soon-desc {
+      font-size: 0.9rem;
+      color: #606664;
+      margin-bottom: 16px;
+    }
+
+    /* ABOUT SECTION */
+    .about-section {
+      background: var(--color-neutral-white);
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about-text h3 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    .about-text p {
+      font-size: 1.05rem;
+      color: #555c5a;
+      margin-bottom: 24px;
+      line-height: 1.7;
+    }
+
+    .about-highlights {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .highlight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .highlight-icon {
+      color: var(--color-accent);
+      font-size: 1.2rem;
+      margin-top: 2px;
+    }
+
+    .highlight-title {
+      font-weight: 700;
+      color: var(--color-primary);
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .highlight-desc {
+      font-size: 0.85rem;
+      color: #606664;
+    }
+
+    .about-graphic {
+      background: var(--color-accent-pale);
+      border: 1px solid var(--color-accent);
+      padding: 40px;
+      border-radius: 8px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.05);
+    }
+
+    .about-graphic-badge {
+      background: var(--color-primary);
+      color: var(--color-accent);
+      padding: 6px 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 16px;
+      border: 1px solid var(--color-accent);
+    }
+
+    .about-graphic h4 {
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+    }
+
+    .about-graphic p {
+      font-size: 0.95rem;
+      color: #555c5a;
+      margin-bottom: 20px;
+    }
+
+    .about-graphic-bullets {
+      list-style: none;
+    }
+
+    .about-graphic-bullets li {
+      font-size: 0.9rem;
+      color: var(--color-primary-mid);
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .about-graphic-bullets li::before {
+      content: '✓';
+      color: var(--color-accent);
+      font-weight: 800;
+    }
+
+    /* MEET OUR FAMILY SECTION */
+    .family-section {
+      background: var(--color-neutral-light);
+    }
+
+    .family-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+      margin-top: 40px;
+    }
+
+    .family-card {
+      background: var(--color-neutral-white);
+      padding: 40px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: var(--transition-smooth);
+    }
+
+    .family-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(15, 46, 34, 0.06);
+      border-color: var(--color-accent);
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .avatar-circle {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: var(--color-accent);
+      border: 3px solid var(--color-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      box-shadow: 0 8px 20px rgba(15, 46, 34, 0.15);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+    }
+
+    .avatar-badge {
+      position: absolute;
+      bottom: -5px;
+      right: -5px;
+      background: var(--color-accent);
+      color: var(--color-primary);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+      border: 2px solid var(--color-neutral-white);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .family-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .family-role {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-primary-light);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+    }
+
+    .family-bio {
+      font-size: 0.95rem;
+      color: #555c5a;
+      line-height: 1.6;
+    }
+
+    /* SUGGEST A NEIGHBORHOOD / CONTACT SECTION */
+    .suggest-section {
+      background: var(--color-neutral-white);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .suggest-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .suggest-info h3 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+    }
+
+    .suggest-info p {
+      font-size: 1.05rem;
+      color: #555c5a;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .suggest-contacts {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .contact-bubble {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--color-accent-pale);
+      border: 1px solid var(--color-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      font-size: 1.1rem;
+    }
+
+    .contact-detail {
+      font-size: 0.95rem;
+      color: var(--color-primary-mid);
+      font-weight: 600;
+    }
+
+    .contact-detail a {
+      color: var(--color-primary-mid);
+      text-decoration: none;
+      transition: var(--transition-smooth);
+    }
+
+    .contact-detail a:hover {
+      color: var(--color-accent);
+      text-decoration: underline;
+    }
+
+    /* Beautiful Form Styles */
+    .form-container {
+      background: var(--color-neutral-light);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 40px;
+      box-shadow: 0 15px 35px rgba(15, 46, 34, 0.04);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: var(--color-neutral-dark);
+      background: var(--color-neutral-white);
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .form-container .btn-submit {
+      width: 100%;
+      background: var(--color-primary);
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+      padding: 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      box-shadow: 0 4px 10px rgba(15, 46, 34, 0.1);
+    }
+
+    .form-container .btn-submit:hover {
+      background: var(--color-accent);
+      color: var(--color-primary);
+      box-shadow: 0 6px 16px rgba(212, 175, 55, 0.3);
+    }
+
+    /* FOOTER */
+    footer {
+      background: #081711;
+      color: rgba(255, 255, 255, 0.7);
+      padding: 60px 40px;
+      font-size: 0.9rem;
+      border-top: 3px solid var(--color-accent);
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 40px;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--color-neutral-white);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .footer-logo span {
+      color: var(--color-accent);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 30px;
+      justify-content: flex-end;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: var(--transition-smooth);
+    }
+
+    .footer-links a:hover {
+      color: var(--color-accent);
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .footer-bottom strong {
+      color: var(--color-accent);
+    }
 
     /* ANIMATIONS */
-    @keyframes navDrop {
-      0% { transform: translateY(-100%); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
-    }
-
-    @keyframes dramaticEntrance {
-      0% {
+    @keyframes fadeInUp {
+      from {
         opacity: 0;
-        transform: translateY(100px) scale(0.9);
-        filter: blur(15px);
+        transform: translateY(30px);
       }
-      100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
-      }
-    }
 
-    @keyframes dramaticPan {
-      0% { transform: scale(1.2) translateZ(0); filter: brightness(0.6) contrast(1.2); }
-      100% { transform: scale(1) translateZ(0); filter: brightness(1) contrast(1); }
-    }
-    
-    @keyframes cardEntrance {
-      0% {
-        opacity: 0;
-        transform: translateY(80px) scale(0.95);
-        box-shadow: 0 0 0 rgba(0,0,0,0);
-      }
-      100% {
+      to {
         opacity: 1;
-        transform: translateY(0) scale(1);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      }
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes pulseBorder {
-      0% { border-color: var(--va-gray); box-shadow: 0 0 0 0 rgba(0,0,0,0); }
-      100% { border-color: var(--va-red); box-shadow: 0 0 20px 0 rgba(166,86,70,0.15); }
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 860px) {
-      .main-nav { padding: 12px 20px; }
-      .top-bar { display: none; }
-      .menu-btn { display: block; }
-      .nav-center {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background: var(--va-white);
-        padding: 0 20px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        border-top: 1px solid var(--va-gray);
-        display: flex;
-        flex-direction: column;
-        max-height: 0;
-        opacity: 0;
-        visibility: hidden;
-        overflow: hidden;
-        transform: translateY(-10px);
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      .menu-toggle:checked ~ .nav-center {
-        padding: 20px;
-        max-height: 400px;
-        opacity: 1;
-        visibility: visible;
         transform: translateY(0);
       }
-      .nav-links {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        width: 100%;
-      }
-      
-      .dropdown-menu {
-        position: static;
-        box-shadow: none;
-        border: none;
-        padding: 0 0 0 16px;
-        margin-top: 10px;
-        display: none;
-      }
-      .dropdown:hover .dropdown-menu {
-        display: block;
+    }
+
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(40px) rotate(0deg);
       }
 
-      .panel-grid { grid-template-columns: 1fr; }
-      h1 { font-size: clamp(3.5rem, 12vw, 5rem); }
-      header { padding: 40px 20px 20px; height: 60vh; min-height: 400px; }
-      main { padding: 0 20px; margin-top: 40px; }
+      to {
+        opacity: 1;
+        transform: translateX(0) rotate(3deg);
+      }
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 992px) {
+      .hero-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+      }
+
+      .hero-eyebrow {
+        justify-content: center;
+      }
+
+      .hero-ctas {
+        justify-content: center;
+      }
+
+      .hero-graphic {
+        display: none;
+        /* Hide decorative mockup on tablet/mobile for cleaner layout */
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .family-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .suggest-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .footer-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 20px;
+      }
+
+      .footer-links {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-nav {
+        padding: 16px 20px;
+      }
+
+      .top-bar {
+        display: none;
+      }
+
+      .menu-btn {
+        display: block;
+        z-index: 101;
+      }
+
+      .nav-links {
+        position: fixed;
+        top: 0;
+        left: 100%;
+        width: 100%;
+        height: 100vh;
+        background: var(--color-neutral-white);
+        flex-direction: column;
+        justify-content: center;
+        gap: 32px;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 100;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
+      }
+
+      .menu-toggle:checked~.nav-links {
+        transform: translateX(-100%);
+      }
+
+      .menu-toggle:checked~.menu-btn svg {
+        /* simple cross icon animation */
+        color: var(--color-primary);
+      }
+
+      section {
+        padding: 60px 20px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .form-container {
+        padding: 24px;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Top Utility Bar -->
   <div class="top-bar">
-    <span>VISIT</span>
-    <span>MEETINGS</span>
-    <span>INSIDER BLOG</span>
+    <span>🌿 hyper-local &nbsp;·&nbsp; 100% neighbor-sourced referrals</span>
+    <div class="top-bar-links">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#suggest-neighborhood">Add Neighborhood</a>
+    </div>
   </div>
 
+  <!-- Navigation Bar (Glassmorphic) -->
   <nav class="main-nav">
-    <a href="/" class="main-nav-logo">Trusted<span>Neighbors</span></a>
-    
+    <a href="/" class="logo-container">
+      <div class="logo-badge">T</div>
+      <h1 class="main-nav-logo">Trusted<span>Neighbors</span></h1>
+    </a>
+
     <input type="checkbox" id="menu-toggle" class="menu-toggle">
-    <label for="menu-toggle" class="menu-btn">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    <label for="menu-toggle" class="menu-btn" id="menuBtnLabel">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
     </label>
 
-        <div class="nav-center">
-      <div class="nav-links">
-        <div class="dropdown">
-          <a href="#neighborhoods">Neighborhoods</a>
-          <div class="dropdown-menu">
-              <a href="/onion-creek">Onion Creek (Austin)</a>
-              <a href="/sunfield">Sunfield (Buda)</a>
-              <a href="/circle-c">Circle C (Austin)</a>
-              <a href="#">More Coming Soon...</a>
-            </div>
-        </div>
-        <a href="#meet-our-family">Meet Our Family</a>
-        <a href="#about">About</a>
-      </div>
+    <div class="nav-links" id="navLinks">
+      <a href="#neighborhoods" onclick="closeMobileMenu()">Neighborhoods</a>
+      <a href="#how-it-works" onclick="closeMobileMenu()">How it works</a>
+      <a href="#about" onclick="closeMobileMenu()">About</a>
+      <a href="#meet-our-family" onclick="closeMobileMenu()">Meet Our Family</a>
+      <a href="#suggest-neighborhood" class="nav-cta" onclick="closeMobileMenu()">Add Neighborhood</a>
     </div>
   </nav>
 
-  <header>
-    <div class="header-content">
-      <div class="eyebrow">Local Directories</div>
-      <h1>Your Trusted Neighborhood</h1>
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span>🌿</span> Community Referral Platform
+        </div>
+        <h2>Directories Built on <span>Real Trust</span>.</h2>
+        <p class="hero-subtitle">
+          Skip the sponsored ads, premium search game, and fake online reviews. Find authentic, hand-picked local
+          businesses recommended by your immediate neighbors.
+        </p>
+        <div class="hero-ctas">
+          <a href="#neighborhoods" class="btn btn-primary">Select Directory</a>
+          <a href="#how-it-works" class="btn btn-secondary">Learn More</a>
+        </div>
+      </div>
+      <div class="hero-graphic">
+        <div class="hero-image-card">
+          <div class="badge-floating">
+            <span>Verified</span>
+            <strong>100%</strong>
+            <span>Local</span>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main>
-    <div class="intro-section">
-      <p class="subtitle">Start with the directory that fits where you live or where you are looking. Find trusted local referrals from your neighbors as we continue to grow.</p>
-    </div>
-
-    <section class="panel-grid" aria-label="Neighborhood choices">
-      <a class="selector-card onion" href="/onion-creek">
-        <div class="card-top">
-          <div class="card-tag">Austin, TX</div>
-          <div class="card-title">Onion Creek</div>
-        </div>
-        <div class="card-footer">
-          <div class="cta-label">Referral Network</div>
-          <div class="cta-button">Open Directory</div>
-        </div>
-      </a>
-
-      <a class="selector-card sunfield" href="/sunfield">
-        <div class="card-top">
-          <div class="card-tag">Buda, TX</div>
-          <div class="card-title">Sunfield</div>
-        </div>
-        <div class="card-footer">
-          <div class="cta-label">Referral Network</div>
-          <div class="cta-button">Open Directory</div>
-        </div>
-      </a>
-
-      <a class="selector-card circlec" href="/circle-c">
-        <div class="card-top">
-          <div class="card-tag">Austin, TX</div>
-          <div class="card-title">Circle C</div>
-        </div>
-        <div class="card-footer">
-          <div class="cta-label">Referral Network</div>
-          <div class="cta-button">Open Directory</div>
-        </div>
-      </a>
-
-      <div class="coming-soon-card">
-        <div class="coming-soon-text">More Neighborhoods<br>Coming Soon</div>
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="how-it-works">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-eyebrow">The System</span>
+        <h3 class="section-title">How Trusted Neighbors Works</h3>
+        <p class="section-desc">We built a simple, community-first pipeline to surface the best vendors without paid
+          bias.</p>
       </div>
-    </section>
-  </main>
 
+      <div class="steps-grid">
+        <!-- Step 1 -->
+        <div class="step-card">
+          <span class="step-number">01</span>
+          <div class="step-icon">💬</div>
+          <h4 class="step-title">Organic Discovery</h4>
+          <p class="step-text">We actively monitor private neighborhood Facebook groups and Nextdoor threads where
+            neighbors post spontaneous, unprompted business recommendations.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card">
+          <span class="step-number">02</span>
+          <div class="step-icon">🛡️</div>
+          <h4 class="step-title">Manual Verification</h4>
+          <p class="step-text">Our dedicated Virtual Assistants check every single entry manually. We filter out spam,
+            fake profiles, and self-promotion to ensure only genuine referrals are logged.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card">
+          <span class="step-number">03</span>
+          <div class="step-icon">📞</div>
+          <h4 class="step-title">Direct Connection</h4>
+          <p class="step-text">Browse neat, category-organized directories. We provide clean recommendation quotes and
+            tap-to-call numbers so you can contact trusted pros instantly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Select Neighborhood Section -->
+  <section id="neighborhoods" class="neighborhoods-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-eyebrow">Directories</span>
+        <h3 class="section-title">Select Your Neighborhood</h3>
+        <p class="section-desc">Open the specific community directory below to find local recommendations near you.</p>
+      </div>
+
+      <div class="panel-grid">
+        <!-- Onion Creek Card -->
+        <a class="selector-card onion" href="/onion-creek/">
+          <div class="card-top">
+            <div>
+              <div class="card-tag">Austin, TX</div>
+              <h4 class="card-title">Onion Creek</h4>
+            </div>
+            <p class="card-desc">Featuring verified plumbers, roofers, landscapers, and tailors recommended by Onion
+              Creek residents.</p>
+          </div>
+          <div class="card-footer">
+            <span class="cta-label">Active Directory</span>
+            <div class="cta-button">Open Directory</div>
+          </div>
+        </a>
+
+        <!-- Sunfield Card -->
+        <a class="selector-card sunfield" href="/sunfield/">
+          <div class="card-top">
+            <div>
+              <div class="card-tag">Buda, TX</div>
+              <h4 class="card-title">Sunfield</h4>
+            </div>
+            <p class="card-desc">Sourced directly from Buda homeowners. Safe and vetted local services for your
+              household.</p>
+          </div>
+          <div class="card-footer">
+            <span class="cta-label">Active Directory</span>
+            <div class="cta-button">Open Directory</div>
+          </div>
+        </a>
+
+        <!-- Circle C Card -->
+        <a class="selector-card circlec" href="/circle-c/">
+          <div class="card-top">
+            <div>
+              <div class="card-tag">Austin, TX</div>
+              <h4 class="card-title">Circle C</h4>
+            </div>
+            <p class="card-desc">Trusted local resources, handymen, and kids activities recommended in Circle C Austin
+              feeds.</p>
+          </div>
+          <div class="card-footer">
+            <span class="cta-label">Active Directory</span>
+            <div class="cta-button">Open Directory</div>
+          </div>
+        </a>
+
+        <!-- Coming Soon / Suggest Card -->
+        <div class="coming-soon-card">
+          <div class="coming-soon-icon">📍</div>
+          <h4 class="coming-soon-text">More Coming Soon</h4>
+          <p class="coming-soon-desc">We are continuously reviewing recommendations to launch new neighborhoods.</p>
+          <a href="#suggest-neighborhood" class="btn btn-secondary"
+            style="font-size:0.75rem; padding:8px 16px; color:var(--color-primary); border-color:var(--color-primary-light);">Suggest
+            Yours</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about-section">
+    <div class="section-container">
+      <div class="about-grid">
+        <div class="about-text">
+          <span class="section-eyebrow">Our Philosophy</span>
+          <h3>Reclaiming Community Word-of-Mouth</h3>
+          <p>
+            Yelp, Angi, and Google reviews were once useful tools, but today they are heavily gamed by search engine
+            optimization (SEO) teams, fake profile rings, and sponsored bidding wars. The contractor at the top is
+            rarely the best—they are simply the one who paid the most.
+          </p>
+          <p>
+            <strong>Trusted Neighbors</strong> restores authenticity. Our listings are completely free for basic
+            insertion and are selected entirely because a real neighbor went out of their way to recommend them. No
+            bias, no corporate manipulation.
+          </p>
+
+          <div class="about-highlights">
+            <div class="highlight-item">
+              <span class="highlight-icon">🛡️</span>
+              <div>
+                <h5 class="highlight-title">Zero Sponsored Noise</h5>
+                <p class="highlight-desc">Basic listings cannot be bought. Authenticity is our entire value proposition.
+                </p>
+              </div>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">🏡</span>
+              <div>
+                <h5 class="highlight-title">Strictly Local</h5>
+                <p class="highlight-desc">Vetted lists customized specifically for active HOAs and subdivisions.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-graphic">
+          <span class="about-graphic-badge">Physical Directory</span>
+          <h4>The Printed Edition</h4>
+          <p>
+            Our online platform is backed by our premium yardage book-style printed directory. Designed to live
+            permanently on the fridge via a magnetic back, it keeps local numbers exactly where you need them.
+          </p>
+          <ul class="about-graphic-bullets">
+            <li>Green leatherette cover with elegant gold lettering</li>
+            <li>Slip-in seasonal inserts (Spring / Pre-Holiday)</li>
+            <li>Hand-delivered door-to-door twice a year</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Meet Our Family Section -->
+  <section id="meet-our-family" class="family-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-eyebrow">The Team</span>
+        <h3 class="section-title">Meet Our Family</h3>
+        <p class="section-desc">We are a local family business dedicated to serving Central Texas communities.</p>
+      </div>
+
+      <div class="family-grid">
+        <!-- Seth Card -->
+        <div class="family-card">
+          <div class="avatar-wrapper">
+            <div class="avatar-circle">SH</div>
+            <div class="avatar-badge">🌿</div>
+          </div>
+          <h4 class="family-name">Seth Hill</h4>
+          <div class="family-role">Founder &amp; Coordinator</div>
+          <p class="family-bio">
+            Seth coordinates directory infrastructure, runs QA on the virtual assistant data pipelines, and oversees
+            vendor partnerships. As a long-term area resident, he wanted to build a clean resource to help homeowners
+            support real, high-quality local businesses.
+          </p>
+        </div>
+
+        <!-- Kids Card -->
+        <div class="family-card">
+          <div class="avatar-wrapper">
+            <div class="avatar-circle">HK</div>
+            <div class="avatar-badge">📦</div>
+          </div>
+          <h4 class="family-name">The Hill Kids</h4>
+          <div class="family-role">Sales &amp; Distribution</div>
+          <p class="family-bio">
+            The heart and muscle of the physical operation! The kids manage inventory, package the printed inserts into
+            their leatherette magnetic covers, and lead the seasonal door-to-door distribution, delivering the directory
+            straight to your doorstep.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Suggest Neighborhood / Form Section -->
+  <section id="suggest-neighborhood" class="suggest-section">
+    <div class="section-container">
+      <div class="suggest-grid">
+        <div class="suggest-info">
+          <span class="section-eyebrow">Expansion</span>
+          <h3>Bring Trusted Neighbors to Your Area</h3>
+          <p>
+            Don't see your subdivision or neighborhood listed? We expand based on community demand and volunteer
+            moderator engagement. Fill out the request form to put your community on our launch queue.
+          </p>
+          <div class="suggest-contacts">
+            <div class="contact-item">
+              <div class="contact-bubble">📧</div>
+              <div>
+                <span
+                  style="font-size: 0.75rem; text-transform: uppercase; color: #606664; display: block; font-weight: 700;">General
+                  Inquiries</span>
+                <span class="contact-detail"><a
+                    href="mailto:seththomashill@icloud.com">seththomashill@icloud.com</a></span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-bubble">📍</div>
+              <div>
+                <span
+                  style="font-size: 0.75rem; text-transform: uppercase; color: #606664; display: block; font-weight: 700;">Headquarters</span>
+                <span class="contact-detail">Austin, Texas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Suggest Form (uses Netlify Forms) -->
+        <div class="form-container">
+          <form name="neighborhood-suggestion" method="POST" data-netlify="true">
+            <input type="hidden" name="form-name" value="neighborhood-suggestion" />
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Your Name *</label>
+                <input type="text" id="name" name="name" placeholder="e.g. Sarah Jennings" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" placeholder="e.g. sarah@example.com" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="neighborhood">Neighborhood &amp; City *</label>
+              <input type="text" id="neighborhood" name="neighborhood"
+                placeholder="e.g. Circle C, Austin or Plum Creek, Buda" required />
+            </div>
+
+            <div class="form-group">
+              <label for="role">Who Are You? *</label>
+              <select id="role" name="role" required>
+                <option value="" disabled selected>— Select your role —</option>
+                <option value="resident">Neighborhood Resident</option>
+                <option value="hoa-board">HOA Board Member / Volunteer</option>
+                <option value="vendor">Local Business Vendor</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Why should we launch in your area? *</label>
+              <textarea id="message" name="message"
+                placeholder="e.g. Our Facebook group has 2,000 active members asking for contractor referrals daily..."
+                required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Request</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
   <footer>
-    <strong>Trusted Neighbors</strong> &nbsp;·&nbsp; Austin, TX &nbsp;·&nbsp; trustedneighbors.net
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="/" class="footer-logo">Trusted<span>Neighbors</span></a>
+        <p style="font-size: 0.85rem; color: rgba(255,255,255,0.4); max-width: 400px; line-height: 1.5;">
+          Hyper-local neighborhood referral directories. Sourced by residents, verified by our team, and presented
+          without corporate sponsored clutter.
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="#neighborhoods">Directories</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#about">About Us</a>
+        <a href="#meet-our-family">The Family</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 <strong>Trusted Neighbors</strong> &nbsp;·&nbsp; Austin, TX &nbsp;·&nbsp; All rights reserved.</p>
+      <p>Domain: <a href="http://trustedneighbors.net"
+          style="color: var(--color-accent); text-decoration: none;">trustedneighbors.net</a></p>
+    </div>
   </footer>
+
+  <script>
+    // Navigation toggle utility
+    const menuToggle = document.getElementById('menu-toggle');
+
+    function closeMobileMenu() {
+      if (menuToggle) {
+        menuToggle.checked = false;
+      }
+    }
+  </script>
 </body>
+
 </html>
