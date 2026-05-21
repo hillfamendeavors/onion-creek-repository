@@ -50,10 +50,14 @@
       /* Warm light grey border */
 
       /* Visit Austin Inspired Palette Accents */
-      --color-austin-brown: #ab5744;      /* Terracotta */
-      --color-austin-salmon: #f48a85;     /* Highlight salmon */
-      --color-austin-yellow-tint: #f3f4d6; /* Soft yellow-green tint */
-      --color-austin-brown-tint: #efe3de;  /* Warm cream background tint */
+      --color-austin-brown: #ab5744;
+      /* Terracotta */
+      --color-austin-salmon: #f48a85;
+      /* Highlight salmon */
+      --color-austin-yellow-tint: #f3f4d6;
+      /* Soft yellow-green tint */
+      --color-austin-brown-tint: #efe3de;
+      /* Warm cream background tint */
 
       /* Accent colors for neighborhood branding */
       --color-onion: #114d33;
@@ -1309,15 +1313,15 @@
         transform-origin: center;
       }
 
-      .menu-toggle:checked ~ .menu-btn svg line:nth-child(1) {
+      .menu-toggle:checked~.menu-btn svg line:nth-child(1) {
         transform: translateY(6px) rotate(45deg);
       }
 
-      .menu-toggle:checked ~ .menu-btn svg line:nth-child(2) {
+      .menu-toggle:checked~.menu-btn svg line:nth-child(2) {
         opacity: 0;
       }
 
-      .menu-toggle:checked ~ .menu-btn svg line:nth-child(3) {
+      .menu-toggle:checked~.menu-btn svg line:nth-child(3) {
         transform: translateY(-6px) rotate(-45deg);
       }
 
@@ -1339,7 +1343,7 @@
         box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
       }
 
-      .menu-toggle:checked ~ .nav-links {
+      .menu-toggle:checked~.nav-links {
         transform: translateX(0);
         visibility: visible;
       }
@@ -1373,6 +1377,124 @@
 
       .form-container {
         padding: 24px;
+      }
+    }
+
+    /* Formspree Submission & Loading/Success Animations */
+    .btn-submit {
+      position: relative;
+    }
+
+    .btn-submit .btn-spinner {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .spinner-svg {
+      animation: rotateSpinner 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    @keyframes rotateSpinner {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Success State Styling */
+    .form-success-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      animation: fadeInUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+      padding: 20px 0;
+    }
+
+    .form-success-state h4 {
+      font-size: 1.8rem;
+      color: var(--color-primary);
+      margin-top: 20px;
+      margin-bottom: 12px;
+    }
+
+    .form-success-state p {
+      font-size: 1.05rem;
+      color: #555c5a;
+      max-width: 400px;
+      line-height: 1.6;
+    }
+
+    /* SVG Checkmark Animation */
+    .success-icon-wrapper {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .checkmark-svg {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: block;
+      stroke-width: 3;
+      stroke: var(--color-primary);
+      stroke-miterlimit: 10;
+      box-shadow: inset 0px 0px 0px var(--color-accent);
+      animation: fillSuccess 0.4s ease-in-out 0.4s forwards, scaleSuccess 0.3s ease-in-out 0.9s both;
+    }
+
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 3;
+      stroke-miterlimit: 10;
+      stroke: var(--color-primary);
+      fill: none;
+      animation: strokeCircle 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      stroke-width: 4;
+      stroke: var(--color-primary);
+      animation: strokeCheck 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    @keyframes strokeCircle {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes strokeCheck {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes fillSuccess {
+      100% {
+        box-shadow: inset 0px 0px 0px 80px var(--color-accent);
+      }
+    }
+
+    @keyframes scaleSuccess {
+
+      0%,
+      100% {
+        transform: none;
+      }
+
+      50% {
+        transform: scale3d(1.1, 1.1, 1);
       }
     }
   </style>
@@ -1685,7 +1807,7 @@
 
         <!-- Suggest Form (uses Formspree) -->
         <div class="form-container">
-          <form action="https://formspree.io/f/xkoerowv" method="POST">
+          <form id="suggestionForm" action="https://formspree.io/f/xkoerowv" method="POST">
 
             <div class="form-row">
               <div class="form-group">
@@ -1722,8 +1844,32 @@
                 required></textarea>
             </div>
 
-            <button type="submit" class="btn-submit">Submit Request</button>
+            <button type="submit" class="btn-submit" id="submitBtn">
+              <span class="btn-text">Submit Request</span>
+              <span class="btn-spinner" style="display: none; align-items: center; gap: 8px; justify-content: center;">
+                <svg class="spinner-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                  stroke-width="3">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.2"></circle>
+                  <path d="M12 2 a 10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                  </path>
+                </svg>
+                Sending...
+              </span>
+            </button>
           </form>
+
+          <!-- Success State (hidden by default) -->
+          <div id="formSuccess" class="form-success-state" style="display: none;">
+            <div class="success-icon-wrapper">
+              <svg class="checkmark-svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+              </svg>
+            </div>
+            <h4>Request Received!</h4>
+            <p>Your suggestions have been successfully logged. We will review them and reach out as we build our launch
+              queue!</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1761,6 +1907,67 @@
       if (menuToggle) {
         menuToggle.checked = false;
       }
+    }
+
+    // Formspree AJAX Submission with Animation
+    const suggestionForm = document.getElementById('suggestionForm');
+    const formSuccess = document.getElementById('formSuccess');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnSpinner = submitBtn.querySelector('.btn-spinner');
+
+    if (suggestionForm) {
+      suggestionForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        // Disable button & show spinner
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnSpinner.style.display = 'inline-flex';
+        submitBtn.style.opacity = '0.8';
+
+        const formData = new FormData(suggestionForm);
+
+        try {
+          const response = await fetch(suggestionForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            // Smoothly transition the form out
+            suggestionForm.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            suggestionForm.style.opacity = '0';
+            suggestionForm.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+              suggestionForm.style.display = 'none';
+              formSuccess.style.display = 'flex';
+            }, 400);
+          } else {
+            const data = await response.json();
+            if (data && data.errors) {
+              alert('Error: ' + data.errors.map(err => err.message).join(', '));
+            } else {
+              alert('Oops! There was a problem submitting your form.');
+            }
+            resetSubmitButton();
+          }
+        } catch (error) {
+          alert('Oops! There was a network connectivity issue.');
+          resetSubmitButton();
+        }
+      });
+    }
+
+    function resetSubmitButton() {
+      submitBtn.disabled = false;
+      btnText.style.display = 'inline-block';
+      btnSpinner.style.display = 'none';
+      submitBtn.style.opacity = '1';
     }
   </script>
 </body>
