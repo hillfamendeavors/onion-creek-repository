@@ -478,8 +478,97 @@
       .nav-tab { padding: 10px 10px; font-size: 0.65rem; letter-spacing: 1px; }
       .listing-row { grid-template-columns: 1fr; }
       .listing-phone { text-align: left; }
+      .listing-phone-group { justify-content: flex-start; }
       .modal { padding: 28px 18px; }
     }
+
+    /* Enhancement 1: Desktop copy-to-clipboard phone button */
+    .listing-phone-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+
+    .listing-phone-text {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cc2200;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+      padding-top: 3px;
+    }
+
+    .copy-phone-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 3px 5px;
+      color: var(--mid-gray);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: color 0.15s, border-color 0.15s;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .copy-phone-btn:hover {
+      color: var(--masters-green);
+      border-color: var(--masters-green-light);
+    }
+
+    .copy-phone-btn.copied {
+      color: var(--masters-green);
+      border-color: var(--masters-green);
+    }
+
+    .copy-phone-btn::after {
+      content: 'Copied!';
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--masters-green);
+      color: var(--masters-yellow);
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border-radius: 2px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+
+    .copy-phone-btn.copied::after {
+      opacity: 1;
+    }
+
+    /* Enhancement 4: Geolocation maps link */
+    .listing-maps-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      color: var(--masters-green-mid);
+      text-decoration: none;
+      margin-bottom: 4px;
+      opacity: 0.7;
+      transition: opacity 0.15s;
+    }
+
+    .listing-maps-link:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    .listing-maps-link svg { flex-shrink: 0; }
   </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-QE75YFJ2ZL"></script>
   <script>
@@ -593,12 +682,19 @@
   const noResults = document.getElementById('no-results');
   let activeGroup = 'all';
   let searchQuery = '';
+  const isDesktop = window.matchMedia('(pointer: fine) and (hover: hover)').matches;
 
   async function init() {
     try {
       const response = await fetch('./listings.json');
       groups = await response.json();
-      
+
+      // Enhancement 3: Count all active listings and update "All" tab
+      const totalListings = groups.reduce((sum, g) =>
+        sum + g.subcategories.reduce((s, sub) => s + sub.listings.length, 0), 0
+      );
+      document.querySelector('.nav-tab[data-gid="all"]').textContent = `All (${totalListings})`;
+
       groups.forEach(g => {
         const btn = document.createElement('button');
         btn.className = 'nav-tab';
@@ -606,7 +702,7 @@
         btn.textContent = g.label;
         pillsEl.appendChild(btn);
       });
-      
+
       render();
     } catch (e) {
       console.error("Failed to load listings data:", e);
@@ -677,19 +773,10 @@
 
         const tableEl = document.createElement('div');
         tableEl.className = 'listings-table';
-        tableEl.innerHTML = sub.listings.length
-          ? sub.listings.map(l => `
-          <div class="listing-row${l.featured ? ' featured' : ''}">
-            <div>
-              <div class="listing-name">
-                ${l.name}
-                ${l.featured ? '<span class="featured-badge">Preferred</span>' : ''}
-              </div>
-              <div class="listing-note">${l.note}</div>
-            </div>
-            <a class="listing-phone" href="tel:${l.phone.replace(/\D/g,'')}">${l.phone}</a>
-          </div>
-        `).join('')
+        // Enhancement 2: Sort featured listings to the top
+        const sortedListings = [...sub.listings].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+        tableEl.innerHTML = sortedListings.length
+          ? sortedListings.map(buildListingRow).join('')
           : `
           <div class="listing-row">
             <div>
@@ -722,6 +809,77 @@
   }
 
   render();
+
+  // Enhancement 1 & 4: Build a single listing row with maps link + desktop copy button
+  function buildListingRow(l) {
+    const rawDigits = l.phone.replace(/\D/g, '');
+
+    // Enhancement 4: Geolocation deep link if address or serviceArea is present
+    const locationStr = l.address || l.serviceArea || '';
+    const mapsLink = locationStr
+      ? `<a class="listing-maps-link"
+            href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.name + ' ' + locationStr)}"
+            target="_blank" rel="noopener noreferrer">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          ${locationStr}
+        </a>`
+      : '';
+
+    // Enhancement 1: Desktop shows copy-to-clipboard; mobile keeps tap-to-call
+    const phoneDisplay = isDesktop
+      ? `<div class="listing-phone-group">
+          <span class="listing-phone-text">${l.phone}</span>
+          <button class="copy-phone-btn" data-phone="${rawDigits}" aria-label="Copy phone number" title="Copy number">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+        </div>`
+      : `<a class="listing-phone" href="tel:${rawDigits}">${l.phone}</a>`;
+
+    return `
+      <div class="listing-row${l.featured ? ' featured' : ''}">
+        <div>
+          <div class="listing-name">
+            ${l.name}
+            ${l.featured ? '<span class="featured-badge">Preferred</span>' : ''}
+          </div>
+          ${mapsLink}
+          <div class="listing-note">${l.note}</div>
+        </div>
+        ${phoneDisplay}
+      </div>
+    `;
+  }
+
+  // Enhancement 1: Event delegation for copy-phone buttons
+  container.addEventListener('click', e => {
+    const btn = e.target.closest('.copy-phone-btn');
+    if (!btn) return;
+    const phone = btn.dataset.phone;
+    const doConfirm = () => {
+      btn.classList.add('copied');
+      setTimeout(() => btn.classList.remove('copied'), 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(phone).then(doConfirm).catch(() => fallbackCopy(phone, doConfirm));
+    } else {
+      fallbackCopy(phone, doConfirm);
+    }
+  });
+
+  function fallbackCopy(text, cb) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand('copy'); cb(); } catch (_) {}
+    document.body.removeChild(ta);
+  }
 
   const overlay   = document.getElementById('modalOverlay');
   const openBtn   = document.getElementById('openModal');
