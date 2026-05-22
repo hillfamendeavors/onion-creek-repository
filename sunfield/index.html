@@ -876,17 +876,16 @@
         </a>`
       : '';
 
-    // Enhancement 1: Desktop shows copy-to-clipboard; mobile keeps tap-to-call
-    const phoneDisplay = isDesktop
-      ? `<div class="listing-phone-group">
-          <span class="listing-phone-text">${l.phone}</span>
-          <button class="copy-phone-btn" data-phone="${rawDigits}" aria-label="Copy phone number" title="Copy number">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-          </button>
-        </div>`
-      : `<a class="listing-phone" href="tel:${rawDigits}">${l.phone}</a>`;
+    // Enhancement 1: Always show copy-to-clipboard button next to tel: link for both desktop and mobile
+    const phoneDisplay = `
+      <div class="listing-phone-group">
+        <a class="listing-phone" href="tel:${rawDigits}">${l.phone}</a>
+        <button class="copy-phone-btn" data-phone="${rawDigits}" aria-label="Copy phone number" title="Copy number">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+        </button>
+      </div>`;
 
     return `
       <div class="listing-row${l.featured ? ' featured' : ''}">
