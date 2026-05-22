@@ -239,19 +239,50 @@
     }
 
     /* MOBILE NAVIGATION */
+    .menu-toggle { display: none; }
+
     .menu-btn {
       display: none;
       cursor: pointer;
-      color: var(--color-primary);
+      background: transparent;
+      border: 1.5px solid var(--color-primary);
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      box-shadow: 2px 2px 0px var(--color-primary);
+      transition: background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      position: relative;
     }
 
-    .menu-btn svg {
-      width: 28px;
-      height: 28px;
+    .menu-bar {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--color-primary);
+      border-radius: 2px;
+      transform-origin: center;
+      transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+                  opacity 0.25s ease,
+                  width 0.3s ease,
+                  background 0.25s ease;
     }
 
-    .menu-toggle {
-      display: none;
+    /* Full-screen backdrop when menu open */
+    .menu-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 46, 34, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 99;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      cursor: pointer;
     }
 
     /* HERO SECTION */
@@ -287,8 +318,22 @@
       align-items: center;
     }
 
-    .hero-content {
-      animation: fadeInUp 0.8s ease-out;
+    .hero-content { /* children stagger individually */ }
+
+    .hero-content .hero-eyebrow {
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+    }
+
+    .hero-content h2 {
+      animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+    }
+
+    .hero-content .hero-subtitle {
+      animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.42s both;
+    }
+
+    .hero-content .hero-ctas {
+      animation: fadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.58s both;
     }
 
     .hero-eyebrow {
@@ -389,7 +434,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      animation: fadeInRight 1s ease-out;
+      animation: fadeInRight 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
     }
 
     .hero-image-card {
@@ -1295,75 +1340,162 @@
 
     @media (max-width: 768px) {
       .main-nav {
-        padding: 16px 20px;
+        padding: 14px 20px;
+        background: var(--color-neutral-white);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      .top-bar  { display: none; }
+
+      /* ── Hamburger button visible on mobile ── */
+      .menu-btn { display: inline-flex; flex-shrink: 0; }
+
+      /* ── Prevent logo from crushing the hamburger on very narrow screens ── */
+      .logo-container { min-width: 0; overflow: hidden; }
+      .main-nav-logo  { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+      /* ── Burger → X morphing ── */
+      .menu-toggle:checked ~ .menu-btn {
+        background: var(--color-primary);
+        box-shadow: none;
+        border-color: var(--color-primary);
       }
 
-      .top-bar {
-        display: none;
+      .menu-toggle:checked ~ .menu-btn .menu-bar {
+        background: var(--color-accent);
       }
 
-      .menu-btn {
-        display: block;
-        z-index: 101;
+      .menu-toggle:checked ~ .menu-btn .menu-bar:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
       }
 
-      /* Animated hamburger menu */
-      .menu-btn svg line {
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        transform-origin: center;
-      }
-
-      .menu-toggle:checked~.menu-btn svg line:nth-child(1) {
-        transform: translateY(6px) rotate(45deg);
-      }
-
-      .menu-toggle:checked~.menu-btn svg line:nth-child(2) {
+      .menu-toggle:checked ~ .menu-btn .menu-bar:nth-child(2) {
         opacity: 0;
+        width: 0;
       }
 
-      .menu-toggle:checked~.menu-btn svg line:nth-child(3) {
-        transform: translateY(-6px) rotate(-45deg);
+      .menu-toggle:checked ~ .menu-btn .menu-bar:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
       }
 
+      /* (backdrop rule moved below for correct specificity) */
+
+      /* ── Backdrop visible on check ── */
+      .menu-toggle:checked ~ .menu-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* ── Dropdown nav panel (right-aligned, auto height) ── */
       .nav-links {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
+        position: absolute;
+        top: calc(100% + 4px);
+        right: 16px;
+        width: min(280px, calc(100vw - 32px));
         background: var(--color-neutral-white);
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 24px;
-        transform: translateX(100%);
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 0;
+        padding: 8px 0;
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+        transform-origin: top right;
         visibility: hidden;
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
-        z-index: 100;
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
+        transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 0s linear 0.3s;
+        z-index: 101;
+        box-shadow: 0 12px 40px rgba(15, 46, 34, 0.18),
+                    0 2px 8px rgba(15, 46, 34, 0.08);
+        border: 1.5px solid var(--color-border);
+        border-radius: 10px;
+        overflow: hidden;
       }
 
-      .menu-toggle:checked~.nav-links {
-        transform: translateX(0);
+      /* Accent top-edge */
+      .nav-links::before {
+        content: '';
+        display: block;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-accent), var(--color-primary-light));
+        flex-shrink: 0;
+      }
+
+      .menu-toggle:checked ~ .nav-links {
+        opacity: 1;
+        transform: translateY(0) scale(1);
         visibility: visible;
+        transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 0s linear 0s;
       }
 
+      /* ── Nav link items ── */
       .nav-links a {
-        font-size: 1rem;
+        font-size: 0.75rem;
         letter-spacing: 1.5px;
-        padding: 8px 20px;
-        transition: var(--transition-smooth);
+        padding: 14px 22px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        text-align: left;
+        border-bottom: none;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 0.25s ease, transform 0.25s ease, color 0.15s, background 0.15s;
+        transition-delay: 0s;
+        border-radius: 0;
+        margin: 0 0;
       }
 
+      .nav-links a::after { display: none; }
+
+      .nav-links a:hover {
+        background: var(--color-accent-pale);
+        color: var(--color-primary);
+      }
+
+      .nav-links a:active {
+        background: rgba(212, 175, 55, 0.15);
+      }
+
+      /* Subtle dividers between links (not the CTA) */
+      .nav-links a:not(.nav-cta) + a:not(.nav-cta) {
+        border-top: 1px solid rgba(226, 223, 213, 0.6);
+      }
+
+      /* ── Staggered link entrance ── */
+      .menu-toggle:checked ~ .nav-links a:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.08s; }
+      .menu-toggle:checked ~ .nav-links a:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.12s; }
+      .menu-toggle:checked ~ .nav-links a:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.16s; }
+      .menu-toggle:checked ~ .nav-links a:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.20s; }
+      .menu-toggle:checked ~ .nav-links a:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.24s; }
+
+      /* ── CTA pill inside panel ── */
       .nav-links a.nav-cta {
-        margin-top: 8px;
-        padding: 12px 30px;
-        font-size: 0.9rem;
+        margin: 8px 14px 6px;
+        width: calc(100% - 28px);
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        border-bottom: none;
+        border-top: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        box-shadow: 2px 2px 0px var(--color-primary);
+        font-size: 0.72rem;
       }
 
-      section {
-        padding: 60px 20px;
+      .nav-links a.nav-cta:hover {
+        background: var(--color-accent-hover) !important;
+        color: var(--color-primary) !important;
+        transform: translate(-1px, -1px) !important;
+        box-shadow: 3px 3px 0px var(--color-primary);
       }
+
+      /* ── Layout adjustments ── */
+      section { padding: 60px 20px; }
 
       .about-highlights {
         grid-template-columns: 1fr;
@@ -1375,10 +1507,33 @@
         gap: 0;
       }
 
-      .form-container {
-        padding: 24px;
-      }
+      .form-container { padding: 24px; }
     }
+
+    /* === SCROLL ENTRANCE ANIMATIONS === */
+    .scroll-anim {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .scroll-anim.scroll-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Stagger siblings within their grids */
+    .steps-grid    .step-card.scroll-anim:nth-child(2)     { transition-delay: 0.1s; }
+    .steps-grid    .step-card.scroll-anim:nth-child(3)     { transition-delay: 0.2s; }
+    .panel-grid    .selector-card.scroll-anim:nth-child(2) { transition-delay: 0.1s; }
+    .panel-grid    .selector-card.scroll-anim:nth-child(3) { transition-delay: 0.2s; }
+    .panel-grid    .selector-card.scroll-anim:nth-child(4),
+    .panel-grid    .coming-soon-card.scroll-anim           { transition-delay: 0.3s; }
+    .family-grid   .family-card.scroll-anim:nth-child(2)   { transition-delay: 0.12s; }
+    .about-highlights .highlight-item.scroll-anim:nth-child(2) { transition-delay: 0.08s; }
+    .about-highlights .highlight-item.scroll-anim:nth-child(3) { transition-delay: 0.16s; }
+    .about-highlights .highlight-item.scroll-anim:nth-child(4) { transition-delay: 0.24s; }
 
     /* Formspree Submission & Loading/Success Animations */
     .btn-submit {
@@ -1519,13 +1674,12 @@
     </a>
 
     <input type="checkbox" id="menu-toggle" class="menu-toggle">
-    <label for="menu-toggle" class="menu-btn" id="menuBtnLabel">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
+    <label for="menu-toggle" class="menu-btn" id="menuBtnLabel" aria-label="Toggle navigation">
+      <span class="menu-bar"></span>
+      <span class="menu-bar"></span>
+      <span class="menu-bar"></span>
     </label>
+    <div class="menu-backdrop" id="menuBackdrop" onclick="closeMobileMenu()"></div>
 
     <div class="nav-links" id="navLinks">
       <a href="#neighborhoods" onclick="closeMobileMenu()">Neighborhoods</a>
@@ -1900,16 +2054,40 @@
   </footer>
 
   <script>
-    // Navigation toggle utility
+    // ── Navigation toggle ──
     const menuToggle = document.getElementById('menu-toggle');
 
     function closeMobileMenu() {
-      if (menuToggle) {
-        menuToggle.checked = false;
-      }
+      if (menuToggle) menuToggle.checked = false;
     }
 
-    // Formspree AJAX Submission with Animation
+    // ── Scroll entrance animations ──
+    (function () {
+      const targets = document.querySelectorAll(
+        '.step-card, .selector-card, .coming-soon-card, .family-card, ' +
+        '.section-header, .about-graphic, .about-text, ' +
+        '.highlight-item, .suggest-info, .form-container'
+      );
+
+      targets.forEach(el => el.classList.add('scroll-anim'));
+
+      if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('scroll-visible');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.08, rootMargin: '0px 0px -28px 0px' });
+
+        targets.forEach(el => obs.observe(el));
+      } else {
+        targets.forEach(el => el.classList.add('scroll-visible'));
+      }
+    })();
+
+    // ── Formspree AJAX Submission with Animation ──
     const suggestionForm = document.getElementById('suggestionForm');
     const formSuccess = document.getElementById('formSuccess');
     const submitBtn = document.getElementById('submitBtn');
