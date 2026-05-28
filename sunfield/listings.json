@@ -29,7 +29,7 @@
             "note": "HVAC Services Built Around You."
           },
           {
-            "name": "Hill Country Carpenters",
+            "name": "Hill Country",
             "phone": "(512) 659-4956",
             "note": "Elevating Interiors, Exceeding Expectations."
           }
@@ -39,11 +39,6 @@
         "name": "Electricians",
         "icon": "",
         "listings": [
-          {
-            "name": "Hill Country Carpenters",
-            "phone": "(512) 659-4956",
-            "note": "Elevating Interiors, Exceeding Expectations."
-          },
           {
             "name": "ABRC Electrical Services LLC",
             "phone": "(512) 812-8525",
@@ -239,14 +234,9 @@
             "note": "Community Verified."
           },
           {
-            "name": "Hill Country Carpenters",
+            "name": "Hill Country",
             "phone": "(512) 659-4956",
             "note": "Elevating Interiors, Exceeding Expectations."
-          },
-          {
-            "name": "Muchacho Alegre",
-            "phone": "(512) 749-5372",
-            "note": "Authentic Mexican Cuisine."
           },
           {
             "name": "Mabrasu LLC",
