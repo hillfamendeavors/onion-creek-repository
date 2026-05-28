@@ -308,14 +308,7 @@
     .listing-row:last-child { border-bottom: none; }
     .listing-row:hover { background: var(--masters-yellow-pale); }
 
-    .listing-row.featured {
-      background: #fffdf5;
-      border-left: 3px solid var(--masters-yellow);
-      padding-left: 35px;
-    }
-
-    .listing-row.featured:hover { background: #fffbea; }
-
+    /* ── STANDARD LISTING NAME ── */
     .listing-name {
       font-family: 'EB Garamond', serif;
       font-size: 1.05rem;
@@ -327,16 +320,107 @@
       gap: 8px;
     }
 
-    .featured-badge {
+    /* ── VIP FEATURED CARD ── */
+    @keyframes vip-shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .listing-row.featured {
+      display: block;
+      padding: 0;
+      margin: 10px 10px 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #fffbe6 0%, #fff8d6 60%, #fffbe6 100%);
+      box-shadow: 0 3px 16px rgba(180, 148, 20, 0.22), 0 1px 4px rgba(0,0,0,0.07);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .listing-row.featured:hover {
+      box-shadow: 0 5px 22px rgba(180, 148, 20, 0.32), 0 2px 6px rgba(0,0,0,0.09);
+      background: linear-gradient(135deg, #fff9d8 0%, #fff5c0 60%, #fff9d8 100%);
+    }
+
+    /* shimmer accent line across the top */
+    .listing-row.featured::before {
+      content: '';
+      display: block;
+      height: 3px;
+      background: linear-gradient(90deg,
+        var(--masters-green) 0%,
+        var(--masters-yellow) 40%,
+        #fff 55%,
+        var(--masters-yellow) 70%,
+        var(--masters-green) 100%);
+      background-size: 200% auto;
+      animation: vip-shimmer 3s linear infinite;
+    }
+
+    .featured-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px 4px;
+      background: var(--masters-green);
+      color: var(--masters-yellow);
       font-family: 'Source Sans 3', sans-serif;
       font-size: 0.6rem;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .featured-header svg { flex-shrink: 0; }
+
+    .featured-body {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px 13px;
+    }
+
+    .featured-listing-name {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.18rem;
+      color: var(--masters-green);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+
+    .featured-badge {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       background: var(--masters-yellow);
       color: var(--masters-green);
-      padding: 2px 6px;
-      border-radius: 2px;
+      padding: 2px 7px;
+      border-radius: 20px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .featured-phone-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .featured-call-label {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--masters-green);
+      opacity: 0.6;
     }
 
     .listing-note {
@@ -495,6 +579,9 @@
       .listing-phone { text-align: left; }
       .listing-phone-group { justify-content: flex-start; }
       .modal { padding: 28px 18px; }
+      .featured-body { grid-template-columns: 1fr; }
+      .featured-phone-block { align-items: flex-start; }
+      .featured-call-label { display: none; }
     }
 
     /* Enhancement 1: Desktop copy-to-clipboard phone button */
@@ -887,13 +974,35 @@
         </button>
       </div>`;
 
-    return `
-      <div class="listing-row${l.featured ? ' featured' : ''}">
-        <div>
-          <div class="listing-name">
-            ${l.name}
-            ${l.featured ? '<span class="featured-badge">Preferred</span>' : ''}
+    if (l.featured) {
+      return `
+        <div class="listing-row featured">
+          <div class="featured-header">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+            Featured Advertiser
           </div>
+          <div class="featured-body">
+            <div>
+              <div class="featured-listing-name">
+                ${l.name}
+                <span class="featured-badge">VIP</span>
+              </div>
+              ${mapsLink}
+              <div class="listing-note">${l.note}</div>
+            </div>
+            <div class="featured-phone-block">
+              <span class="featured-call-label">Call Now</span>
+              ${phoneDisplay}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="listing-row">
+        <div>
+          <div class="listing-name">${l.name}</div>
           ${mapsLink}
           <div class="listing-note">${l.note}</div>
         </div>

@@ -231,7 +231,8 @@
           {
             "name": "Hector Ben",
             "phone": "(512) 584-7506",
-            "note": "Community Verified."
+            "note": "Community Verified.",
+            "featured": true
           },
           {
             "name": "Mabrasu LLC",
