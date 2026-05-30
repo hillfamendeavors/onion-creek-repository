@@ -66,6 +66,8 @@
       /* Sienna/rust identity */
       --color-circlec: #0f3b3f;
       /* Deep teal identity */
+      --color-averyranch: #1a365d;
+      /* Deep navy identity */
 
       /* Animation curves */
       --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -762,6 +764,32 @@
     .selector-card.circlec:hover .cta-button {
       background: var(--color-neutral-white);
       color: #0F3B3F;
+      border-color: var(--color-primary);
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0px var(--color-primary);
+    }
+
+    .selector-card.averyranch .card-top {
+      background: linear-gradient(135deg, #1A365D 0%, #2B4C7E 100%);
+      color: var(--color-neutral-white);
+    }
+
+    .selector-card.averyranch .card-tag {
+      color: #e2edf8;
+    }
+
+    .selector-card.averyranch .cta-button {
+      color: #1A365D;
+      background: #e2edf8;
+    }
+
+    .selector-card.averyranch:hover .card-top {
+      background: linear-gradient(135deg, #132a4b 0%, #213b63 100%);
+    }
+
+    .selector-card.averyranch:hover .cta-button {
+      background: var(--color-neutral-white);
+      color: #1A365D;
       border-color: var(--color-primary);
       transform: translate(-1px, -1px);
       box-shadow: 3px 3px 0px var(--color-primary);
@@ -1810,6 +1838,21 @@
             </div>
             <p class="card-desc">Trusted local resources, handymen, and kids activities recommended in Circle C Austin
               feeds.</p>
+          </div>
+          <div class="card-footer">
+            <span class="cta-label">Active Directory</span>
+            <div class="cta-button">Open Directory</div>
+          </div>
+        </a>
+
+        <!-- Avery Ranch Card -->
+        <a class="selector-card averyranch" href="/avery-ranch/">
+          <div class="card-top">
+            <div>
+              <div class="card-tag">Austin, TX</div>
+              <h4 class="card-title">Avery Ranch</h4>
+            </div>
+            <p class="card-desc">Sourced directly from Avery Ranch homeowners. Vetted plumbers, landscapers, and home life services for your household.</p>
           </div>
           <div class="card-footer">
             <span class="cta-label">Active Directory</span>

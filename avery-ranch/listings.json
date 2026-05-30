@@ -1,0 +1,629 @@
+[
+  {
+    "id": "home",
+    "label": "Home & Repair",
+    "icon": "🏠",
+    "subcategories": [
+      {
+        "name": "Plumbers",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Smart Earth Sprinklers",
+            "phone": "(512) 694-1147",
+            "note": "Smart Earth Sprinklers is our go to. - Elizabeth C."
+          },
+          {
+            "name": "Water Damage and Restoration",
+            "phone": "(512) 913-0423",
+            "note": "Great roofer to work with - Damon B."
+          },
+          {
+            "name": "Fausco Plumbing and Drain Service",
+            "phone": "(512) 822-0847",
+            "note": "We’ve used Glenn and Jill several times. And my parents have been happy customers for over 20! - Patti L."
+          },
+          {
+            "name": "The Plumbinator Round Rock",
+            "phone": "(512) 786-1771",
+            "note": "The Plumbinator Round Rock is amazing! We love Mickey, he is the best! - Elizabeth C."
+          },
+          {
+            "name": "Green Leaf Plumbing, AC & Heating",
+            "phone": "(737) 313-1319",
+            "note": "Community Verified"
+          }
+        ]
+      },
+      {
+        "name": "Electricians",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Kwality Electric LLC",
+            "phone": "(737) 444-0405",
+            "note": "They are bonded and insured - Angela T."
+          },
+          {
+            "name": "Jeff Davis Electric",
+            "phone": "(512) 433-0394",
+            "note": "Community Verified."
+          },
+          {
+            "name": "Veacheslav Pit",
+            "phone": "(737) 444-0405",
+            "note": "he is absolutely reliable and diligent. He helped me during my recent home remodel. - Anna Y."
+          },
+          {
+            "name": "AdmissionGurus Raj Rajgopal",
+            "phone": "(512) 568-9977",
+            "note": "Community Verified."
+          }
+        ]
+      },
+      {
+        "name": "Roofers",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Trade Master Restoration",
+            "phone": "(512) 587-4051",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Water Damage and Restoration",
+            "phone": "(512) 913-0423",
+            "note": "Great roofer to work with - Damon B."
+          },
+          {
+            "name": "Oakwood Roofing and Construction",
+            "phone": "(512) 900-6545",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Core by WB Arthur for Restoration",
+            "phone": "(512) 738-3836",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Birdcreek Roofing",
+            "phone": "(512) 635-3796",
+            "note": "Contact Christopher Thomas with Birdcreek Roofing. He has found problem spots that clients have complained about where other roofers couldn't.  - April A."
+          },
+          {
+            "name": "Blue Jack Roofing",
+            "phone": "(512) 299-6568",
+            "note": "Community Verified"
+          },
+          {
+            "name": "TWT Exteriors & Roofing",
+            "phone": "(512) 878-3892",
+            "note": "Ask for David. He has done several homes for us. - Tasha C."
+          },
+          {
+            "name": "Freetail Roofing",
+            "phone": "(512) 299-6576",
+            "note": "Freetail Roofing is who we used and couldn’t of been happier. Ask for Michael Kalish as he is as honest as it gets and helped me through the HOA & Insurance process. - Keith G."
+          },
+          {
+            "name": "Peak Roofing",
+            "phone": "(512) 567-3463",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Streamline Roofing & Construction Group",
+            "phone": "(512) 489-7663",
+            "note": "highly recommend. Please tell them I sent ya. - Jenny C."
+          },
+          {
+            "name": "Jeff",
+            "phone": "(512) 801-0526",
+            "note": "I have been calling him for the last two years and he is amazing - Vivianne A."
+          }
+        ]
+      },
+      {
+        "name": "Handyman",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Celtic Construction & Remodeling Austin",
+            "phone": "(512) 905-8265",
+            "note": "Our go to Handyman - Corey M."
+          },
+          {
+            "name": "Live Edge Woodworking Round Rock",
+            "phone": "(914) 882-4349",
+            "note": "Functional, affordable, lifestyle woodworking in Austin and surrounding areas"
+          },
+          {
+            "name": "RejuvaNATE Renovations",
+            "phone": "(512) 761-4208",
+            "note": "Known him for over a decade. He’s coming next week to do some things at my house - Kim G."
+          },
+          {
+            "name": "Mitchell Woodwork and Remodeling",
+            "phone": "(512) 508-2569",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Made Easy Handyman",
+            "phone": "(872) 301-6946",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Jeff",
+            "phone": "(512) 801-0526",
+            "note": "I have been calling him for the last two years and he is amazing - Vivianne A."
+          }
+        ]
+      },
+      {
+        "name": "Construction",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Trade Master Restoration",
+            "phone": "(512) 587-4051",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Oakwood Roofing and Construction",
+            "phone": "(512) 900-6545",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Streamline Roofing & Construction Group",
+            "phone": "(512) 489-7663",
+            "note": "highly recommend. Please tell them I sent ya. - Jenny C."
+          },
+          {
+            "name": "Blue Jack Construction",
+            "phone": "(512) 986-3953",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Jason Gribben",
+            "phone": "(714) 863-7688",
+            "note": "Community Verified."
+          }
+        ]
+      },
+      {
+        "name": "Fencing & Decks",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Ken Anderson",
+            "phone": "(512) 633-9269",
+            "note": "Community Verified."
+          },
+          {
+            "name": "Austin M&S Contruction LLC",
+            "phone": "(512) 789-0990",
+            "note": "Tell him I referred you - Christine R."
+          },
+          {
+            "name": "Jason Gribben",
+            "phone": "(714) 863-7688",
+            "note": "Community Verified."
+          }
+        ]
+      },
+      {
+        "name": "AC & Heating",
+        "icon": "",
+        "listings": [
+          {
+            "name": "1431/ 183 AC",
+            "phone": "(512) 336-1431",
+            "note": "If you need your HVAC system repaired, maintained or replaced, Mike is the one to call. Very reliable, on time and priced right. He provides 24 hour emergency service and we all know how crucial that becomes when you a/c breaks down in the middle of Texas summer. - Vivianne D."
+          },
+          {
+            "name": "iAir Services",
+            "phone": "(512) 323-2500",
+            "note": "Community Verified."
+          },
+          {
+            "name": "Moody's Air Conditioning and Heating",
+            "phone": "(512) 990-7288",
+            "note": "Moody's Air Conditioning and Heating hands down. - Kirsten V."
+          },
+          {
+            "name": "Green Leaf Plumbing",
+            "phone": "(737) 313-1319",
+            "note": "Community Verified."
+          },
+          {
+            "name": "Air Velocity Services",
+            "phone": "(512) 528-1167",
+            "note": "Community Verified."
+          }
+        ]
+      },
+      {
+        "name": "Painters",
+        "icon": "",
+        "listings": [
+          {
+            "name": "LS.Designs LLC",
+            "phone": "(201) 281-0722",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Brother Brush",
+            "phone": "(512) 801-1471",
+            "note": "Call Bruno from Brother Brush painting - Julia L."
+          },
+          {
+            "name": "Peter",
+            "phone": "(512) 712-6639",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Ronald Tovar",
+            "phone": "(512) 781-0796",
+            "note": "Community Verified"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "outdoor",
+    "label": "Outdoor & Lawn",
+    "icon": "🌿",
+    "subcategories": [
+      {
+        "name": "Landscaping",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Xtreme Lawn Service",
+            "phone": "(512) 696-2834",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Silas Carter",
+            "phone": "(737) 336-4727",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Naquin Power Washing",
+            "phone": "(713) 828-4685",
+            "note": "They are always happy to help - Lucas N."
+          },
+          {
+            "name": "Spring Landscaping",
+            "phone": "(512) 902-2059",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Austin Turf Pros & Outdoor Living",
+            "phone": "(512) 649-6842",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Big Texas Tree & Land Services LLC",
+            "phone": "(512) 247-1930",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Eric Mendoza",
+            "phone": "(512) 967-9014",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Joey Sheedy",
+            "phone": "(737) 484-7977",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Chris Page",
+            "phone": "(737) 843-8900",
+            "note": "Community Verified"
+          }
+        ]
+      },
+      {
+        "name": "Mosquito & Pest Control",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Anthony Arnold",
+            "phone": "(512) 698-3020",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Bug Off Texas",
+            "phone": "(512) 955-0080",
+            "note": "Community Verified"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "auto",
+    "label": "Auto & Transport",
+    "icon": "🚗",
+    "subcategories": [
+      {
+        "name": "Mechanics & Auto Repair",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Mario Mobile Mechanic",
+            "phone": "(512) 845-9739",
+            "note": "Call Mario, Him and his son have helped me plenty of times. Tell him his Realtor Marcus referred you and he’ll take care of you. - Marcus R."
+          },
+          {
+            "name": "E&T Automotive",
+            "phone": "(512) 255-3034",
+            "note": "E&T Automotive is great! - Nisheeth P."
+          },
+          {
+            "name": "Mahmood Khatri Auto Mechanic",
+            "phone": "(512) 299-0935",
+            "note": "Mahmood Khatri Auto Mechanic. He is mobile and very good and reasonable - Dilshad S."
+          },
+          {
+            "name": "ER Automotive",
+            "phone": "(512) 335-8863",
+            "note": "ER Automotive! So honest and reliable. Very good service with competitive pricing. - Sallie A."
+          },
+          {
+            "name": "Dennis Christiansen",
+            "phone": "(512) 350-0911",
+            "note": "Community Verified"
+          }
+        ]
+      },
+      {
+        "name": "Golf Cart Sales & Repair",
+        "icon": "",
+        "listings": []
+      }
+    ]
+  },
+  {
+    "id": "professional",
+    "label": "Professional Services",
+    "icon": "💼",
+    "subcategories": [
+      {
+        "name": "Accounting & Tax Services",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Chandra Tax Service",
+            "phone": "(512) 800-2386",
+            "note": "Chandrakala is an Avery Ranch resident and is great!! - Sugandha H."
+          },
+          {
+            "name": "AUSTIN BUSINESS SERVICE",
+            "phone": "(512) 346-6595",
+            "note": "AUSTIN BUSINESS SERVICE ,CALL JAMES OR DAVID @512-346-6595. - Salim C."
+          },
+          {
+            "name": "Kiker & Uhlenbrock, CPA, LLP",
+            "phone": "(210) 492-5115",
+            "note": "My brother Tim is a CPA who graduated from Southwestern University and has his own firm! He saved me from myself - over $2,000 last year alone. He's in San Antonio and can handle things via email - Patrick K."
+          },
+          {
+            "name": "Spectrum",
+            "phone": "(866) 874-2389",
+            "note": "Spectrum responds quickly whenever there is an outage. My Wi-Fi is not down for long. As a non-techie, they have always been very helpful & patient when we have called on the phone for assistance. - Danielle D."
+          }
+        ]
+      },
+      {
+        "name": "Real Estate Agents",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Insurance Agents",
+        "icon": "",
+        "listings": []
+      }
+    ]
+  },
+  {
+    "id": "health",
+    "label": "Health & Wellness",
+    "icon": "🩺",
+    "subcategories": [
+      {
+        "name": "Doctors & Healthcare",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Veterinarians",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Great Oaks Animal Hospital",
+            "phone": "(512) 388-4551",
+            "note": "Great Oaks Animal Hospital. We’ve been taking our Coco there for more than 10 years. Dr Willis and her staff are fantastic. - John R."
+          },
+          {
+            "name": "Brushy Creek Veterinarian",
+            "phone": "(512) 255-9725",
+            "note": "Brushy Creek Veterinarian is awesome. Dr. Naylor and dr. Pratt have been Treating my animals for over 13 years. - Tawanna V."
+          },
+          {
+            "name": "Parmer Lane Pet Hospital",
+            "phone": "(512) 260-5443",
+            "note": "Parmer Lane Pet Hospital. We love Dr. Bryant! - Jen J."
+          },
+          {
+            "name": "VCA Lakeline Animal Hospital",
+            "phone": "(512) 258-1155",
+            "note": "The care and compassion at VCA Lakeline is unmatched. - Marcey H."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "kids",
+    "label": "Kids & Education",
+    "icon": "🎒",
+    "subcategories": [
+      {
+        "name": "Kids Activities",
+        "icon": "",
+        "listings": [
+          {
+            "name": "The Musician Woodshed",
+            "phone": "(512) 614-6491",
+            "note": "The 30 min class per week is around 180 a month. I like it - Stephanie G."
+          },
+          {
+            "name": "Northwest School of Music",
+            "phone": "(512) 258-9785",
+            "note": "NW School of Music off of Anderson Mill. My son & husband both took guitar lessons there & liked the instructors. - Amy M."
+          },
+          {
+            "name": "Lulu's Piano Studio",
+            "phone": "(512) 934-8965",
+            "note": "My daughter just started these piano lessons at her school - Dezbah D."
+          },
+          {
+            "name": "Matt Oliveira Music",
+            "phone": "(774) 357-6877",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Bach to Rock",
+            "phone": "(512) 777-5572",
+            "note": "Music Lessons, DJ Lessons, Birthday Parties, Music Camps & More"
+          },
+          {
+            "name": "Cordovan Art School",
+            "phone": "(512) 275-4040",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Nili's Art Studio",
+            "phone": "(512) 887-4239",
+            "note": "Nillis Art studio on Palmer. Our daughter went there and liked it - Bhavik G."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "homelife",
+    "label": "Home Life",
+    "icon": "🏡",
+    "subcategories": [
+      {
+        "name": "Childcare & Babysitting",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Wilco Nannies",
+            "phone": "(512) 766-8369",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Giorgi's Child Care",
+            "phone": "(512) 800-9961",
+            "note": "Community Verified"
+          }
+        ]
+      },
+      {
+        "name": "House Cleaning",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Tatted Lady Cleaning",
+            "phone": "(737) 297-1270",
+            "note": "10 years of experience, who doesn't cut corners - Bri A."
+          },
+          {
+            "name": "Lupe Cleanings",
+            "phone": "(512) 351-2335",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Shinebright Maids",
+            "phone": "(240) 693-7492",
+            "note": "they are really good and reasonable - Lisette A."
+          },
+          {
+            "name": "Norma Medrano",
+            "phone": "(512) 679-9648",
+            "note": "I've used Norma Medrano for years, she and her helper are always reliable and clean the baseboards, blinds and fans. - Tanya J."
+          },
+          {
+            "name": "Mighty & Tidy",
+            "phone": "(512) 269-6002",
+            "note": "Mighty & Tidy are incredible ❤ I recommend them so much - Stephanie G."
+          },
+          {
+            "name": "SteinShine",
+            "phone": "(737) 843-0514",
+            "note": "Reach out to Nastasja Steinbrink, who owns SteinShine. She is the best cleaner in all of Central Texas. Your home will feel like new once she is done. Reach out to her ASAP. - Gabriel C."
+          },
+          {
+            "name": "The Clean Team",
+            "phone": "(512) 247-1930",
+            "note": "Community Verified"
+          }
+        ]
+      },
+      {
+        "name": "Pet Services",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Reese's Dog Grooming",
+            "phone": "(512) 529-8203",
+            "note": "The owner lives in Avery Ranch. We used them during 2020. They’re fantastic. Oh, and we had a poodle too. - John R."
+          },
+          {
+            "name": "Elena Pet Grooming",
+            "phone": "(954) 515-6696",
+            "note": "Our Gabbar Singh goes to Elena Pet Grooming, Close to Dana Bazar, reasonably priced. He comes home looking great (and happy) every time - Malati M."
+          },
+          {
+            "name": "Zoo Crew Pet Care",
+            "phone": "(512) 348-6683",
+            "note": "They offer drop-in visits, they care and loves animal. highly recommend them! - Jenia R."
+          },
+          {
+            "name": "Sophia's Dog Sitting & Walking Service",
+            "phone": "(512) 962-3851",
+            "note": "Sophia is amazing - Marlio T."
+          }
+        ]
+      },
+      {
+        "name": "Sewing & Jewelry Craft",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Needle Rhythm",
+            "phone": "(281) 406-0711",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Go Go Alterations & Beauty",
+            "phone": "(512) 825-5804",
+            "note": "Community Verified"
+          }
+        ]
+      },
+      {
+        "name": "Junk Removal",
+        "icon": "",
+        "listings": []
+      }
+    ]
+  }
+]
