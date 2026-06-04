@@ -9,9 +9,24 @@
         "icon": "",
         "listings": [
           {
+            "name": "Thomas Martinez Jack of all trades",
+            "phone": "(191) 952-4918",
+            "note": "He fixes everything. He does electrical, cuts grass, hangs TVs, storage racks, EV chargers , generator kits. He has hung all my pictures and mirrors. Changed all my sink faucets and hung all my curtains. Jack of all trades and a sunfield legend. - Denise"
+          },
+          {
             "name": "M3 Plumbing Services",
             "phone": "(512) 739-1984",
             "note": "Family-owned plumbing company serving Central Texas. From homes to high-rises — we handle it all with quality, honesty, and craftsmanship."
+          },
+          {
+            "name": "Miguel",
+            "phone": "(512) 939-0157",
+            "note": "He’s amazing! Tons of local references, years of experience, and voted Nextdoor’s Best 4 years in a row! - Blayne M."
+          },
+          {
+            "name": "Complete Plumbing and HVAC Services",
+            "phone": "(737) 312-7905",
+            "note": "Community Verified - Jo Ann"
           },
           {
             "name": "Call My Plumber",
@@ -44,6 +59,11 @@
         "name": "Electricians",
         "icon": "",
         "listings": [
+          {
+            "name": "Thomas Martinez Jack of all trades",
+            "phone": "(191) 952-4918",
+            "note": "He fixes everything. He does electrical, cuts grass, hangs TVs, storage racks, EV chargers , generator kits. He has hung all my pictures and mirrors. Changed all my sink faucets and hung all my curtains. Jack of all trades and a sunfield legend. - Denise"
+          },
           {
             "name": "JRod Riguez",
             "phone": "(512) 964-5001",
@@ -206,6 +226,11 @@
         "icon": "",
         "listings": [
           {
+            "name": "Complete Plumbing and HVAC Services",
+            "phone": "(737) 312-7905",
+            "note": "Community Verified - Jo Ann"
+          },
+          {
             "name": "Hill Country Carpenters",
             "phone": "(512) 659-4956",
             "note": "Elevating Interiors, Exceeding Expectations."
@@ -269,6 +294,11 @@
             "phone": "(512) 584-7506",
             "note": "Community Verified.",
             "featured": true
+          },
+          {
+            "name": "Thomas Martinez Jack of all trades",
+            "phone": "(191) 952-4918",
+            "note": "He fixes everything. He does electrical, cuts grass, hangs TVs, storage racks, EV chargers , generator kits. He has hung all my pictures and mirrors. Changed all my sink faucets and hung all my curtains. Jack of all trades and a sunfield legend. - Denise"
           },
           {
             "name": "Mabrasu LLC",
