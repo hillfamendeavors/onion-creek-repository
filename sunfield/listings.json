@@ -53,7 +53,13 @@
             "name": "AMP Electric",
             "phone": "(737) 373-2870",
             "note": "No Job too SHOCKING!"
-          },
+          }
+        ]
+      },
+      {
+        "name": "Appliance Repair",
+        "icon": "",
+        "listings": [
           {
             "name": "PROTECHS Appliance Repair",
             "phone": "(512) 705-6910",
