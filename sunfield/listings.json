@@ -183,6 +183,11 @@
             "note": "Highly recommend 2098146443 Brendan Jordan. He lives here in Sunfield. He did my TV wall and it looks amazing. - Hamilton L."
           },
           {
+            "name": "Ryan",
+            "phone": "(512) 964-1026",
+            "note": "Community Verified."
+          },
+          {
             "name": "Hill Country Carpenters",
             "phone": "(512) 659-4956",
             "note": "Elevating Interiors, Exceeding Expectations."
@@ -359,6 +364,11 @@
             "name": "Texas Green Lawn Landscape & Maintenance",
             "phone": "(512) 590-1845",
             "note": "Mow lawn landscape flower bed cleanup - FREE ESTIMATE!"
+          },
+          {
+            "name": "Helpr Lawn Service",
+            "phone": "(512) 560-6301",
+            "note": "Founded in 2024 by Army Reserve veteran Kenton Thompson, Helpr Lawn Service delivers efficient, affordable lawn care—the home of the $40 mow. With wife Tabitha, Kenton aims to make lawn care simple, reliable, and community-driven. Based out of Sunfield."
           }
         ]
       },
@@ -400,6 +410,17 @@
             "name": "Real Green",
             "phone": "(512) 852-0345",
             "note": "Providing a green approach since 1989; well before 'Green' was cool."
+          }
+        ]
+      },
+      {
+        "name": "Window Cleaning/Exterior Cleaning",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Sparkle Squad of South Austin - Kyle - New Braunfels",
+            "phone": "(512) 503-8402",
+            "note": "Community Verified - David J."
           }
         ]
       }
