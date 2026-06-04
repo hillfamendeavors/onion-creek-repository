@@ -61,6 +61,11 @@
         "icon": "",
         "listings": [
           {
+            "name": "Evergreen Valley Home Improvement",
+            "phone": "(737) 707-9222",
+            "note": "Professional appliance diagnostics and repair serving Central Texas."
+          },
+          {
             "name": "PROTECHS Appliance Repair",
             "phone": "(512) 705-6910",
             "note": "We can help you move forward."
@@ -271,6 +276,11 @@
         "name": "Mosquito & Pest Control",
         "icon": "",
         "listings": [
+          {
+            "name": "Paladin Pest Control",
+            "phone": "(512) 430-7254",
+            "note": "We are a locally owned company. Our goal is to vanquish pests in and around homes."
+          },
           {
             "name": "EnviroGuard Pest Control",
             "phone": "(737) 387-3774",
