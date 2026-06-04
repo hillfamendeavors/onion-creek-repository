@@ -9,6 +9,11 @@
         "icon": "",
         "listings": [
           {
+            "name": "M3 Plumbing Services",
+            "phone": "(512) 739-1984",
+            "note": "Family-owned plumbing company serving Central Texas. From homes to high-rises — we handle it all with quality, honesty, and craftsmanship."
+          },
+          {
             "name": "Call My Plumber",
             "phone": "(512) 699-0617",
             "note": "When you Call-My-Plumber, you’re choosing peace of mind, professionalism, and plumbing done right."
@@ -87,11 +92,6 @@
             "note": "David A Johnson with Texas choice roofing - Ismael L."
           },
           {
-            "name": "4M Roofing Co. LLC",
-            "phone": "(512) 299-8949",
-            "note": "Complete Roofing Solutions."
-          },
-          {
             "name": "Lone Star Renovation & Design, INC",
             "phone": "(512) 758-0128",
             "note": "Making the Lone Star State Shine One Renovation at a Time."
@@ -126,6 +126,11 @@
             "name": "David Johnson",
             "phone": "(512) 967-7185",
             "note": "David A Johnson with Texas choice roofing - Ismael L."
+          },
+          {
+            "name": "Brendan Jordan",
+            "phone": "(209) 814-6443",
+            "note": "Highly recommend 2098146443 Brendan Jordan. He lives here in Sunfield. He did my TV wall and it looks amazing. - Hamilton L."
           },
           {
             "name": "Hill Country Carpenters",
