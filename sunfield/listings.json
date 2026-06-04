@@ -19,14 +19,39 @@
             "note": "Family-owned plumbing company serving Central Texas. From homes to high-rises — we handle it all with quality, honesty, and craftsmanship."
           },
           {
-            "name": "Miguel",
-            "phone": "(512) 939-0157",
-            "note": "He’s amazing! Tons of local references, years of experience, and voted Nextdoor’s Best 4 years in a row! - Blayne M."
+            "name": "Miguel(Spanish Speaking) - Mabrasu LLC",
+            "phone": "(512) 750-7401",
+            "note": "Community Verified - Mar C."
+          },
+          {
+            "name": "Manuel(English Speaking) - Mabrasu LLC",
+            "phone": "(512) 909-0285",
+            "note": "Community Verified - Mar C."
+          },
+          {
+            "name": "Matt",
+            "phone": "(512) 227-0717",
+            "note": "Community Verified - David J."
           },
           {
             "name": "Complete Plumbing and HVAC Services",
             "phone": "(737) 312-7905",
             "note": "Community Verified - Jo Ann"
+          },
+          {
+            "name": "Gerardo Silva",
+            "phone": "(512) 848-7163",
+            "note": "Community Verified - Dee Dee P."
+          },
+          {
+            "name": "Travis Sprinkler Sunfield",
+            "phone": "(737) 600-1050",
+            "note": "Community Verified - Trey P."
+          },
+          {
+            "name": "Halls Hydroworks",
+            "phone": "(512) 814-7189",
+            "note": "Community Verified - Dustin E."
           },
           {
             "name": "Call My Plumber",
@@ -46,7 +71,7 @@
           {
             "name": "Creative Comfort Solutions",
             "phone": "(512) 757-2366",
-            "note": "HVAC Services Built Around You."
+            "note": "Locally owned and family-operated with almost 20 years experience of keeping homes cool. True service, not sales."
           },
           {
             "name": "Hill Country",
@@ -96,14 +121,14 @@
             "note": "He fixes everything. He does electrical, cuts grass, hangs TVs, storage racks, EV chargers , generator kits. He has hung all my pictures and mirrors. Changed all my sink faucets and hung all my curtains. Jack of all trades and a sunfield legend. - Denise"
           },
           {
-            "name": "Evergreen Valley Home Improvement",
-            "phone": "(737) 707-9222",
-            "note": "Professional appliance diagnostics and repair serving Central Texas."
-          },
-          {
             "name": "PROTECHS Appliance Repair",
             "phone": "(512) 705-6910",
             "note": "We can help you move forward."
+          },
+          {
+            "name": "Evergreen Valley Home Improvement",
+            "phone": "(737) 707-9222",
+            "note": "Professional appliance diagnostics and repair serving Central Texas."
           }
         ]
       },
@@ -248,7 +273,7 @@
           {
             "name": "Creative Comfort Solutions",
             "phone": "(512) 757-2366",
-            "note": "Providing Comfortable Living Spaces."
+            "note": "Locally owned and family-operated with almost 20 years experience of keeping homes cool. True service, not sales."
           },
           {
             "name": "JC's AC Heating & Cooling",
@@ -311,9 +336,14 @@
             "note": "He fixes everything. He does electrical, cuts grass, hangs TVs, storage racks, EV chargers , generator kits. He has hung all my pictures and mirrors. Changed all my sink faucets and hung all my curtains. Jack of all trades and a sunfield legend. - Denise"
           },
           {
-            "name": "Mabrasu LLC",
+            "name": "Miguel(Spanish Speaking) - Mabrasu LLC",
             "phone": "(512) 750-7401",
-            "note": "Dedicated to Professional Excellence."
+            "note": "Community Verified - Mar C."
+          },
+          {
+            "name": "Manuel(English Speaking) - Mabrasu LLC",
+            "phone": "(512) 909-0285",
+            "note": "Community Verified - Mar C."
           },
           {
             "name": "Green Lawn",
@@ -475,19 +505,19 @@
         "icon": "",
         "listings": [
           {
-            "name": "Justin Rossi, Realtor",
-            "phone": "(512) 587-6577",
-            "note": "Austin's top agent at LPT Realty and Host of ADTV’s SelADTV’s Selling Austin | Founder of the 'Everything Austin, TX'."
-          },
-          {
             "name": "Norma Perez, Realtor",
             "phone": "(210) 380-8781",
-            "note": ""
+            "note": "Licensed Real Estate Agent "
           },
           {
             "name": "Deanna Skelliter Carrico, Realtor",
             "phone": "(512) 203-9566",
             "note": "Meritage Homes builds life. Built Better."
+          },            
+          {
+            "name": "Justin Rossi, Realtor",
+            "phone": "(512) 587-6577",
+            "note": "Austin's top agent at LPT Realty and Host of ADTV’s SelADTV’s Selling Austin | Founder of the 'Everything Austin, TX'."
           },
           {
             "name": "Austin Moore, Realtor",
