@@ -59,7 +59,23 @@
       {
         "name": "Appliance Repair",
         "icon": "",
-        "listings": []
+        "listings": [
+          {
+            "name": "Super Clean Bins",
+            "phone": "(512) 336-9394",
+            "note": "Keep Your Cans Clean, FRESH & ODOR FREE!"
+          },
+          {
+            "name": "PROTECHS Appliance Repair",
+            "phone": "(512) 705-6910",
+            "note": "We can help you move forward."
+          },
+          {
+            "name": "Evergreen Valley Home Improvement",
+            "phone": "(737) 707-9222",
+            "note": "Professional appliance diagnostics and repair serving Central Texas."
+          }
+        ]
       },
       {
         "name": "Roofers",
