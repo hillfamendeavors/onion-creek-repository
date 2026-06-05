@@ -307,6 +307,11 @@
         "icon": "",
         "listings": [
           {
+            "name": "5Point Paint Pros",
+            "phone": "(512) 909-9916",
+            "note": "A team of paint professionals who are dedicated to creating a paint experience that wows!"
+          },
+          {
             "name": "Piitsburgh Paints Co.",
             "phone": "(512) 771-78744",
             "note": "Priming you for success."
