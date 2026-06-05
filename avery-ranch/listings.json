@@ -331,6 +331,16 @@
         ]
       },
       {
+        "name": "Window Cleaning/Exterior Cleaning",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Tree Care",
+        "icon": "",
+        "listings": []
+      },
+      {
         "name": "Mosquito & Pest Control",
         "icon": "",
         "listings": [
@@ -345,11 +355,6 @@
             "note": "Community Verified"
           }
         ]
-      },
-      {
-        "name": "Window Cleaning/Exterior Cleaning",
-        "icon": "",
-        "listings": []
       }
     ]
   },
@@ -474,6 +479,11 @@
             "note": "The care and compassion at VCA Lakeline is unmatched. - Marcey H."
           }
         ]
+      },
+      {
+        "name": "Travel Agent",
+        "icon": "",
+        "listings": []
       }
     ]
   },

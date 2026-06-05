@@ -373,6 +373,22 @@
         ]
       },
       {
+        "name": "Window Cleaning/Exterior Cleaning",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Sparkle Squad of South Austin - Kyle - New Braunfels",
+            "phone": "(512) 503-8402",
+            "note": "Community Verified - David J."
+          }
+        ]
+      },
+      {
+        "name": "Tree Care",
+        "icon": "",
+        "listings": []
+      },
+      {
         "name": "Mosquito & Pest Control",
         "icon": "",
         "listings": [
@@ -410,17 +426,6 @@
             "name": "Real Green",
             "phone": "(512) 852-0345",
             "note": "Providing a green approach since 1989; well before 'Green' was cool."
-          }
-        ]
-      },
-      {
-        "name": "Window Cleaning/Exterior Cleaning",
-        "icon": "",
-        "listings": [
-          {
-            "name": "Sparkle Squad of South Austin - Kyle - New Braunfels",
-            "phone": "(512) 503-8402",
-            "note": "Community Verified - David J."
           }
         ]
       }
@@ -636,6 +641,11 @@
             "note": "Caring staff, great with anxious pets. Our dogs actually like going here."
           }
         ]
+      },
+      {
+        "name": "Travel Agent",
+        "icon": "",
+        "listings": []
       }
     ]
   },

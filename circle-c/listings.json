@@ -301,6 +301,16 @@
         ]
       },
       {
+        "name": "Window Cleaning/Exterior Cleaning",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Tree Care",
+        "icon": "",
+        "listings": []
+      },
+      {
         "name": "Mosquito & Pest Control",
         "icon": "",
         "listings": [
@@ -335,11 +345,6 @@
             "note": "I highly recommend this company to get rid of any pests. - Jenny W."
           }
         ]
-      },
-      {
-        "name": "Window Cleaning/Exterior Cleaning",
-        "icon": "",
-        "listings": []
       }
     ]
   },
@@ -563,6 +568,11 @@
             "note": "Commitment to provide quality veterinary care throughout the life of your pet. - Robert K."
           }
         ]
+      },
+      {
+        "name": "Travel Agent",
+        "icon": "",
+        "listings": []
       }
     ]
   },

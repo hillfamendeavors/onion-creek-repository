@@ -271,6 +271,22 @@
         ]
       },
       {
+        "name": "Window Cleaning/Exterior Cleaning",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Tree Care",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Gil's Tree Service",
+            "phone": "(512) 221-6716",
+            "note": "Gilbert Lopez. Gilbert has been in the tree service industry for forty plus years. He's a local businessman who values customer service and satisfying the customer above all else."
+          }
+        ]
+      },
+      {
         "name": "Mosquito & Pest Control",
         "icon": "",
         "listings": [
@@ -290,11 +306,6 @@
             "note": "Handles mosquitoes, fire ants, and roaches. Family-safe products, great results."
           }
         ]
-      },
-      {
-        "name": "Window Cleaning/Exterior Cleaning",
-        "icon": "",
-        "listings": []
       }
     ]
   },
@@ -496,6 +507,17 @@
             "name": "Buda Vet Center",
             "phone": "(512) 555-0938",
             "note": "Full-service clinic. Reasonable rates and very thorough checkups."
+          }
+        ]
+      },
+      {
+        "name": "Travel Agent",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Diane Hundelt",
+            "phone": "(281) 636-6035",
+            "note": "Community Verified."
           }
         ]
       }
