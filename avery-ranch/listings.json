@@ -71,6 +71,11 @@
         "icon": "",
         "listings": [
           {
+            "name": "Hill Country Outdoor Living",
+            "phone": "(512) 200-2385",
+            "note": "Community Verified"
+          },
+          {
             "name": "Trade Master Restoration",
             "phone": "(512) 587-4051",
             "note": "Community Verified"
