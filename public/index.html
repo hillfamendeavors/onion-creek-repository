@@ -1654,6 +1654,9 @@
     .about-highlights .highlight-item.scroll-anim:nth-child(2) { transition-delay: 0.08s; }
     .about-highlights .highlight-item.scroll-anim:nth-child(3) { transition-delay: 0.16s; }
     .about-highlights .highlight-item.scroll-anim:nth-child(4) { transition-delay: 0.24s; }
+    .trust-stats .trust-stat.scroll-anim:nth-child(2)          { transition-delay: 0.12s; }
+    .trust-stats .trust-stat.scroll-anim:nth-child(3)          { transition-delay: 0.24s; }
+    .trust-bar   .trust-tagline.scroll-anim                    { transition-delay: 0.34s; }
 
     /* Formspree Submission & Loading/Success Animations */
     .btn-submit {
@@ -1845,15 +1848,15 @@
       <span class="trust-eyebrow"><span>🌿</span> Trusted by Local Neighbors</span>
       <div class="trust-stats">
         <div class="trust-stat">
-          <span class="trust-number">400+</span>
+          <span class="trust-number" data-count="400" data-suffix="+">400+</span>
           <span class="trust-label">Recommendations</span>
         </div>
         <div class="trust-stat">
-          <span class="trust-number">100+</span>
+          <span class="trust-number" data-count="100" data-suffix="+">100+</span>
           <span class="trust-label">Local Businesses</span>
         </div>
         <div class="trust-stat">
-          <span class="trust-number">4</span>
+          <span class="trust-number" data-count="4" data-suffix="">4</span>
           <span class="trust-label">Active Neighborhoods</span>
         </div>
       </div>
@@ -2223,7 +2226,8 @@
       const targets = document.querySelectorAll(
         '.step-card, .selector-card, .coming-soon-card, .family-card, ' +
         '.section-header, .about-graphic, .about-text, ' +
-        '.highlight-item, .suggest-info, .form-container'
+        '.highlight-item, .suggest-info, .form-container, ' +
+        '.trust-eyebrow, .trust-stat, .trust-tagline'
       );
 
       targets.forEach(el => el.classList.add('scroll-anim'));
@@ -2242,6 +2246,43 @@
       } else {
         targets.forEach(el => el.classList.add('scroll-visible'));
       }
+    })();
+
+    // ── Count-up animation for trust/stats numbers ──
+    (function () {
+      const nums = document.querySelectorAll('.trust-number[data-count]');
+      if (!nums.length) return;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // No-JS already shows final values; bail (leave them) for reduced-motion or old browsers.
+      if (reduceMotion || !('IntersectionObserver' in window)) return;
+
+      const DURATION = 2400; // ~2.4s
+      const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+
+      function run(el) {
+        const target = parseFloat(el.dataset.count) || 0;
+        const suffix = el.dataset.suffix || '';
+        const start = performance.now();
+        el.textContent = '0' + suffix;
+        function tick(now) {
+          const p = Math.min((now - start) / DURATION, 1);
+          el.textContent = Math.round(easeOutCubic(p) * target).toLocaleString() + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            run(entry.target);
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.4 });
+
+      nums.forEach(el => obs.observe(el));
     })();
 
     // ── Formspree AJAX Submission with Animation ──
