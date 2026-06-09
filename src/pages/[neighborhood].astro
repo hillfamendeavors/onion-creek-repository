@@ -1,0 +1,52 @@
+---
+import Directory from '../layouts/Directory.astro';
+import ListingsTree from '../components/ListingsTree.astro';
+import ReferralModal from '../components/ReferralModal.astro';
+import OrderModal from '../components/OrderModal.astro';
+import { neighborhoods } from '../data/neighborhoods.js';
+
+export function getStaticPaths() {
+  // Load every listings file at build time and key it by slug.
+  const dataModules = import.meta.glob('../data/*.json', { eager: true });
+  return neighborhoods.map((n) => ({
+    params: { neighborhood: n.slug },
+    props: {
+      neighborhood: n,
+      groups: dataModules[`../data/${n.slug}.json`].default,
+    },
+  }));
+}
+
+const { neighborhood, groups } = Astro.props;
+
+const total = groups.reduce(
+  (sum, g) => sum + g.subcategories.reduce((s, sub) => s + sub.listings.length, 0),
+  0
+);
+---
+
+<Directory title={neighborhood.title} footerLabel={neighborhood.footerLabel} theme={neighborhood.theme}>
+  <header>
+    <div class="logo-wrap">
+      <h1>{neighborhood.name} <span>Directory</span></h1>
+      <p class="header-sub">Trusted Neighbors &middot; Austin, Texas</p>
+      <a class="order-btn" href="/">Back Home</a>
+    </div>
+
+    <nav class="nav-tabs" id="groupPills">
+      <button class="nav-tab active" data-gid="all">All ({total})</button>
+      {groups.map((g) => <button class="nav-tab" data-gid={g.id}>{g.label}</button>)}
+    </nav>
+  </header>
+
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="Search by name, service, or keyword…" />
+  </div>
+
+  <main>
+    <ListingsTree groups={groups} />
+  </main>
+
+  <ReferralModal formspreeId={neighborhood.formspreeId} subjectPrefix={neighborhood.subjectPrefix} />
+  {neighborhood.order && <OrderModal order={neighborhood.order} />}
+</Directory>

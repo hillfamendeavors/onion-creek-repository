@@ -1,0 +1,70 @@
+---
+// Renders a single listing at build time. Featured listings get the premium
+// "VIP" card; everything else gets the standard row. `data-search` carries the
+// lowercased searchable text so the client script can filter without rebuilding.
+const { l, subName, groupLabel } = Astro.props;
+
+const rawDigits = (l.phone || '').replace(/\D/g, '');
+const locationStr = l.address || l.serviceArea || '';
+const mapsHref = locationStr
+  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.name + ' ' + locationStr)}`
+  : '';
+const searchText = [l.name, l.note, l.phone, rawDigits, subName, groupLabel]
+  .filter(Boolean)
+  .join(' ')
+  .toLowerCase();
+---
+
+{l.featured ? (
+  <div class="listing-row featured" data-search={searchText}>
+    <div class="featured-header">
+      <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+      Featured Advertiser
+      <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+    </div>
+    <div class="featured-divider"></div>
+    <div class="featured-body">
+      <div>
+        <div class="featured-listing-name">
+          {l.name}
+          <span class="featured-badge">VIP</span>
+        </div>
+        {locationStr && (
+          <a class="listing-maps-link" href={mapsHref} target="_blank" rel="noopener noreferrer">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {locationStr}
+          </a>
+        )}
+        <div class="listing-note">{l.note}</div>
+      </div>
+      <div class="featured-phone-block">
+        <span class="featured-call-label">Call Now</span>
+        <div class="listing-phone-group">
+          <a class="listing-phone" href={`tel:${rawDigits}`}>{l.phone}</a>
+          <button class="copy-phone-btn" data-phone={rawDigits} aria-label="Copy phone number" title="Copy number">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+) : (
+  <div class="listing-row" data-search={searchText}>
+    <div>
+      <div class="listing-name">{l.name}</div>
+      {locationStr && (
+        <a class="listing-maps-link" href={mapsHref} target="_blank" rel="noopener noreferrer">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          {locationStr}
+        </a>
+      )}
+      <div class="listing-note">{l.note}</div>
+    </div>
+    <div class="listing-phone-group">
+      <a class="listing-phone" href={`tel:${rawDigits}`}>{l.phone}</a>
+      <button class="copy-phone-btn" data-phone={rawDigits} aria-label="Copy phone number" title="Copy number">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
+    </div>
+  </div>
+)}

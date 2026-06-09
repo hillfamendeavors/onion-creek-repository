@@ -1,0 +1,48 @@
+---
+import '../styles/directory.css';
+
+interface Props {
+  title: string;
+  footerLabel: string;
+  theme: Record<string, string>;
+}
+
+const { title, footerLabel, theme } = Astro.props;
+
+// Per-neighborhood color palette, emitted as a global :root block.
+const themeCss = `:root{${Object.entries(theme)
+  .map(([k, v]) => `${k}:${v};`)
+  .join('')}}`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <style is:global set:html={themeCss}></style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chronicles&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-QE75YFJ2ZL"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-QE75YFJ2ZL');
+    </script>
+  </head>
+  <body>
+    <div class="top-bar">Austin, Texas &nbsp;·&nbsp; Neighbor-Sourced Referrals</div>
+
+    <slot />
+
+    <footer>
+      <strong>{footerLabel}</strong> &nbsp;·&nbsp; Austin, TX &nbsp;·&nbsp; trustedneighbors.net
+    </footer>
+
+    <script src="../scripts/directory.js"></script>
+  </body>
+</html>

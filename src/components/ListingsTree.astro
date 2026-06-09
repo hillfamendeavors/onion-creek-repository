@@ -1,0 +1,49 @@
+---
+import ListingRow from './ListingRow.astro';
+
+// Renders every group -> subcategory -> listing at build time, so the listings
+// are present in the static HTML (readable by crawlers / AI). The client script
+// (directory.js) only shows/hides this pre-rendered DOM when filtering.
+const { groups } = Astro.props;
+
+// Featured listings float to the top of their subcategory (same as the old render()).
+const sortFeatured = (listings) =>
+  [...listings].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+---
+
+<div id="listingsContainer">
+  {groups.map((g) => (
+    <div class="group-block" data-gid={g.id} data-label={g.label.toLowerCase()}>
+      <div class="group-header-row">
+        <span class="gicon">{g.icon}</span><span>{g.label}</span>
+      </div>
+      {g.subcategories.map((sub) => (
+        <div class="subcategory" data-subname={sub.name.toLowerCase()}>
+          <div class="subcat-header">
+            <span class="subcat-icon">{sub.icon}</span>
+            <span class="subcat-name">{sub.name}</span>
+            <span class="subcat-count" data-full={sub.listings.length}>
+              {sub.listings.length} listing{sub.listings.length !== 1 ? 's' : ''}
+            </span>
+            <span class="subcat-arrow open">▼</span>
+          </div>
+          <div class="listings-table" data-empty={sub.listings.length ? 'false' : 'true'}>
+            {sub.listings.length ? (
+              sortFeatured(sub.listings).map((l) => (
+                <ListingRow l={l} subName={sub.name} groupLabel={g.label} />
+              ))
+            ) : (
+              <div class="listing-row">
+                <div>
+                  <div class="listing-name">No listings yet</div>
+                  <div class="listing-note">This category has been added and is ready for referrals.</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
+<div id="no-results">No listings found — try a different search.</div>
