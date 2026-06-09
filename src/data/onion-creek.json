@@ -265,11 +265,6 @@
         "icon": "",
         "listings": [
           {
-            "name": "Cayse",
-            "phone": "(832) 233-0175",
-            "note": "Pressure Washing."
-          },
-          {
             "name": "Austex Sprinklers",
             "phone": "(512) 721-8564",
             "note": "#1 Lawn Sprinkler Contractor Austin, TX."
@@ -294,7 +289,13 @@
       {
         "name": "Hardscaping",
         "icon": "",
-        "listings": []
+        "listings": [
+          {
+            "name": "Cayse",
+            "phone": "(832) 233-0175",
+            "note": "Pressure Washing."
+          }
+        ]
       },
       {
         "name": "Window Cleaning/Exterior Cleaning",
