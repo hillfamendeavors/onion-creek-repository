@@ -64,16 +64,6 @@
             "name": "Abundant Plumbing LLC",
             "phone": "(512) 201-9978",
             "note": "Experience Abundance through our Service."
-          },
-          {
-            "name": "Creative Comfort Solutions",
-            "phone": "(512) 757-2366",
-            "note": "Locally owned and family-operated with almost 20 years experience of keeping homes cool. True service, not sales."
-          },
-          {
-            "name": "Hill Country",
-            "phone": "(512) 659-4956",
-            "note": "Elevating Interiors, Exceeding Expectations."
           }
         ]
       },
@@ -271,6 +261,11 @@
         "name": "AC & Heating",
         "icon": "",
         "listings": [
+          {
+            "name": "Creative Comfort Solutions",
+            "phone": "(512) 757-2366",
+            "note": "Locally owned and family-operated with almost 20 years experience of keeping homes cool. True service, not sales."
+          },
           {
             "name": "Complete Plumbing and HVAC Services",
             "phone": "(737) 312-7905",
