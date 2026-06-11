@@ -299,11 +299,6 @@
             "note": "Community Verified"
           },
           {
-            "name": "Naquin Power Washing",
-            "phone": "(713) 828-4685",
-            "note": "They are always happy to help - Lucas N."
-          },
-          {
             "name": "Spring Landscaping",
             "phone": "(512) 902-2059",
             "note": "Community Verified"
@@ -338,7 +333,13 @@
       {
         "name": "Hardscaping",
         "icon": "",
-        "listings": []
+        "listings": [
+          {
+            "name": "Naquin Power Washing",
+            "phone": "(713) 828-4685",
+            "note": "They are always happy to help - Lucas N."
+          }
+        ]
       },
       {
         "name": "Window Cleaning/Exterior Cleaning",
