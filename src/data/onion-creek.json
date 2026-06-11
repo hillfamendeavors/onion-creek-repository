@@ -97,11 +97,6 @@
             "note": "He’s family! He’s reliable, super friendly and very trustworthy…will take care of all the insurance claim for you and has a hard working crew!"
           },
           {
-            "name": "Christian Family Guttering",
-            "phone": "(512) 589-9173",
-            "note": "Quality You Can Trust, Service You Can Count On."
-          },
-          {
             "name": "Good News Roofing",
             "phone": "(512) 630-1440",
             "note": "Rudy and Brooke were incredibly professional, straightforward, and responsive throughout our roof replacement. - Alex M."
@@ -130,6 +125,17 @@
             "name": "Peak Pro Roofing",
             "phone": "(512) 555-0742",
             "note": "Fair estimates, quality shingles. No pressure sales tactics."
+          }
+        ]
+      },
+      {
+        "name": "Gutters",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Christian Family Guttering",
+            "phone": "(512) 589-9173",
+            "note": "Quality You Can Trust, Service You Can Count On."
           }
         ]
       },
