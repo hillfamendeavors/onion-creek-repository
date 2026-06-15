@@ -349,7 +349,24 @@
       {
         "name": "Tree Care",
         "icon": "",
-        "listings": []
+        "listings": [
+          {
+            "name": "Bartlett Tree Experts - Austin, TX",
+            "phone": "(877) 227-8538",
+            "note": "We use Bartlett Tree service. They have taken care of our 11 trees for over 20 years. Wonderful arborists who know their business. - Elizabeth C.",
+            "email": "austinoffice@bartlett.com"
+          },
+          {
+            "name": "A’s Exterior Services - Andrei Esquivel",
+            "phone": "(512) 945-0990",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Zach Anderson",
+            "phone": "(512) 255-6396",
+            "note": "Community Verified"
+          }
+        ]
       },
       {
         "name": "Mosquito & Pest Control",
@@ -450,6 +467,11 @@
       },
       {
         "name": "Insurance Agents",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Notary Services",
         "icon": "",
         "listings": []
       }

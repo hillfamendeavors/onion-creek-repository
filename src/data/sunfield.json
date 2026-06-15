@@ -15,6 +15,12 @@
             "featured": true
           },
           {
+            "name": "JD TILE and MORE - Miguel",
+            "phone": "(512) 939-0157",
+            "note": "Call Miguel at 512-939-0157 — he’s amazing! Tons of local references, years of experience, and voted Nextdoor’s Best 4 years in a row! - Blayne M.",
+            "email": "desendientetolteca@gmail.com"
+          },
+          {
             "name": "M3 Plumbing Services",
             "phone": "(512) 739-1984",
             "note": "Family-owned plumbing company serving Central Texas. From homes to high-rises — we handle it all with quality, honesty, and craftsmanship."
@@ -38,11 +44,6 @@
             "name": "Complete Plumbing and HVAC Services",
             "phone": "(737) 312-7905",
             "note": "Community Verified - Jo Ann"
-          },
-          {
-            "name": "Gerardo Silva",
-            "phone": "(512) 848-7163",
-            "note": "Community Verified - Dee Dee P."
           },
           {
             "name": "Travis Sprinkler Sunfield",
@@ -110,6 +111,11 @@
             "featured": true
           },
           {
+            "name": "Gerardo Silva",
+            "phone": "(512) 848-7163",
+            "note": "Community Verified - Dee Dee P."
+          },
+          {
             "name": "PROTECHS Appliance Repair",
             "phone": "(512) 705-6910",
             "note": "We can help you move forward."
@@ -125,6 +131,12 @@
         "name": "Roofers",
         "icon": "",
         "listings": [
+          {
+            "name": "Parco Roofing Group LLC - Michael Partain",
+            "phone": "(737) 308-6649",
+            "note": "My husband can come by anytime! He owns his own company, give him a call at 1 (737) 308-6649 - Kassidy F.",
+            "email": "michael@parcoroofing.com"
+          },
           {
             "name": "David Johnson",
             "phone": "(512) 967-7185",
@@ -167,6 +179,12 @@
             "phone": "(919) 524-9187",
             "note": "The Jack of All Trades! He does it all or has someone that can lead you in the right direction. ⭐️⭐️⭐️⭐️⭐️ - Jenifer",
             "featured": true
+          },
+          {
+            "name": "JD TILE and MORE - Miguel",
+            "phone": "(512) 939-0157",
+            "note": "Call Miguel at 512-939-0157 — he’s amazing! Tons of local references, years of experience, and voted Nextdoor’s Best 4 years in a row! - Blayne M.",
+            "email": "desendientetolteca@gmail.com"
           },
           {
             "name": "JRod Riguez",
@@ -359,6 +377,22 @@
             "featured": true
           },
           {
+            "name": "Dylan's Landscaping",
+            "phone": "(845) 275-4114",
+            "note": "Community Verified."
+          },
+          {
+            "name": "Lone Star Lawn Care - Jacob V.",
+            "phone": "(737) 231-5223",
+            "note": "My little cousin can! You can text him, I know he won’t charge you an arm and a leg lol. Brianna C.",
+            "email": "jacob.v1398@gmail.com"
+          },
+          {
+            "name": "Belmontes Legacy Landscaping",
+            "phone": "(512) 721-9864",
+            "note": "Community Verified - La Y."
+          },
+          {
             "name": "Miguel(Spanish Speaking) - Mabrasu LLC",
             "phone": "(512) 750-7401",
             "note": "Community Verified - Mar C."
@@ -409,7 +443,13 @@
       {
         "name": "Tree Care",
         "icon": "",
-        "listings": []
+        "listings": [
+          {
+            "name": "Belmontes Legacy Landscaping",
+            "phone": "(512) 721-9864",
+            "note": "Community Verified - La Y."
+          }
+        ]
       },
       {
         "name": "Mosquito & Pest Control",
@@ -463,6 +503,11 @@
         "name": "Mechanics & Auto Repair",
         "icon": "",
         "listings": [
+          {
+            "name": "Pete",
+            "phone": "(512) 567-1830",
+            "note": "Pete is a great mechanic and is mobile his number is 512-567-1830. - Jo Ann T."
+          },
           {
             "name": "South Side Hays Repair",
             "phone": "(512) 400-5132",
@@ -608,6 +653,17 @@
             "name": "David Chen - State Farm",
             "phone": "(512) 555-0224",
             "note": "Local agent, easy to reach, great at explaining coverage options. - Mark S."
+          }
+        ]
+      },
+      {
+        "name": "Notary Services",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Melissa Ortiz Rodriguez",
+            "phone": "(512) 618-2383",
+            "note": "I’m a mobile notary public available in Austin, Buda, Del Valle, Kyle and surrounding areas. I COME TO YOU!!"
           }
         ]
       }
