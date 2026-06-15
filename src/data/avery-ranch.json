@@ -66,6 +66,35 @@
         "icon": "",
         "listings": [
           {
+            "name": "Freetail Roofing - Michael Kalish",
+            "phone": "(512) 299-6576",
+            "note": "Michael Kalish owner of Freetail Roofing did ours. Passed HOA no problems. - Keith G.",
+            "email": "freetail@freetailroofing.com"
+          },
+          {
+            "name": "Regenesis Roofing & Restoration LLC - Matt Werling",
+            "phone": "(512) 674-5979",
+            "note": "Matt Werling is the owner, great guy. Honest and won't oversell you. - Kyle B.",
+            "email": "admin@regenesisroofing.com"
+          },
+          {
+            "name": "GOLD STAR ROOFING AND CONSTRUCTION - Jordan Kohlburg",
+            "phone": "(737) 777-0720",
+            "note": "Highly recommend him to work with all insurance issues and receive amazing customer service throughout the entire process. Several neighbors have used him and all are very very happy. - Janaki I."
+          },
+          {
+            "name": "Radar Roofing",
+            "phone": "(512) 777-1377",
+            "note": "Call Radar Roofing they are local and do a great job. - Adam R.",
+            "email": "info@radarroofingtx.com"
+          },
+          {
+            "name": "Stubbs Roofing & Construction",
+            "phone": "(512) 550-5161",
+            "note": "Stubbs Roofing & Construction my husband ☺️ message him. 512-500-5161. - Alisa S.",
+            "email": "jason@stubbsroofingatx.com"
+          },
+          {
             "name": "Hill Country Outdoor Living",
             "phone": "(512) 200-2385",
             "note": "Community Verified"
@@ -83,7 +112,8 @@
           {
             "name": "Oakwood Roofing and Construction",
             "phone": "(512) 900-6545",
-            "note": "Community Verified"
+            "note": "Oakwood Roofing and Construction is the best! It is owned by an Avery ranch resident and they are super easy to work with! They know the HOA rules so they make the process a breeze! - Brooke A.",
+            "email": "contact@oakwoodroofers.com"
           },
           {
             "name": "Core by WB Arthur for Restoration",
@@ -173,6 +203,12 @@
         "icon": "",
         "listings": [
           {
+            "name": "Stubbs Roofing & Construction",
+            "phone": "(512) 550-5161",
+            "note": "Stubbs Roofing & Construction my husband ☺️ message him. 512-500-5161. - Alisa S.",
+            "email": "jason@stubbsroofingatx.com"
+          },
+          {
             "name": "Trade Master Restoration",
             "phone": "(512) 587-4051",
             "note": "Community Verified"
@@ -180,7 +216,8 @@
           {
             "name": "Oakwood Roofing and Construction",
             "phone": "(512) 900-6545",
-            "note": "Community Verified"
+            "note": "Oakwood Roofing and Construction is the best! It is owned by an Avery ranch resident and they are super easy to work with! They know the HOA rules so they make the process a breeze! - Brooke A.",
+            "email": "contact@oakwoodroofers.com"
           },
           {
             "name": "Streamline Roofing & Construction Group",
@@ -665,6 +702,12 @@
         "name": "Sewing & Jewelry Craft",
         "icon": "",
         "listings": [
+          {
+            "name": "OCB Squared LLC - Shauna",
+            "phone": "(512) 716-5371",
+            "note": "I use OCB Squared LLC for that. The owner, Shauna does amazing work. Everyone that I know goes to her for all types of stuff including embroidery. She is a local Texan and her husband is a police officer. - Chryssandra M.",
+            "email":"ocbsquared@gmail.com"
+          },
           {
             "name": "Needle Rhythm",
             "phone": "(281) 406-0711",
