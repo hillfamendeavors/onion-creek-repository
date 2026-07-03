@@ -355,6 +355,16 @@
             "note": "I highly recommend this company to get rid of any pests. - Jenny W."
           }
         ]
+      },
+      {
+        "name": "Pool Cleaning & Service",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Irrigation",
+        "icon": "",
+        "listings": []
       }
     ]
   },
@@ -473,6 +483,11 @@
             "note": "Community Verified."
           }
         ]
+      },
+      {
+        "name": "Real Estate Attorney",
+        "icon": "",
+        "listings": []
       },
       {
         "name": "Insurance Agents",

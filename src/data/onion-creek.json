@@ -45,6 +45,13 @@
         "icon": "",
         "listings": [
           {
+            "name": "SM Electrical - Sonny Martinez",
+            "phone": "(512) 202-408",
+            "note": "Did our panel upgrade — clean work, passed inspection first try.",
+            "email": "smelectrical80@gmail.com",
+            "website": "https://sonnymelectrical.com/"
+          },
+          {
             "name": "Spark Right Electric",
             "phone": "(512) 555-0471",
             "note": "Did our panel upgrade — clean work, passed inspection first try."
@@ -144,6 +151,12 @@
         "icon": "",
         "listings": [
           {
+            "name": "RK Perry Services - Roger",
+            "phone": "(801) 815-4694",
+            "note": "Community Verified - Justin R.",
+            "website": "https://www.rkperryservicesllc.com/"
+          },
+          {
             "name": "Alexander Moran",
             "phone": "(512) 960-5894",
             "note": "Alexander is a certified HVAC and pool maintenance technician offering home repairs, including painting, flooring, backsplash, and gutter installation. Known for fair pricing and trusted local service."
@@ -222,6 +235,12 @@
         "icon": "",
         "listings": [
           {
+            "name": "Abacus",
+            "phone": "(512) 400-0749",
+            "note": "Community Verified - Justin R.",
+            "website": "https://www.abacusplumbing.com/air-conditioning/"
+          },
+          {
             "name": "Moontower Mechanical",
             "phone": "(512) 971-2331",
             "note": "From emergency repairs to full system installs, Moontower Mechanical delivers fast, reliable service you can count on."
@@ -270,6 +289,11 @@
         "name": "Landscaping",
         "icon": "",
         "listings": [
+          {
+            "name": "Lance Barnes",
+            "phone": "(713) 822-8300",
+            "note": "Community Verified - Justin R."
+          },
           {
             "name": "Austex Sprinklers",
             "phone": "(512) 721-8564",
@@ -337,6 +361,29 @@
             "name": "Lone Star Pest Solutions",
             "phone": "(512) 555-0723",
             "note": "Handles mosquitoes, fire ants, and roaches. Family-safe products, great results."
+          }
+        ]
+      },
+      {
+        "name": "Pool Cleaning & Service",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Splash Pools - Kelton",
+            "phone": "(737) 477-9234",
+            "note": "Community Verified - Justin R.",
+            "website": "https://splashswimmingpoolservices.com"
+          }
+        ]
+      },
+      {
+        "name": "Irrigation",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Gerardo Silva",
+            "phone": "(512) 848-7163",
+            "note": "Community Verified - Justin R."
           }
         ]
       }
@@ -474,9 +521,27 @@
         ]
       },
       {
+        "name": "Real Estate Attorney",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Robbins Estate Law",
+            "phone": "(000) 000-0000",
+            "note": "https://robbinsestatelaw.com/ - Community Verified - Justin R.",
+            "website": "https://robbinsestatelaw.com/"
+          }
+        ]
+      },
+      {
         "name": "Insurance Agents",
         "icon": "",
         "listings": [
+          {
+            "name": "Stonebriar Insurance - Jared",
+            "phone": "(469) 362-5300",
+            "note": "Community Verified - Justin R.",
+            "website": "https://stonebriarinsurance.com/"
+          },
           {
             "name": "Eric Baker",
             "phone": "(737) 900-6914",

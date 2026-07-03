@@ -420,6 +420,16 @@
             "note": "Community Verified"
           }
         ]
+      },
+      {
+        "name": "Pool Cleaning & Service",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Irrigation",
+        "icon": "",
+        "listings": []
       }
     ]
   },
@@ -499,6 +509,11 @@
       },
       {
         "name": "Real Estate Agents",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Real Estate Attorney",
         "icon": "",
         "listings": []
       },
