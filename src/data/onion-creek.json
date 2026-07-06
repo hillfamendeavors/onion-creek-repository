@@ -293,7 +293,11 @@
       {
         "name": "Landscaping",
         "icon": "",
-        "listings": [
+        "listings": [ {
+            "name": "John Levell Miles",
+            "phone": " (936) 234-9334",
+            "note": " If you're looking for dependable lawn care, give John Levell Miles a call for all your lawn service needs! He has a great personality, outstanding work ethic, and takes pride in delivering excellent results. You won't be disappointed! - Hector R."
+          },
           {
             "name": "Lance Barnes",
             "phone": "(713) 822-8300",
