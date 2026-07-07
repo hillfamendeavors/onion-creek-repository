@@ -79,6 +79,13 @@
             "featured": true
           },
           {
+            "name": "AirOne Rescue",
+            "phone": "(512) 392-0022",
+            "note": "AirOne Rescue does a fantastic job. - Mandy H.",
+            "website": "myairone.com",
+            "email": "info@myairone.com"
+          },
+          {
             "name": "JRod Riguez",
             "phone": "(512) 964-5001",
             "note": "for low voltage set up, tv mounting, plus more - Ismael L."
@@ -179,6 +186,23 @@
             "phone": "(919) 524-9187",
             "note": "The Jack of All Trades! He does it all or has someone that can lead you in the right direction. ⭐️⭐️⭐️⭐️⭐️ - Jenifer",
             "featured": true
+          },
+          {
+            "name": "D2 Garage Door",
+            "phone": "(512) 529-2734",
+            "note": "Community Verified",
+            "email": "d2garagedoor@gmail.com"
+          },
+          {
+            "name": "Mike Hegstrom",
+            "phone": "(425) 444-0704",
+            "note": "Community Verified",
+            "email": "mike@alliesrc.com"
+          },
+          {
+            "name": "Antonio Oliva",
+            "phone": "(512) 299-8949",
+            "note": "Community Verified"
           },
           {
             "name": "JD TILE and MORE - Miguel",
@@ -286,6 +310,20 @@
         "icon": "",
         "listings": [
           {
+            "name": "Air Necessities",
+            "phone": "(830) 652-1900",
+            "note": "Jaime Castaneda Jr. with Air Necessities is another great option- Sara C.",
+            "website": "theairnecessities.com",
+            "email": "airnecessities@icloud.com"
+          },
+          {
+            "name": "AirOne Rescue",
+            "phone": "(512) 392-0022",
+            "note": "AirOne Rescue does a fantastic job. - Mandy H.",
+            "website": "myairone.com",
+            "email": "info@myairone.com"
+          },
+          {
             "name": "Creative Comfort Solutions",
             "phone": "(512) 757-2366",
             "note": "Locally owned and family-operated with almost 20 years experience of keeping homes cool. True service, not sales."
@@ -375,6 +413,11 @@
             "phone": "(919) 524-9187",
             "note": "The Jack of All Trades! He does it all or has someone that can lead you in the right direction. ⭐️⭐️⭐️⭐️⭐️ - Jenifer",
             "featured": true
+          },
+          {
+            "name": "Rene",
+            "phone": "(512) 781-0464",
+            "note": "great price - Lisa A."
           },
           {
             "name": "JB Rogers Landscape Services",
