@@ -360,6 +360,12 @@
         "icon": "",
         "listings": [
           {
+            "name": "360 Painting Central Texas",
+            "phone": "(512) 265-0757",
+            "note": "Veteran-owned company specializing in residential and commercial painting services.",
+            "website": "360painting.com"
+          },
+          {
             "name": "Hernandez Remodeling",
             "phone": "(737) 291-7701",
             "note": "Our priority is your satisfaction."
