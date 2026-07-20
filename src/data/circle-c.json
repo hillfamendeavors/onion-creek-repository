@@ -487,7 +487,34 @@
       {
         "name": "Real Estate Attorney",
         "icon": "",
-        "listings": []
+        "listings": [
+          {
+            "name": "Bethany Gingras at Weisbart Springer Law",
+            "phone": "(512) 831-3604",
+            "note": "Community Verified - Raj B.",
+            "email": "[bhannusch@weisbartspringer.com]",
+            "website": "https://weisbartspringer.com/attorneys/bethany-hannusch/"
+          },
+          {
+            "name": "Ian Pittman at JP Law",
+            "phone": "(512) 320-0999",
+            "note": "Community Verified - Nathaniel C.",
+            "website": "https://jptexaslaw.com/"
+          },
+          {
+            "name": "Travis and Mike",
+            "phone": "(512) 472-5060",
+            "note": "Community Verified - Justin F.",
+            "website": "https://www.burnettturner.com/"
+          },
+          {
+            "name": "Sam D. Colletti",
+            "phone": "(512) 480-9777",
+            "note": "I know Sam well. He and his firm are excellent. - Daniel B.",
+            "email": "[scolletti@austinfamilylaw.com]",
+            "website": "https://austinfamilylaw.com/attorney/sam-colletti/"
+          }
+        ]
       },
       {
         "name": "Insurance Agents",
