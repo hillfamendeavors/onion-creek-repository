@@ -699,6 +699,32 @@
         ]
       },
       {
+        "name": "Junk Removal",
+        "icon": "",
+        "listings": [
+          {
+            "name": "1-800-Got-Junk",
+            "phone": "(512) 287-7996",
+            "note": "Excellent same day customer service! - John D."
+          },
+          {
+            "name": "Three Brothers Moving ATX",
+            "phone": "(512) 994-0334",
+            "note": "You Ring, We Bring."
+          },
+          {
+            "name": "Creek Clean Junk Removal",
+            "phone": "(512) 555-0347",
+            "note": "Same-day service available. They donate and recycle what they can."
+          },
+          {
+            "name": "Haul It Away ATX",
+            "phone": "(512) 555-0592",
+            "note": "Cleared out our whole garage in two hours. Affordable and very professional. - Grace M."
+          }
+        ]
+      },
+      {
         "name": "Tailors & Alterations",
         "icon": "",
         "listings": [
