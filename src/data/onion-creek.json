@@ -608,7 +608,26 @@
       {
         "name": "Gyms",
         "icon": "",
-        "listings": []
+        "listings": [
+          {
+            "name": "This Gym",
+            "phone": "(512) 617-1314",
+            "note": "they are located off of 71 and South Congress, I heard they have Eleiko equipment - Janelle B.",
+            "email": "[info@thisgym.com]"
+          },
+          {
+            "name": "Factory Gym",
+            "phone": "(512) 545-3589",
+            "note": "Community Verified - Kaleigh W.",
+            "email": "[https://www.factorygymatx.com/]"
+          },
+          {
+            "name": "Life Time",
+            "phone": "(512) 275-4700",
+            "note": "Community Verified - Lindsay H.",
+            "email": "[https://www.lifetime.life/locations/tx/south-lamar.html]"
+          }
+        ]
       },
       {
         "name": "Travel Agent",
