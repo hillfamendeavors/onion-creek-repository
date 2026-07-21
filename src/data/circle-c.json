@@ -306,11 +306,6 @@
         ]
       },
       {
-        "name": "Hardscaping",
-        "icon": "",
-        "listings": []
-      },
-      {
         "name": "Window Cleaning/Exterior Cleaning",
         "icon": "",
         "listings": []
@@ -581,6 +576,152 @@
         ]
       },
       {
+        "name": "Gyms",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Travel Agent",
+        "icon": "",
+        "listings": []
+      }
+    ]
+  },
+  {
+    "id": "kids",
+    "label": "Kids & Education",
+    "icon": "🎒",
+    "subcategories": [
+      {
+        "name": "Childcare",
+        "icon": "",
+        "listings": [
+          {
+            "name": "ProSpec & Design",
+            "phone": "(737) 354-1275",
+            "note": "quality results with attention to detail. Licensed, insured, and committed to making your space shine. - John D."
+          }
+        ]
+      },
+      {
+        "name": "Babysitting & Nannies",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Hannah Merkel",
+            "phone": "(512) 699-8122",
+            "note": "CPR Certified and have a reliable form of transportation! - Hannah M."
+          },
+          {
+            "name": "Jovie Care",
+            "phone": "(512) 343-1087",
+            "note": "Previously College Nannies + Sitters, Jovie care is here for all of your childcare needs. - Lisa K."
+          }
+        ]
+      },
+      {
+        "name": "Camps & Sports Leagues",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Home Court Training Center",
+            "phone": "(512) 284-8149",
+            "note": "HCTC is a fully equipped strength & conditioning facility with a full-size indoor basketball court. - Alex T."
+          },
+          {
+            "name": "Austin Sports Academy",
+            "phone": "(512) 382-6952",
+            "note": "Indoor, air-conditioned facility for summer camps, elite training, after-school programs and more. - Jordan M."
+          },
+          {
+            "name": "Lonestar Soccer Club",
+            "phone": "(512) 336-5425",
+            "note": "The Perfect Place To Start. A Great Place To Stay. - Michael R."
+          },
+          {
+            "name": "Circle C Coed Soccer",
+            "phone": "(510) 579-0445",
+            "note": "Friendly, Fun, Casual and Free. - Sarah P."
+          },
+          {
+            "name": "Neighborhood Sports",
+            "phone": "(512) 918-3524",
+            "note": "Neighborhood Sports is a youth sports organization offering all types of sports leagues, camps, and clinics for boys & girls in Austin, TX and the surrounding areas. - Emily S."
+          },
+          {
+            "name": "The Pond Hockey Club",
+            "phone": "(512) 924-0090",
+            "note": "Ice Rink Facility for Austin & Central Texas hockey players, curlers, and figure skaters. - David K."
+          }
+        ]
+      },
+      {
+        "name": "Hobby & Entertainment",
+        "icon": "",
+        "listings": []
+      }
+    ]
+  },
+  {
+    "id": "homelife",
+    "label": "Home Life",
+    "icon": "🏡",
+    "subcategories": [
+      {
+        "name": "House Cleaning",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Fock Cleaning LLC",
+            "phone": "(512) 962-0103",
+            "note": "Luxury cleaning isn’t just how it looks—it’s how deeply it’s cleaned. We combine high-end cleaning services with science-backed methods to give you a cleaner, healthier home."
+          },
+          {
+            "name": "Hill Country Cleaning Service",
+            "phone": "(512) 792-6728",
+            "note": "Community Verified."
+          },
+          {
+            "name": "ProSpec & Design",
+            "phone": "(737) 354-1275",
+            "note": "Quality Results with attention to detail. Licensed, insured, and committed to making your space shine. - Jessica S."
+          },
+          {
+            "name": "Anna’s Cleaning Service",
+            "phone": "(512) 507-8045",
+            "note": "Community Verified."
+          },
+          {
+            "name": "Lissy Cortez",
+            "phone": "(737) 354-7787",
+            "note": "Community Verified."
+          }
+        ]
+      },
+      {
+        "name": "Movers",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Three Brothers Moving ATX",
+            "phone": "(512) 994-0334",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Haul It Away ATX",
+            "phone": "(512) 555-0592",
+            "note": "Cleared out our whole garage in two hours. Affordable and very professional. - Grace M."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pets",
+    "label": "Pets",
+    "icon": "🐾",
+    "subcategories": [
+      {
         "name": "Veterinarians",
         "icon": "",
         "listings": [
@@ -627,113 +768,6 @@
         ]
       },
       {
-        "name": "Travel Agent",
-        "icon": "",
-        "listings": []
-      }
-    ]
-  },
-  {
-    "id": "kids",
-    "label": "Kids & Education",
-    "icon": "🎒",
-    "subcategories": [
-      {
-        "name": "Kids Activities",
-        "icon": "",
-        "listings": [
-          {
-            "name": "Home Court Training Center",
-            "phone": "(512) 284-8149",
-            "note": "HCTC is a fully equipped strength & conditioning facility with a full-size indoor basketball court. - Alex T."
-          },
-          {
-            "name": "Austin Sports Academy",
-            "phone": "(512) 382-6952",
-            "note": "Indoor, air-conditioned facility for summer camps, elite training, after-school programs and more. - Jordan M."
-          },
-          {
-            "name": "Lonestar Soccer Club",
-            "phone": "(512) 336-5425",
-            "note": "The Perfect Place To Start. A Great Place To Stay. - Michael R."
-          },
-          {
-            "name": "Circle C Coed Soccer",
-            "phone": "(510) 579-0445",
-            "note": "Friendly, Fun, Casual and Free. - Sarah P."
-          },
-          {
-            "name": "Neighborhood Sports",
-            "phone": "(512) 918-3524",
-            "note": "Neighborhood Sports is a youth sports organization offering all types of sports leagues, camps, and clinics for boys & girls in Austin, TX and the surrounding areas. - Emily S."
-          },
-          {
-            "name": "The Pond Hockey Club",
-            "phone": "(512) 924-0090",
-            "note": "Ice Rink Facility for Austin & Central Texas hockey players, curlers, and figure skaters. - David K."
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "homelife",
-    "label": "Home Life",
-    "icon": "🏡",
-    "subcategories": [
-      {
-        "name": "House Cleaning",
-        "icon": "",
-        "listings": [
-          {
-            "name": "Fock Cleaning LLC",
-            "phone": "(512) 962-0103",
-            "note": "Luxury cleaning isn’t just how it looks—it’s how deeply it’s cleaned. We combine high-end cleaning services with science-backed methods to give you a cleaner, healthier home."
-          },
-          {
-            "name": "Hill Country Cleaning Service",
-            "phone": "(512) 792-6728",
-            "note": "Community Verified."
-          },
-          {
-            "name": "ProSpec & Design",
-            "phone": "(737) 354-1275",
-            "note": "Quality Results with attention to detail. Licensed, insured, and committed to making your space shine. - Jessica S."
-          },
-          {
-            "name": "Anna’s Cleaning Service",
-            "phone": "(512) 507-8045",
-            "note": "Community Verified."
-          },
-          {
-            "name": "Lissy Cortez",
-            "phone": "(737) 354-7787",
-            "note": "Community Verified."
-          }
-        ]
-      },
-      {
-        "name": "Childcare & Babysitting",
-        "icon": "",
-        "listings": [
-          {
-            "name": "ProSpec & Design",
-            "phone": "(737) 354-1275",
-            "note": "quality results with attention to detail. Licensed, insured, and committed to making your space shine. - John D."
-          },
-          {
-            "name": "Hannah Merkel",
-            "phone": "(512) 699-8122",
-            "note": "CPR Certified and have a reliable form of transportation! - Hannah M."
-          },
-          {
-            "name": "Jovie Care",
-            "phone": "(512) 343-1087",
-            "note": "Previously College Nannies + Sitters, Jovie care is here for all of your childcare needs. - Lisa K."
-          }
-        ]
-      },
-      {
         "name": "Pet Services",
         "icon": "",
         "listings": [
@@ -761,79 +795,6 @@
             "name": "Creek Walk Dog Walking",
             "phone": "(512) 555-0319",
             "note": "Afternoon walks, very dependable. Dogs love her! - Sarah T."
-          }
-        ]
-      },
-      {
-        "name": "Junk Removal",
-        "icon": "",
-        "listings": [
-          {
-            "name": "1-800-Got-Junk",
-            "phone": "(512) 287-7996",
-            "note": "Excellent same day customer service! - John D."
-          },
-          {
-            "name": "Three Brothers Moving ATX",
-            "phone": "(512) 994-0334",
-            "note": "You Ring, We Bring."
-          },
-          {
-            "name": "Creek Clean Junk Removal",
-            "phone": "(512) 555-0347",
-            "note": "Same-day service available. They donate and recycle what they can."
-          },
-          {
-            "name": "Haul It Away ATX",
-            "phone": "(512) 555-0592",
-            "note": "Cleared out our whole garage in two hours. Affordable and very professional. - Grace M."
-          }
-        ]
-      },
-      {
-        "name": "Tailors & Alterations",
-        "icon": "",
-        "listings": [
-          {
-            "name": "Judy Thornhill",
-            "phone": "(512) 789-8617",
-            "note": "She lives in Circle C and does OUTSTANDING Work! - Sherri W."
-          },
-          {
-            "name": "Couture Tailors",
-            "phone": "(512) 769-1486",
-            "note": "Tiffany altered my Wedding Gown and I have brought several pieces since then. - Elisabeth D."
-          },
-          {
-            "name": "Hope Tailor Shop & Alterations",
-            "phone": "(512) 447-4673",
-            "note": "They do AMAZING work! - Kelly T."
-          },
-          {
-            "name": "Soco Cleaner & Alterations",
-            "phone": "(512) 462-0048",
-            "note": "He's reasonable and amazing at what he does. - Kelli F."
-          },
-          {
-            "name": "AA Alterations",
-            "phone": "(512) 328-1766",
-            "note": "Very happy with their work, it’s in the HEB shopping center at Slaughter/Menchaca. - Tiffany F."
-          }
-        ]
-      },
-      {
-        "name": "Movers",
-        "icon": "",
-        "listings": [
-          {
-            "name": "Three Brothers Moving ATX",
-            "phone": "(512) 994-0334",
-            "note": "Community Verified"
-          },
-          {
-            "name": "Haul It Away ATX",
-            "phone": "(512) 555-0592",
-            "note": "Cleared out our whole garage in two hours. Affordable and very professional. - Grace M."
           }
         ]
       }

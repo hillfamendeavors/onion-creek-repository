@@ -481,11 +481,6 @@
         ]
       },
       {
-        "name": "Hardscaping",
-        "icon": "",
-        "listings": []
-      },
-      {
         "name": "Window Cleaning/Exterior Cleaning",
         "icon": "",
         "listings": [
@@ -767,30 +762,9 @@
         ]
       },
       {
-        "name": "Veterinarians",
+        "name": "Gyms",
         "icon": "",
-        "listings": [
-          {
-            "name": "Apollo Veterinary",
-            "phone": "(512) 648-6477",
-            "note": "Love their open-concept clinic where we can stay with our dog. Very compassionate and transparent pricing. - Michelle T."
-          },
-          {
-            "name": "South Austin Cat Hospital",
-            "phone": "(512) 910-2287",
-            "note": "Next to the neighborhood, wonderful service and care. We won’t take our cats anywhere else. - Sarah K."
-          },
-          {
-            "name": "Buda Vet Center",
-            "phone": "(512) 555-0938",
-            "note": "Full-service clinic. Reasonable rates and very thorough checkups."
-          },
-          {
-            "name": "Onion Creek Animal Clinic",
-            "phone": "(512) 555-0274",
-            "note": "Caring staff, great with anxious pets. Our dogs actually like going here."
-          }
-        ]
+        "listings": []
       },
       {
         "name": "Travel Agent",
@@ -805,7 +779,29 @@
     "icon": "🎒",
     "subcategories": [
       {
-        "name": "Kids Activities",
+        "name": "Childcare",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Little Sprouts Daycare",
+            "phone": "(512) 555-0533",
+            "note": "Small home daycare run by a neighbor. Warm and nurturing environment."
+          }
+        ]
+      },
+      {
+        "name": "Babysitting & Nannies",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Sarah T. (Babysitter)",
+            "phone": "(512) 555-0267",
+            "note": "CPR certified, great with kids of all ages. Very responsible neighbor."
+          }
+        ]
+      },
+      {
+        "name": "Camps & Sports Leagues",
         "icon": "",
         "listings": [
           {
@@ -814,14 +810,25 @@
             "note": "My son loves KidStrong! Is a great way to get kids who aren't into sports a fun way to exercise! - Tara L."
           },
           {
-            "name": "The Party Rentals",
-            "phone": "(512) 787-2616",
-            "note": "Providing the best Water Slides for rent in Kyle, Buda, Lockhart, San Marcos and greater Austin region."
-          },
-          {
             "name": "Austin Submission Fighting",
             "phone": "(512) 431-2458",
             "note": "One week of Jiu Jitsu, Mixed Martial Arts, fitness, games and FUN."
+          },
+          {
+            "name": "Buda Youth Sports League",
+            "phone": "(512) 555-0162",
+            "note": "Soccer, baseball, and flag football for ages 4–14. Great coaches, very organized."
+          }
+        ]
+      },
+      {
+        "name": "Hobby & Entertainment",
+        "icon": "",
+        "listings": [
+          {
+            "name": "The Party Rentals",
+            "phone": "(512) 787-2616",
+            "note": "Providing the best Water Slides for rent in Kyle, Buda, Lockhart, San Marcos and greater Austin region."
           },
           {
             "name": "Ashley VanGilder",
@@ -832,11 +839,6 @@
             "name": "FOAMISTA",
             "phone": "(195) 634-0521",
             "note": "Foam Party Just Got Better."
-          },
-          {
-            "name": "Buda Youth Sports League",
-            "phone": "(512) 555-0162",
-            "note": "Soccer, baseball, and flag football for ages 4–14. Great coaches, very organized."
           },
           {
             "name": "Creek Side Art Studio",
@@ -899,18 +901,56 @@
         ]
       },
       {
-        "name": "Childcare & Babysitting",
+        "name": "Movers",
         "icon": "",
         "listings": [
           {
-            "name": "Sarah T. (Babysitter)",
-            "phone": "(512) 555-0267",
-            "note": "CPR certified, great with kids of all ages. Very responsible neighbor."
+            "name": "Christopher Doyle",
+            "phone": "(512) 413-2324",
+            "note": "Get that spring cleaning out of the way!"
           },
           {
-            "name": "Little Sprouts Daycare",
-            "phone": "(512) 555-0533",
-            "note": "Small home daycare run by a neighbor. Warm and nurturing environment."
+            "name": "Three Brothers Moving ATX",
+            "phone": "(512) 994-0334",
+            "note": "You Ring, We Bring."
+          },
+          {
+            "name": "Haul It Away ATX",
+            "phone": "(512) 555-0592",
+            "note": "Cleared out our whole garage in two hours. Affordable and very professional. - Grace M."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pets",
+    "label": "Pets",
+    "icon": "🐾",
+    "subcategories": [
+      {
+        "name": "Veterinarians",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Apollo Veterinary",
+            "phone": "(512) 648-6477",
+            "note": "Love their open-concept clinic where we can stay with our dog. Very compassionate and transparent pricing. - Michelle T."
+          },
+          {
+            "name": "South Austin Cat Hospital",
+            "phone": "(512) 910-2287",
+            "note": "Next to the neighborhood, wonderful service and care. We won’t take our cats anywhere else. - Sarah K."
+          },
+          {
+            "name": "Buda Vet Center",
+            "phone": "(512) 555-0938",
+            "note": "Full-service clinic. Reasonable rates and very thorough checkups."
+          },
+          {
+            "name": "Onion Creek Animal Clinic",
+            "phone": "(512) 555-0274",
+            "note": "Caring staff, great with anxious pets. Our dogs actually like going here."
           }
         ]
       },
@@ -955,94 +995,6 @@
             "name": "Creek Walk Dog Walking",
             "phone": "(512) 555-0319",
             "note": "Afternoon walks, very dependable. Dogs love her! - Sarah T."
-          }
-        ]
-      },
-      {
-        "name": "Junk Removal",
-        "icon": "",
-        "listings": [
-          {
-            "name": "Junk Squad",
-            "phone": "(737) 999-2335",
-            "note": "Junk Removal and More!! You call, we haul. Reach out to us for a FREE No Obligation Quote!"
-          },
-          {
-            "name": "Christopher Doyle",
-            "phone": "(512) 413-2324",
-            "note": "Get that spring cleaning out of the way!"
-          },
-          {
-            "name": "1-800-Got-Junk",
-            "phone": "(512) 287-7996",
-            "note": "Excellent same day customer service! - John D."
-          },
-          {
-            "name": "Three Brothers Moving ATX",
-            "phone": "(512) 994-0334",
-            "note": "You Ring, We Bring."
-          },
-          {
-            "name": "Creek Clean Junk Removal",
-            "phone": "(512) 555-0347",
-            "note": "Same-day service available. They donate and recycle what they can."
-          },
-          {
-            "name": "Haul It Away ATX",
-            "phone": "(512) 555-0592",
-            "note": "Cleared out our whole garage in two hours. Affordable and very professional. - Grace M."
-          }
-        ]
-      },
-      {
-        "name": "Tailors & Alterations",
-        "icon": "",
-        "listings": [
-          {
-            "name": "Judy Thornhill",
-            "phone": "(512) 789-8617",
-            "note": "She lives in Onion Creek and does OUTSTANDING Work! - Sherri W."
-          },
-          {
-            "name": "Couture Tailors",
-            "phone": "(512) 769-1486",
-            "note": "Tiffany altered my Wedding Gown and I have brought several pieces since then. - Elisabeth D."
-          },
-          {
-            "name": "Hope Tailor Shop & Alterations",
-            "phone": "(512) 447-4673",
-            "note": "They do AMAZING work. - Kelly T."
-          },
-          {
-            "name": "Soco Cleaner & Alterations",
-            "phone": "(512) 462-0048",
-            "note": "He's reasonable and amazing at what he does. - Kelli F."
-          },
-          {
-            "name": "AA Alterations",
-            "phone": "(512) 328-1766",
-            "note": "Very happy with their work, it’s in the HEB shopping center at Slaughter/Menchaca. - Tiffany F."
-          }
-        ]
-      },
-      {
-        "name": "Movers",
-        "icon": "",
-        "listings": [
-          {
-            "name": "Christopher Doyle",
-            "phone": "(512) 413-2324",
-            "note": "Get that spring cleaning out of the way!"
-          },
-          {
-            "name": "Three Brothers Moving ATX",
-            "phone": "(512) 994-0334",
-            "note": "You Ring, We Bring."
-          },
-          {
-            "name": "Haul It Away ATX",
-            "phone": "(512) 555-0592",
-            "note": "Cleared out our whole garage in two hours. Affordable and very professional. - Grace M."
           }
         ]
       }

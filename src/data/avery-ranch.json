@@ -368,22 +368,6 @@
         ]
       },
       {
-        "name": "Hardscaping",
-        "icon": "",
-        "listings": [
-          {
-            "name": "Naquin Power Washing",
-            "phone": "(713) 828-4685",
-            "note": "They are always happy to help - Lucas N."
-          },
-          {
-            "name": "Cayden Hinderman-Close",
-            "phone": "(512) 635-5922",
-            "note": "Who needs mowing, landscaping, pressure washing or detailing? I’m trying to earn money this summer and would love to help out for reasonable prices. You can reach me at, 512-635-5922"
-          }
-        ]
-      },
-      {
         "name": "Window Cleaning/Exterior Cleaning",
         "icon": "",
         "listings": []
@@ -545,30 +529,9 @@
         "listings": []
       },
       {
-        "name": "Veterinarians",
+        "name": "Gyms",
         "icon": "",
-        "listings": [
-          {
-            "name": "Great Oaks Animal Hospital",
-            "phone": "(512) 388-4551",
-            "note": "Great Oaks Animal Hospital. We’ve been taking our Coco there for more than 10 years. Dr Willis and her staff are fantastic. - John R."
-          },
-          {
-            "name": "Brushy Creek Veterinarian",
-            "phone": "(512) 255-9725",
-            "note": "Brushy Creek Veterinarian is awesome. Dr. Naylor and dr. Pratt have been Treating my animals for over 13 years. - Tawanna V."
-          },
-          {
-            "name": "Parmer Lane Pet Hospital",
-            "phone": "(512) 260-5443",
-            "note": "Parmer Lane Pet Hospital. We love Dr. Bryant! - Jen J."
-          },
-          {
-            "name": "VCA Lakeline Animal Hospital",
-            "phone": "(512) 258-1155",
-            "note": "The care and compassion at VCA Lakeline is unmatched. - Marcey H."
-          }
-        ]
+        "listings": []
       },
       {
         "name": "Travel Agent",
@@ -583,7 +546,39 @@
     "icon": "🎒",
     "subcategories": [
       {
-        "name": "Kids Activities",
+        "name": "Childcare",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Giorgi's Child Care",
+            "phone": "(512) 800-9961",
+            "note": "Community Verified"
+          }
+        ]
+      },
+      {
+        "name": "Babysitting & Nannies",
+        "icon": "",
+        "listings": [
+          {
+            "name": "April",
+            "phone": "(512) 529-5692",
+            "note": "April can help you out! Her number is +1 (512) 529-5692 - Isabel Read"
+          },
+          {
+            "name": "Wilco Nannies",
+            "phone": "(512) 766-8369",
+            "note": "Community Verified"
+          }
+        ]
+      },
+      {
+        "name": "Camps & Sports Leagues",
+        "icon": "",
+        "listings": []
+      },
+      {
+        "name": "Hobby & Entertainment",
         "icon": "",
         "listings": [
           {
@@ -631,27 +626,6 @@
     "icon": "🏡",
     "subcategories": [
       {
-        "name": "Childcare & Babysitting",
-        "icon": "",
-        "listings": [
-          {
-            "name": "April",
-            "phone": "(512) 529-5692",
-            "note": "April can help you out! Her number is +1 (512) 529-5692 - Isabel Read"
-          },
-          {
-            "name": "Wilco Nannies",
-            "phone": "(512) 766-8369",
-            "note": "Community Verified"
-          },
-          {
-            "name": "Giorgi's Child Care",
-            "phone": "(512) 800-9961",
-            "note": "Community Verified"
-          }
-        ]
-      },
-      {
         "name": "House Cleaning",
         "icon": "",
         "listings": [
@@ -693,6 +667,66 @@
         ]
       },
       {
+        "name": "Sewing & Jewelry Craft",
+        "icon": "",
+        "listings": [
+          {
+            "name": "OCB Squared LLC - Shauna",
+            "phone": "(512) 716-5371",
+            "note": "I use OCB Squared LLC for that. The owner, Shauna does amazing work. Everyone that I know goes to her for all types of stuff including embroidery. She is a local Texan and her husband is a police officer. - Chryssandra M.",
+            "email":"ocbsquared@gmail.com"
+          },
+          {
+            "name": "Needle Rhythm",
+            "phone": "(281) 406-0711",
+            "note": "Community Verified"
+          },
+          {
+            "name": "Go Go Alterations & Beauty",
+            "phone": "(512) 825-5804",
+            "note": "Community Verified"
+          }
+        ]
+      },
+      {
+        "name": "Junk Removal",
+        "icon": "",
+        "listings": []
+      }
+    ]
+  },
+  {
+    "id": "pets",
+    "label": "Pets",
+    "icon": "🐾",
+    "subcategories": [
+      {
+        "name": "Veterinarians",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Great Oaks Animal Hospital",
+            "phone": "(512) 388-4551",
+            "note": "Great Oaks Animal Hospital. We’ve been taking our Coco there for more than 10 years. Dr Willis and her staff are fantastic. - John R."
+          },
+          {
+            "name": "Brushy Creek Veterinarian",
+            "phone": "(512) 255-9725",
+            "note": "Brushy Creek Veterinarian is awesome. Dr. Naylor and dr. Pratt have been Treating my animals for over 13 years. - Tawanna V."
+          },
+          {
+            "name": "Parmer Lane Pet Hospital",
+            "phone": "(512) 260-5443",
+            "note": "Parmer Lane Pet Hospital. We love Dr. Bryant! - Jen J."
+          },
+          {
+            "name": "VCA Lakeline Animal Hospital",
+            "phone": "(512) 258-1155",
+            "note": "The care and compassion at VCA Lakeline is unmatched. - Marcey H."
+          }
+        ]
+      },
+      {
         "name": "Pet Services",
         "icon": "",
         "listings": [
@@ -722,33 +756,6 @@
             "note": "Sophia is amazing - Marlio T."
           }
         ]
-      },
-      {
-        "name": "Sewing & Jewelry Craft",
-        "icon": "",
-        "listings": [
-          {
-            "name": "OCB Squared LLC - Shauna",
-            "phone": "(512) 716-5371",
-            "note": "I use OCB Squared LLC for that. The owner, Shauna does amazing work. Everyone that I know goes to her for all types of stuff including embroidery. She is a local Texan and her husband is a police officer. - Chryssandra M.",
-            "email":"ocbsquared@gmail.com"
-          },
-          {
-            "name": "Needle Rhythm",
-            "phone": "(281) 406-0711",
-            "note": "Community Verified"
-          },
-          {
-            "name": "Go Go Alterations & Beauty",
-            "phone": "(512) 825-5804",
-            "note": "Community Verified"
-          }
-        ]
-      },
-      {
-        "name": "Junk Removal",
-        "icon": "",
-        "listings": []
       }
     ]
   }
