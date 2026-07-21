@@ -534,7 +534,7 @@
         "listings": [
           {
             "name": "Robbins Estate Law",
-            "phone": "(000) 000-0000",
+            "phone": "(512) 851-1248",
             "note": "https://robbinsestatelaw.com/ - Community Verified - Justin R.",
             "website": "https://robbinsestatelaw.com/"
           }
@@ -741,6 +741,37 @@
             "name": "Spotless Home Cleaning",
             "phone": "(512) 555-0182",
             "note": "Deep cleans are incredible. Uses eco-friendly products."
+          }
+        ]
+      },
+      {
+        "name": "Tailors & Alterations",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Judy Thornhill",
+            "phone": "(512) 789-8617",
+            "note": "She lives in Onion Creek and does OUTSTANDING Work! - Sherri W."
+          },
+          {
+            "name": "Couture Tailors",
+            "phone": "(512) 769-1486",
+            "note": "Tiffany altered my Wedding Gown and I have brought several pieces since then. - Elisabeth D."
+          },
+          {
+            "name": "Hope Tailor Shop & Alterations",
+            "phone": "(512) 447-4673",
+            "note": "They do AMAZING work. - Kelly T."
+          },
+          {
+            "name": "Soco Cleaner & Alterations",
+            "phone": "(512) 462-0048",
+            "note": "He's reasonable and amazing at what he does. - Kelli F."
+          },
+          {
+            "name": "AA Alterations",
+            "phone": "(512) 328-1766",
+            "note": "Very happy with their work, it’s in the HEB shopping center at Slaughter/Menchaca. - Tiffany F."
           }
         ]
       },
