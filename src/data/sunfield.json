@@ -565,6 +565,11 @@
         "icon": "",
         "listings": [
           {
+            "name": "TEXASWINDOWTINT.BIZ",
+            "phone": "(512) 361-8597",
+            "note": "Texas Window Tinting - Joseph D."
+          },
+          {
             "name": "Pete",
             "phone": "(512) 567-1830",
             "note": "Pete is a great mechanic and is mobile his number is 512-567-1830. - Jo Ann T."
@@ -659,6 +664,11 @@
         "name": "Real Estate Agents",
         "icon": "",
         "listings": [
+          {
+            "name": "Ana Cuevas, Realtor",
+            "phone": "(512) 619-8252",
+            "note": "Licensed Real Estate Agent "
+          },
           {
             "name": "Norma Perez, Realtor",
             "phone": "(210) 380-8781",
