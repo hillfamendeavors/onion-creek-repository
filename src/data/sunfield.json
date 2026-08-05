@@ -421,6 +421,11 @@
             "featured": true
           },
           {
+            "name": "Texican Lawn Care",
+            "phone": "(512) 587-2652",
+            "note": "Proudly serving Texans with top quality lawn services"
+          },
+          {
             "name": "Rene",
             "phone": "(512) 781-0464",
             "note": "great price - Lisa A."
@@ -564,6 +569,11 @@
         "name": "Mechanics & Auto Repair",
         "icon": "",
         "listings": [
+          {
+            "name": "Antonio Mechanical",
+            "phone": "(512) 429-6256",
+            "note": "Community Verified"
+          },
           {
             "name": "TEXASWINDOWTINT.BIZ",
             "phone": "(512) 361-8597",
@@ -914,6 +924,11 @@
         "name": "Junk Removal",
         "icon": "",
         "listings": [
+          {
+            "name": "Enrique Mora",
+            "phone": "(512) 825-9505",
+            "note": "No job is too small, or big for us. We are also fully Insured. Residential, and Commercial Services!"
+          },
           {
             "name": "Junk Squad",
             "phone": "(737) 999-2335",

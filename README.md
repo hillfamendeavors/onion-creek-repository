@@ -1,58 +1,112 @@
 # Trusted Neighbors Directory
 
-Neighbor-sourced local business directories for Austin-area neighborhoods, built
-with [Astro](https://astro.build).
+Neighbor-sourced local business directories for Austin-area neighborhoods, built with [Astro](https://astro.build).
 
-## Why Astro
+## Overview
 
-The pages used to load their listings in the browser with `fetch('listings.json')`.
-Search engines and AI readers (ChatGPT, Claude) fetch the raw HTML but **don't run
-JavaScript**, so they saw an empty page. Astro **pre-renders** every listing into the
-static HTML at build time, so the content is readable by crawlers and AI — while the
-search, filtering, collapsing, and "Suggest a Referral" form still work client-side.
+**Trusted Neighbors Directory** provides fast, accessible, neighbor-recommended local business directories for Austin-area communities (including Avery Ranch, Circle C, Onion Creek, and Sunfield). 
 
-## Project structure
+### Why Astro?
+Previously, directory listings were fetched dynamically in the browser via client-side JavaScript (`fetch('listings.json')`). Because search engine crawlers and AI assistants (e.g., ChatGPT, Claude) often fetch raw HTML without executing JavaScript, they were indexing empty pages. 
+
+With Astro, every listing is **pre-rendered into static HTML at build time**. Crawlers and AI engines receive full, indexable content immediately, while client-side search, filtering, category expansion/collapse, and referral submission remain fast and interactive.
+
+---
+
+## Supported Neighborhoods
+
+- **Avery Ranch** (`/avery-ranch/`)
+- **Circle C** (`/circle-c/`)
+- **Onion Creek** (`/onion-creek/`)
+- **Sunfield** (`/sunfield/`)
+
+---
+
+## Project Structure
 
 ```
-src/
-  data/
-    neighborhoods.js     # per-neighborhood config (name, title, Formspree id, subject)
-    <slug>.json          # the listings for each neighborhood (edit these to add listings)
-  layouts/Directory.astro
-  components/
-    ListingsTree.astro   # renders all groups/subcategories/listings at build time
-    ListingRow.astro     # one listing (standard row or VIP "featured" card)
-    ReferralModal.astro  # "Suggest a Referral" modal
-    OrderModal.astro     # dormant "Order a Directory" modal (Sunfield)
-  scripts/directory.js   # client interactivity (filter/search/collapse/copy/submit)
-  styles/directory.css   # all styles
-  pages/[neighborhood].astro  # one template -> /avery-ranch/, /circle-c/, etc.
-public/
-  index.html             # the landing page (served as-is at /)
-  assets/                # images
+.
+├── astro.config.mjs          # Astro configuration
+├── netlify.toml              # Netlify build & security headers configuration
+├── package.json              # Project dependencies & scripts
+├── public/                   # Static assets & landing page
+│   ├── index.html            # Main landing page
+│   └── assets/               # Branding assets & images
+└── src/
+    ├── components/
+    │   ├── ListingsTree.astro  # Builds category/subcategory listing tree
+    │   ├── ListingRow.astro    # Renders standard listings & VIP featured cards
+    │   ├── ReferralModal.astro # "Suggest a Referral" interactive modal
+    │   └── OrderModal.astro    # "Order a Directory" modal
+    ├── data/
+    │   ├── neighborhoods.js    # Neighborhood metadata (name, Formspree ID, SEO titles)
+    │   ├── avery-ranch.json    # Avery Ranch business listings
+    │   ├── circle-c.json       # Circle C business listings
+    │   ├── onion-creek.json    # Onion Creek business listings
+    │   └── sunfield.json       # Sunfield business listings
+    ├── layouts/
+    │   └── Directory.astro     # Master layout for directory pages
+    ├── pages/
+    │   ├── index.astro         # Main landing page route
+    │   └── [neighborhood].astro# Dynamic route generating pages for each neighborhood
+    ├── scripts/
+    │   └── directory.js        # Client-side filtering, search, collapse, & form handler
+    └── styles/
+        └── directory.css       # Global styles & directory theme
 ```
 
-## Develop / build
+---
+
+## Development & Commands
+
+Ensure Node.js (v20 or higher recommended) is installed.
 
 ```bash
-npm install        # once
-npm run dev        # local dev server with hot reload
-npm run build      # outputs static site to dist/
-npm run preview    # serve the built dist/ locally
+# Install dependencies
+npm install
+
+# Start local development server (with hot-reload at http://localhost:4321)
+npm run dev
+
+# Build for production (outputs static HTML to dist/)
+npm run build
+
+# Preview the production build locally
+npm run preview
 ```
 
-## Adding or editing a listing
+---
 
-1. Edit the relevant `src/data/<slug>.json` (e.g. `src/data/onion-creek.json`).
-   Each listing is `{ "name", "phone", "note" }`; optional `"featured": true` renders
-   the VIP card, and `"address"` / `"serviceArea"` adds a Google Maps link.
-2. Run `npm run build`.
-3. Deploy the `dist/` folder.
+## Managing Listings & Neighborhoods
 
-## Deploy
+### Adding or Editing Listings
+1. Open the JSON file corresponding to the target neighborhood in `src/data/` (e.g., `src/data/onion-creek.json`).
+2. Add or modify listings under the relevant group/category.
+   - **Standard listing**: `{ "name": "Vendor Name", "phone": "512-555-0199", "note": "Recommended plumber" }`
+   - **Featured VIP card**: Add `"featured": true` to display as a highlighted card.
+   - **Location / Maps link**: Include `"address"` or `"serviceArea"` to automatically generate a Google Maps link.
+3. Save the file and verify with `npm run build`.
 
-The build outputs plain static files to `dist/` — deploy that folder to any static
-host (Netlify, Vercel, GitHub Pages, etc.). Netlify/Vercel auto-detect Astro.
+### Adding a New Neighborhood
+1. Create a new JSON data file in `src/data/<slug>.json` containing the category structure and listings.
+2. Register the neighborhood in `src/data/neighborhoods.js` with its title, Formspree form ID, and metadata.
+3. Build or restart the dev server—Astro's dynamic route `src/pages/[neighborhood].astro` will automatically generate the new page at `/<slug>/`.
 
-For **GitHub Pages**, set `site` (and `base` if served from a sub-path) in
-`astro.config.mjs` and publish `dist/` via an action.
+---
+
+## Deployment
+
+The project builds to a fully static output directory (`dist/`).
+
+### Netlify (Recommended)
+This repository includes a `netlify.toml` pre-configured with:
+- **Build command**: `npm run build`
+- **Publish directory**: `dist`
+- **Node version**: `20`
+- **Security headers**: CSP, HSTS, X-Frame-Options, and Referrer Policy.
+
+Simply connect the Git repository to Netlify for automatic CI/CD deployments.
+
+### Other Static Hosts (Vercel, Cloudflare Pages, GitHub Pages)
+- **Vercel / Cloudflare**: Auto-detects Astro. Set output directory to `dist`.
+- **GitHub Pages**: Configure `site` (and `base` if using a subpath) in `astro.config.mjs`, and deploy the `dist/` directory via GitHub Actions.
