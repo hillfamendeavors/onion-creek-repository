@@ -1659,7 +1659,7 @@
     .trust-stats .trust-stat.scroll-anim:nth-child(3)          { transition-delay: 0.24s; }
     .trust-bar   .trust-tagline.scroll-anim                    { transition-delay: 0.34s; }
 
-    /* Formspree Submission & Loading/Success Animations */
+    /* Form Submission & Loading/Success Animations */
     .btn-submit {
       position: relative;
     }
@@ -2120,7 +2120,7 @@
           </div>
         </div>
 
-        <!-- Suggest Form (uses Formspree) -->
+        <!-- Suggest Form (emailed via Resend, see netlify/functions/notify-suggestion.js) -->
         <div class="form-container">
           <form id="suggestionForm" action="/.netlify/functions/notify-suggestion" method="POST">
 
@@ -2286,7 +2286,7 @@
       nums.forEach(el => obs.observe(el));
     })();
 
-    // ── Formspree AJAX Submission with Animation ──
+    // ── Suggestion form AJAX submission with animation ──
     const suggestionForm = document.getElementById('suggestionForm');
     const formSuccess = document.getElementById('formSuccess');
     const submitBtn = document.getElementById('submitBtn');

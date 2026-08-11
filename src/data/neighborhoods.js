@@ -15,7 +15,6 @@ export const neighborhoods = [
     name: 'Avery Ranch',
     title: 'Avery Ranch Directory',
     footerLabel: 'Avery Ranch YP',
-    formspreeId: 'mpqnezbn',
     subjectPrefix: 'New Avery Ranch Referral',
     // Navy & gold
     theme: {
@@ -40,7 +39,6 @@ export const neighborhoods = [
     name: 'Circle C',
     title: 'Circle C Directory',
     footerLabel: 'Circle C YP',
-    formspreeId: 'xeedaqvl',
     subjectPrefix: 'New Circle C YP Referral',
     // Deep teal & warm gold
     theme: {
@@ -65,7 +63,6 @@ export const neighborhoods = [
     name: 'Onion Creek',
     title: 'Onion Creek Directory',
     footerLabel: 'Onion Creek YP',
-    formspreeId: 'xqewrzww',
     subjectPrefix: 'New Onion Creek YP Referral',
     // Masters green & yellow
     theme: {
@@ -90,7 +87,6 @@ export const neighborhoods = [
     name: 'Sunfield, Buda',
     title: 'Sunfield, Buda Directory',
     footerLabel: 'Sunfield, Buda YP',
-    formspreeId: 'mwvyajvb',
     subjectPrefix: 'New Sunfield, Buda YP Referral',
     // Deep navy, muted teal & desaturated gold
     theme: {
