@@ -2,6 +2,7 @@
 import Directory from '../layouts/Directory.astro';
 import ListingsTree from '../components/ListingsTree.astro';
 import ReferralModal from '../components/ReferralModal.astro';
+import RequestModal from '../components/RequestModal.astro';
 import OrderModal from '../components/OrderModal.astro';
 import { neighborhoods } from '../data/neighborhoods.js';
 
@@ -48,5 +49,6 @@ const total = groups.reduce(
   </main>
 
   <ReferralModal formspreeId={neighborhood.formspreeId} subjectPrefix={neighborhood.subjectPrefix} />
+  <RequestModal groups={groups} neighborhood={neighborhood} />
   {neighborhood.order && <OrderModal order={neighborhood.order} />}
 </Directory>

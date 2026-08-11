@@ -3,7 +3,9 @@
 // The listings are already pre-rendered into the HTML at build time (good for
 // crawlers / AI readers). This script never rebuilds the list — it only
 // shows/hides the existing DOM for category-tab filtering and search, plus the
-// collapse, copy-phone, and "Suggest a Referral" behaviors.
+// collapse, copy-phone, "Suggest a Referral", and "Need a Service?" behaviors.
+
+import { supabase } from '../lib/supabase.js';
 
 const pillsEl = document.getElementById('groupPills');
 const container = document.getElementById('listingsContainer');
@@ -206,8 +208,8 @@ if (overlay && openBtn && closeBtn) {
 }
 
 // ── Phone input live formatting ──
-const phoneEl = document.getElementById('f-phone');
-if (phoneEl) {
+function wirePhoneFormatting(phoneEl) {
+  if (!phoneEl) return;
   phoneEl.addEventListener('input', () => {
     phoneEl.value = formatUSPhone(phoneEl.value.replace(/\D/g, ''));
   });
@@ -225,6 +227,81 @@ if (phoneEl) {
     e.preventDefault();
     const paste = (e.clipboardData || window.clipboardData).getData('text') || '';
     phoneEl.value = formatUSPhone(paste.replace(/\D/g, '').slice(0, 10));
+  });
+}
+wirePhoneFormatting(document.getElementById('f-phone'));
+wirePhoneFormatting(document.getElementById('r-phone'));
+
+// ── "Need a Service?" modal ──
+const reqOverlay = document.getElementById('requestModalOverlay');
+const reqOpenBtn = document.getElementById('openRequestModal');
+const reqCloseBtn = document.getElementById('closeRequestModal');
+const reqSubmitBtn = document.getElementById('submitRequestBtn');
+const reqFormView = document.getElementById('requestFormView');
+const reqThankYou = document.getElementById('requestThankYouView');
+
+function closeRequestModal() {
+  reqOverlay.classList.remove('open');
+  setTimeout(() => {
+    reqFormView.style.display = 'block';
+    reqThankYou.style.display = 'none';
+    ['r-category', 'r-date', 'r-name', 'r-phone', 'r-email', 'r-notes'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  }, 300);
+}
+
+if (reqOverlay && reqOpenBtn && reqCloseBtn) {
+  const dateEl = document.getElementById('r-date');
+  if (dateEl) dateEl.min = new Date().toISOString().split('T')[0];
+
+  reqOpenBtn.addEventListener('click', () => reqOverlay.classList.add('open'));
+  reqCloseBtn.addEventListener('click', closeRequestModal);
+  reqOverlay.addEventListener('click', (e) => { if (e.target === reqOverlay) closeRequestModal(); });
+
+  reqSubmitBtn.addEventListener('click', async () => {
+    const category = document.getElementById('r-category').value;
+    const date_needed = document.getElementById('r-date').value;
+    const name = document.getElementById('r-name').value.trim();
+    let phone = document.getElementById('r-phone').value.trim();
+    const email = document.getElementById('r-email').value.trim();
+    const notes = document.getElementById('r-notes').value.trim();
+
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (!category || !date_needed || !name || !phoneDigits) {
+      alert('Please fill in the category, date needed, your name, and phone fields.');
+      return;
+    }
+    if (phoneDigits.length !== 10) {
+      alert('Please enter a 10-digit phone number in the format (512) 555-0000.');
+      return;
+    }
+    phone = formatUSPhone(phoneDigits);
+
+    reqSubmitBtn.textContent = 'Submitting…';
+    reqSubmitBtn.disabled = true;
+
+    const { error } = await supabase.from('service_requests').insert({
+      neighborhood: reqOverlay.dataset.neighborhood,
+      category,
+      date_needed,
+      name,
+      phone,
+      email: email || null,
+      notes: notes || null,
+    });
+
+    reqSubmitBtn.textContent = 'Submit Request';
+    reqSubmitBtn.disabled = false;
+
+    if (error) {
+      alert('Something went wrong submitting your request. Please try again.');
+      return;
+    }
+
+    reqFormView.style.display = 'none';
+    reqThankYou.style.display = 'block';
   });
 }
 

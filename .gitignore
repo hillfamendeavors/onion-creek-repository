@@ -14,3 +14,9 @@ node_modules/
 
 # os
 .DS_Store
+
+# AI skills / agents
+.agents/
+.claude/
+.codex/
+skills-lock.json
