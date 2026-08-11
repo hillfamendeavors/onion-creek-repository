@@ -13,7 +13,12 @@ const filterCategory = document.getElementById('filterCategory');
 const filterStatus = document.getElementById('filterStatus');
 
 const STATUSES = ['new', 'contacted', 'closed'];
-const ADMIN_EMAIL = 'hillfamendeavors@gmail.com';
+
+async function isAdmin(email) {
+  if (!email) return false;
+  const { data } = await supabase.from('admins').select('email').eq('email', email).maybeSingle();
+  return !!data;
+}
 
 let requests = [];
 let sortKey = 'date_needed';
@@ -146,7 +151,7 @@ loginBtn.addEventListener('click', async () => {
     loginError.textContent = 'Invalid email or password.';
     return;
   }
-  if (data.user?.email !== ADMIN_EMAIL) {
+  if (!(await isAdmin(data.user?.email))) {
     await supabase.auth.signOut();
     loginError.textContent = 'This account does not have admin access.';
     return;
@@ -159,6 +164,6 @@ logoutBtn.addEventListener('click', async () => {
   showLogin();
 });
 
-supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session?.user?.email === ADMIN_EMAIL) showApp();
+supabase.auth.getSession().then(async ({ data: { session } }) => {
+  if (session?.user?.email && (await isAdmin(session.user.email))) showApp();
 });
