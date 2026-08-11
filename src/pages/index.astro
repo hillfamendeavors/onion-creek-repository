@@ -2122,7 +2122,7 @@
 
         <!-- Suggest Form (uses Formspree) -->
         <div class="form-container">
-          <form id="suggestionForm" action="https://formspree.io/f/xkoerowv" method="POST">
+          <form id="suggestionForm" action="/.netlify/functions/notify-suggestion" method="POST">
 
             <div class="form-row">
               <div class="form-group">
@@ -2304,13 +2304,14 @@
         submitBtn.style.opacity = '0.8';
 
         const formData = new FormData(suggestionForm);
+        const payload = Object.fromEntries(formData.entries());
 
         try {
           const response = await fetch(suggestionForm.action, {
             method: 'POST',
-            body: formData,
+            body: JSON.stringify(payload),
             headers: {
-              'Accept': 'application/json'
+              'Content-Type': 'application/json'
             }
           });
 
@@ -2325,12 +2326,7 @@
               formSuccess.style.display = 'flex';
             }, 400);
           } else {
-            const data = await response.json();
-            if (data && data.errors) {
-              alert('Error: ' + data.errors.map(err => err.message).join(', '));
-            } else {
-              alert('Oops! There was a problem submitting your form.');
-            }
+            alert('Oops! There was a problem submitting your form.');
             resetSubmitButton();
           }
         } catch (error) {
