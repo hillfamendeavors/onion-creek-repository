@@ -1,8 +1,4 @@
-function esc(str) {
-  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  })[c]);
-}
+import { esc, sendEmail } from './_resend.js';
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -22,22 +18,10 @@ export const handler = async (event) => {
     <p>${esc(r.notes)}</p>
   `;
 
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: process.env.RESEND_FROM_EMAIL,
-      to: ['hillfamendeavors@gmail.com', 'hillfamilyautofair.marconi@gmail.com'],
-      subject: `New service request: ${r.category} in ${r.neighborhood}`,
-      html,
-    }),
-  });
-
-  if (!res.ok) {
-    return { statusCode: 502, body: `Resend request failed: ${await res.text()}` };
+  try {
+    await sendEmail({ subject: `New service request: ${r.category} in ${r.neighborhood}`, html });
+  } catch (e) {
+    return { statusCode: 502, body: e.message };
   }
 
   return { statusCode: 200, body: 'ok' };
