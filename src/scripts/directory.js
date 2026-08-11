@@ -6,6 +6,7 @@
 // collapse, copy-phone, "Suggest a Referral", and "Need a Service?" behaviors.
 
 import { supabase } from '../lib/supabase.js';
+import { getSession, signIn, signUp } from '../lib/auth.js';
 
 const pillsEl = document.getElementById('groupPills');
 const container = document.getElementById('listingsContainer');
@@ -237,18 +238,38 @@ const reqOverlay = document.getElementById('requestModalOverlay');
 const reqOpenBtn = document.getElementById('openRequestModal');
 const reqCloseBtn = document.getElementById('closeRequestModal');
 const reqSubmitBtn = document.getElementById('submitRequestBtn');
+const reqAuthView = document.getElementById('requestAuthView');
 const reqFormView = document.getElementById('requestFormView');
 const reqThankYou = document.getElementById('requestThankYouView');
+const authEmailEl = document.getElementById('auth-email');
+const authPasswordEl = document.getElementById('auth-password');
+const authErrorEl = document.getElementById('authError');
+const authSignupNoticeEl = document.getElementById('authSignupNotice');
+const authSignInBtn = document.getElementById('authSignInBtn');
+const authSignUpBtn = document.getElementById('authSignUpBtn');
+
+function showRequestForm() {
+  reqAuthView.style.display = 'none';
+  reqFormView.style.display = 'block';
+  reqThankYou.style.display = 'none';
+}
+
+function showAuthView() {
+  reqAuthView.style.display = 'block';
+  reqFormView.style.display = 'none';
+  reqThankYou.style.display = 'none';
+}
 
 function closeRequestModal() {
   reqOverlay.classList.remove('open');
   setTimeout(() => {
-    reqFormView.style.display = 'block';
     reqThankYou.style.display = 'none';
-    ['r-category', 'r-date', 'r-name', 'r-phone', 'r-email', 'r-notes'].forEach((id) => {
+    ['r-category', 'r-date', 'r-name', 'r-phone', 'r-email', 'r-notes', 'auth-email', 'auth-password'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
+    authErrorEl.textContent = '';
+    authSignupNoticeEl.style.display = 'none';
   }, 300);
 }
 
@@ -256,9 +277,37 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
   const dateEl = document.getElementById('r-date');
   if (dateEl) dateEl.min = new Date().toISOString().split('T')[0];
 
-  reqOpenBtn.addEventListener('click', () => reqOverlay.classList.add('open'));
+  reqOpenBtn.addEventListener('click', async () => {
+    reqOverlay.classList.add('open');
+    const session = await getSession();
+    if (session) {
+      showRequestForm();
+    } else {
+      showAuthView();
+    }
+  });
   reqCloseBtn.addEventListener('click', closeRequestModal);
   reqOverlay.addEventListener('click', (e) => { if (e.target === reqOverlay) closeRequestModal(); });
+
+  authSignInBtn.addEventListener('click', async () => {
+    authErrorEl.textContent = '';
+    const { error } = await signIn(authEmailEl.value.trim(), authPasswordEl.value);
+    if (error) {
+      authErrorEl.textContent = error.message;
+      return;
+    }
+    showRequestForm();
+  });
+
+  authSignUpBtn.addEventListener('click', async () => {
+    authErrorEl.textContent = '';
+    const { error } = await signUp(authEmailEl.value.trim(), authPasswordEl.value);
+    if (error) {
+      authErrorEl.textContent = error.message;
+      return;
+    }
+    authSignupNoticeEl.style.display = 'block';
+  });
 
   reqSubmitBtn.addEventListener('click', async () => {
     const category = document.getElementById('r-category').value;

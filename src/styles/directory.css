@@ -589,6 +589,8 @@ body.all-tab-active .listings-table { max-height: 350px; }
   color: var(--masters-green); margin-bottom: 8px;
 }
 .thank-you p { font-size: 0.85rem; color: var(--mid-gray); }
+.auth-error { color: #b00020; font-size: 0.85rem; min-height: 1.2em; }
+.auth-notice { font-size: 0.85rem; color: var(--masters-green); }
 
 footer {
   background: var(--masters-green);
