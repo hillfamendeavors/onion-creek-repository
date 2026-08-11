@@ -1,0 +1,80 @@
+---
+// Internal-only page: log in with the Supabase admin account to view and
+// triage "Need a Service?" requests from all four neighborhoods.
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Service Requests — Admin</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; padding: 24px; background: #f7f7f5; color: #222; }
+      h1 { font-size: 1.3rem; margin-bottom: 16px; }
+      #loginView { max-width: 320px; margin: 80px auto; }
+      #loginView input { display: block; width: 100%; box-sizing: border-box; margin-bottom: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+      #loginView button, #logoutBtn { padding: 8px 16px; border: none; border-radius: 4px; background: #1a3a2a; color: #fff; cursor: pointer; }
+      #loginError { color: #b00020; font-size: 0.85rem; min-height: 1.2em; }
+      #appView { display: none; }
+      table { width: 100%; border-collapse: collapse; background: #fff; font-size: 0.85rem; }
+      th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e5e5e0; vertical-align: top; }
+      th { background: #eeeee8; }
+      select.status { padding: 4px; }
+      .delete-btn { padding: 4px 10px; border: 1px solid #b00020; background: #fff; color: #b00020; border-radius: 4px; cursor: pointer; }
+      .delete-btn:hover { background: #b00020; color: #fff; }
+      .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+      .filters { display: flex; gap: 10px; margin-bottom: 12px; }
+      .filters select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+      th.sortable { cursor: pointer; user-select: none; }
+      th.sortable .arrow { font-size: 0.7em; }
+    </style>
+  </head>
+  <body>
+    <div id="loginView">
+      <h1>Admin Login</h1>
+      <input type="email" id="loginEmail" placeholder="Email" autocomplete="username" />
+      <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" />
+      <button id="loginBtn">Log In</button>
+      <p id="loginError"></p>
+    </div>
+
+    <div id="appView">
+      <div class="topbar">
+        <h1>Service Requests</h1>
+        <button id="logoutBtn">Log Out</button>
+      </div>
+      <div class="filters">
+        <select id="filterNeighborhood"><option value="">All neighborhoods</option></select>
+        <select id="filterCategory"><option value="">All categories</option></select>
+        <select id="filterStatus">
+          <option value="">All statuses</option>
+          <option value="new">new</option>
+          <option value="contacted">contacted</option>
+          <option value="closed">closed</option>
+        </select>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="created_at">Submitted <span class="arrow"></span></th>
+            <th>Neighborhood</th>
+            <th>Category</th>
+            <th class="sortable" data-sort="date_needed">Date Needed <span class="arrow"></span></th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Notes</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="requestsBody"></tbody>
+      </table>
+    </div>
+
+    <script src="../scripts/admin.js"></script>
+  </body>
+</html>
