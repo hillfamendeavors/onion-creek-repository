@@ -1,0 +1,46 @@
+---
+import Directory from '../../layouts/Directory.astro';
+import { neighborhoods } from '../../data/neighborhoods.js';
+
+export function getStaticPaths() {
+  return neighborhoods.map((n) => ({
+    params: { neighborhood: n.slug },
+    props: { neighborhood: n },
+  }));
+}
+
+const { neighborhood } = Astro.props;
+---
+
+<Directory title={`${neighborhood.name} Requests`} footerLabel={neighborhood.footerLabel} theme={neighborhood.theme}>
+  <header>
+    <div class="logo-wrap">
+      <h1>{neighborhood.name} <span>Requests</span></h1>
+      <p class="header-sub">Open service requests from your neighbors</p>
+      <a class="order-btn" href={`/${neighborhood.slug}/`}>Back to Directory</a>
+    </div>
+  </header>
+
+  <main data-neighborhood={neighborhood.slug}>
+    <div id="requestsAuthPrompt" style="display:none;">
+      <p class="modal-sub">Log in or create a free account to see who's asking and reach out.</p>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" id="rp-auth-email" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Password *</label>
+        <input type="password" id="rp-auth-password" placeholder="At least 6 characters" />
+      </div>
+      <button class="submit-btn" id="rpSignInBtn">Log In</button>
+      <button class="submit-btn" id="rpSignUpBtn">Sign Up</button>
+      <p class="auth-error" id="rpAuthError"></p>
+      <p class="auth-notice" id="rpSignupNotice" style="display:none;">Check your email to confirm your account, then log in above.</p>
+    </div>
+
+    <div id="requestsCounts"></div>
+    <div id="requestsFull" style="display:none;"></div>
+  </main>
+</Directory>
+
+<script src="../../scripts/requests-page.js"></script>
