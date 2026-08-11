@@ -49,7 +49,7 @@ const total = groups.reduce(
     <ListingsTree groups={groups} />
   </main>
 
-  <ReferralModal formspreeId={neighborhood.formspreeId} subjectPrefix={neighborhood.subjectPrefix} />
+  <ReferralModal neighborhoodName={neighborhood.name} subjectPrefix={neighborhood.subjectPrefix} />
   <RequestModal groups={groups} neighborhood={neighborhood} />
   {neighborhood.order && <OrderModal order={neighborhood.order} />}
 </Directory>

@@ -1,13 +1,14 @@
 ---
-// The "Suggest a Referral" modal + floating button. Formspree target and the
+// The "Suggest a Referral" modal + floating button. The neighborhood name and
 // email subject prefix are passed through to the client via data attributes
-// on #modalOverlay (read by directory.js on submit).
-const { formspreeId, subjectPrefix } = Astro.props;
+// on #modalOverlay (read by directory.js on submit, sent to the
+// notify-referral Netlify function).
+const { neighborhoodName, subjectPrefix } = Astro.props;
 ---
 
 <button class="fab" id="openModal">+ Suggest a Referral</button>
 
-<div class="modal-overlay" id="modalOverlay" data-formspree={formspreeId} data-subject={subjectPrefix}>
+<div class="modal-overlay" id="modalOverlay" data-neighborhood={neighborhoodName} data-subject={subjectPrefix}>
   <div class="modal">
     <button class="modal-close" id="closeModal">✕</button>
     <div id="formView">

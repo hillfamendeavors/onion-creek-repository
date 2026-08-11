@@ -190,14 +190,19 @@ if (overlay && openBtn && closeBtn) {
     submitBtn.textContent = 'Submitting…';
     submitBtn.disabled = true;
 
-    const formspreeId = overlay.dataset.formspree;
-    const subject = `${overlay.dataset.subject || 'New Referral'}: ${name}`;
-
     try {
-      await fetch(`https://formspree.io/f/${formspreeId}`, {
+      await fetch('/.netlify/functions/notify-referral', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ name, phone, category, note, referrer, _subject: subject }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          phone,
+          category,
+          note,
+          referrer,
+          neighborhood: overlay.dataset.neighborhood,
+          subjectPrefix: overlay.dataset.subject,
+        }),
       });
     } catch (e) {}
 
