@@ -6,7 +6,7 @@
 // collapse, copy-phone, "Suggest a Referral", and "Need a Service?" behaviors.
 
 import { supabase } from '../lib/supabase.js';
-import { getSession, signIn, signUp, requestPasswordReset } from '../lib/auth.js';
+import { getSession } from '../lib/auth.js';
 
 const pillsEl = document.getElementById('groupPills');
 const container = document.getElementById('listingsContainer');
@@ -246,14 +246,7 @@ const reqSubmitBtn = document.getElementById('submitRequestBtn');
 const reqAuthView = document.getElementById('requestAuthView');
 const reqFormView = document.getElementById('requestFormView');
 const reqThankYou = document.getElementById('requestThankYouView');
-const authEmailEl = document.getElementById('auth-email');
-const authPasswordEl = document.getElementById('auth-password');
-const authErrorEl = document.getElementById('authError');
-const authSignupNoticeEl = document.getElementById('authSignupNotice');
-const authSignInBtn = document.getElementById('authSignInBtn');
-const authSignUpBtn = document.getElementById('authSignUpBtn');
-const authForgotBtn = document.getElementById('authForgotBtn');
-const authResetNoticeEl = document.getElementById('authResetNotice');
+const requestLoginLink = document.getElementById('requestLoginLink');
 
 function showRequestForm() {
   reqAuthView.style.display = 'none';
@@ -271,13 +264,10 @@ function closeRequestModal() {
   reqOverlay.classList.remove('open');
   setTimeout(() => {
     reqThankYou.style.display = 'none';
-    ['r-category', 'r-date', 'r-name', 'r-phone', 'r-email', 'r-notes', 'auth-email', 'auth-password'].forEach((id) => {
+    ['r-category', 'r-date', 'r-name', 'r-phone', 'r-email', 'r-notes'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
-    authErrorEl.textContent = '';
-    authSignupNoticeEl.style.display = 'none';
-    authResetNoticeEl.style.display = 'none';
   }, 300);
 }
 
@@ -291,50 +281,14 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
     if (session) {
       showRequestForm();
     } else {
+      if (requestLoginLink) {
+        requestLoginLink.href = `/login/?next=${encodeURIComponent(location.pathname)}`;
+      }
       showAuthView();
     }
   });
   reqCloseBtn.addEventListener('click', closeRequestModal);
   reqOverlay.addEventListener('click', (e) => { if (e.target === reqOverlay) closeRequestModal(); });
-
-  async function withButtonLock(btn, fn) {
-    btn.disabled = true;
-    try {
-      await fn();
-    } finally {
-      btn.disabled = false;
-    }
-  }
-
-  authSignInBtn.addEventListener('click', () => withButtonLock(authSignInBtn, async () => {
-    authErrorEl.textContent = '';
-    const { error } = await signIn(authEmailEl.value.trim(), authPasswordEl.value);
-    if (error) {
-      authErrorEl.textContent = error.message;
-      return;
-    }
-    showRequestForm();
-  }));
-
-  authSignUpBtn.addEventListener('click', () => withButtonLock(authSignUpBtn, async () => {
-    authErrorEl.textContent = '';
-    const { error } = await signUp(authEmailEl.value.trim(), authPasswordEl.value);
-    if (error) {
-      authErrorEl.textContent = error.message;
-      return;
-    }
-    authSignupNoticeEl.style.display = 'block';
-  }));
-
-  authForgotBtn.addEventListener('click', () => withButtonLock(authForgotBtn, async () => {
-    authErrorEl.textContent = '';
-    const { error } = await requestPasswordReset(authEmailEl.value.trim());
-    if (error) {
-      authErrorEl.textContent = error.message;
-      return;
-    }
-    authResetNoticeEl.style.display = 'block';
-  }));
 
   reqSubmitBtn.addEventListener('click', async () => {
     const category = document.getElementById('r-category').value;
@@ -394,12 +348,15 @@ function escStatus(str) {
 const authStatusEl = document.getElementById('authStatus');
 if (authStatusEl) {
   getSession().then((session) => {
-    if (!session?.user?.email) return;
-    authStatusEl.innerHTML = `Logged in as ${escStatus(session.user.email)} &middot; <button id="authStatusLogout">Log out</button>`;
+    if (session?.user?.email) {
+      authStatusEl.innerHTML = `Logged in as ${escStatus(session.user.email)} &middot; <button id="authStatusLogout">Log out</button>`;
+      document.getElementById('authStatusLogout').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        location.reload();
+      });
+    } else {
+      authStatusEl.innerHTML = `<a href="/login/?next=${encodeURIComponent(location.pathname)}">Log in</a>`;
+    }
     authStatusEl.classList.add('visible');
-    document.getElementById('authStatusLogout').addEventListener('click', async () => {
-      await supabase.auth.signOut();
-      location.reload();
-    });
   });
 }

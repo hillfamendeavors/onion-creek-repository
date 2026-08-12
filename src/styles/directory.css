@@ -597,6 +597,8 @@ body.all-tab-active .listings-table { max-height: 350px; }
 .auth-status.visible { display: flex; }
 .auth-status button { background: none; border: none; padding: 0; color: var(--phone); text-decoration: underline; font-size: 0.75rem; cursor: pointer; }
 .auth-status button:hover { color: var(--phone-hover); }
+.auth-status a { color: var(--phone); text-decoration: underline; }
+.auth-status a:hover { color: var(--phone-hover); }
 .request-count-row { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
 .request-card { padding: 16px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 12px; }
 .request-card a { color: var(--phone); text-decoration: none; }

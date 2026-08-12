@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase.js';
-import { getSession, signIn, signUp, requestPasswordReset } from '../lib/auth.js';
+import { getSession } from '../lib/auth.js';
 
 const main = document.querySelector('main[data-neighborhood]');
 const neighborhood = main.dataset.neighborhood;
@@ -7,11 +7,7 @@ const neighborhood = main.dataset.neighborhood;
 const authPrompt = document.getElementById('requestsAuthPrompt');
 const countsEl = document.getElementById('requestsCounts');
 const fullEl = document.getElementById('requestsFull');
-const authEmailEl = document.getElementById('rp-auth-email');
-const authPasswordEl = document.getElementById('rp-auth-password');
-const authErrorEl = document.getElementById('rpAuthError');
-const signupNoticeEl = document.getElementById('rpSignupNotice');
-const resetNoticeEl = document.getElementById('rpResetNotice');
+const loginLink = document.getElementById('rpLoginLink');
 
 function esc(str) {
   const div = document.createElement('div');
@@ -79,51 +75,11 @@ async function render() {
     authPrompt.style.display = 'block';
     fullEl.style.display = 'none';
     countsEl.style.display = 'block';
+    if (loginLink) {
+      loginLink.href = `/login/?next=${encodeURIComponent(location.pathname)}`;
+    }
     await renderCounts();
   }
 }
-
-async function withButtonLock(btn, fn) {
-  btn.disabled = true;
-  try {
-    await fn();
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-const rpSignInBtn = document.getElementById('rpSignInBtn');
-const rpSignUpBtn = document.getElementById('rpSignUpBtn');
-const rpForgotBtn = document.getElementById('rpForgotBtn');
-
-rpSignInBtn.addEventListener('click', () => withButtonLock(rpSignInBtn, async () => {
-  authErrorEl.textContent = '';
-  const { error } = await signIn(authEmailEl.value.trim(), authPasswordEl.value);
-  if (error) {
-    authErrorEl.textContent = error.message;
-    return;
-  }
-  render();
-}));
-
-rpSignUpBtn.addEventListener('click', () => withButtonLock(rpSignUpBtn, async () => {
-  authErrorEl.textContent = '';
-  const { error } = await signUp(authEmailEl.value.trim(), authPasswordEl.value);
-  if (error) {
-    authErrorEl.textContent = error.message;
-    return;
-  }
-  signupNoticeEl.style.display = 'block';
-}));
-
-rpForgotBtn.addEventListener('click', () => withButtonLock(rpForgotBtn, async () => {
-  authErrorEl.textContent = '';
-  const { error } = await requestPasswordReset(authEmailEl.value.trim());
-  if (error) {
-    authErrorEl.textContent = error.message;
-    return;
-  }
-  resetNoticeEl.style.display = 'block';
-}));
 
 render();
