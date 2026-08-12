@@ -374,3 +374,23 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
 
 // Initial state: "All" tab active (caps each table height via CSS).
 syncAllTabClass();
+
+// ── Site-wide login status ──
+function escStatus(str) {
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+
+const authStatusEl = document.getElementById('authStatus');
+if (authStatusEl) {
+  getSession().then((session) => {
+    if (!session?.user?.email) return;
+    authStatusEl.innerHTML = `Logged in as ${escStatus(session.user.email)} &middot; <button id="authStatusLogout">Log out</button>`;
+    authStatusEl.classList.add('visible');
+    document.getElementById('authStatusLogout').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      location.reload();
+    });
+  });
+}
