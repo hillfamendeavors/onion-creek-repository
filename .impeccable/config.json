@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "src/styles/directory.css"
+        ],
+        "createdAt": "2026-08-12T18:31:26.846Z",
+        "reason": "User confirmed: 4px top border on .modal with 2px radius is an intentional brand accent"
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "src/styles/directory.css"
+        ],
+        "createdAt": "2026-08-12T18:31:39.138Z",
+        "reason": "User confirmed: max-height collapse animation is intentional; grid-template-rows rewrite not worth it for unreported jank"
+      }
+    ]
+  }
+}
