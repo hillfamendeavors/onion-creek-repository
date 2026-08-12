@@ -8,6 +8,38 @@
 import { supabase } from '../lib/supabase.js';
 import { getSession } from '../lib/auth.js';
 
+export function showToast(message, type = 'info', duration = 4000) {
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  
+  const iconMap = {
+    success: '✅',
+    error: '⚠️',
+    warning: '⚡',
+    info: 'ℹ️',
+  };
+
+  toast.innerHTML = `
+    <span class="toast-icon">${iconMap[type] || 'ℹ️'}</span>
+    <span class="toast-body">${message}</span>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(16px) scale(0.95)';
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
 const pillsEl = document.getElementById('groupPills');
 const container = document.getElementById('listingsContainer');
 const searchEl = document.getElementById('search');
@@ -169,9 +201,27 @@ function closeOtherModals() {
 }
 
 if (overlay && openBtn && closeBtn) {
-  openBtn.addEventListener('click', () => {
+  const referralAuthView = document.getElementById('referralAuthView');
+  const referralLoginLink = document.getElementById('referralLoginLink');
+
+  openBtn.addEventListener('click', async () => {
     closeOtherModals();
     overlay.classList.add('open');
+    const session = await getSession();
+    if (session && session.user) {
+      if (referralAuthView) referralAuthView.style.display = 'none';
+      if (formView) formView.style.display = 'block';
+      const refEl = document.getElementById('f-referrer');
+      if (refEl && !refEl.value) {
+        refEl.value = session.user.user_metadata?.full_name || '';
+      }
+    } else {
+      if (referralLoginLink) {
+        referralLoginLink.href = `/login/?next=${encodeURIComponent(location.pathname)}`;
+      }
+      if (referralAuthView) referralAuthView.style.display = 'block';
+      if (formView) formView.style.display = 'none';
+    }
   });
   closeBtn.addEventListener('click', closeModal);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
@@ -185,17 +235,35 @@ if (overlay && openBtn && closeBtn) {
 
     const phoneDigits = phone.replace(/\D/g, '');
     if (!name || !phoneDigits || !note || !referrer) {
-      alert('Please fill in your name, the business name, phone, and recommendation fields.');
+      showToast('Please fill in your name, the business name, phone, and recommendation fields.', 'warning');
       return;
     }
     if (phoneDigits.length !== 10) {
-      alert('Please enter a 10-digit phone number in the format (512) 555-0000.');
+      showToast('Please enter a 10-digit phone number in the format (512) 555-0000.', 'warning');
       return;
     }
     phone = formatUSPhone(phoneDigits);
 
     submitBtn.textContent = 'Submitting…';
     submitBtn.disabled = true;
+
+    const session = await getSession();
+    const referrerEmail = session?.user?.email || null;
+
+    try {
+      await supabase.from('referral_suggestions').insert({
+        neighborhood: overlay.dataset.neighborhood,
+        name,
+        phone,
+        category: category || null,
+        note,
+        referrer,
+        referrer_email: referrerEmail,
+        status: 'new'
+      });
+    } catch (e) {
+      console.warn('Supabase referral_suggestions insert notice:', e);
+    }
 
     try {
       await fetch('/.netlify/functions/notify-referral', {
@@ -207,6 +275,7 @@ if (overlay && openBtn && closeBtn) {
           category,
           note,
           referrer,
+          referrer_email: referrerEmail,
           neighborhood: overlay.dataset.neighborhood,
           subjectPrefix: overlay.dataset.subject,
         }),
@@ -308,11 +377,11 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
 
     const phoneDigits = phone.replace(/\D/g, '');
     if (!category || !date_needed || !name || !phoneDigits) {
-      alert('Please fill in the category, date needed, your name, and phone fields.');
+      showToast('Please fill in the category, date needed, your name, and phone fields.', 'warning');
       return;
     }
     if (phoneDigits.length !== 10) {
-      alert('Please enter a 10-digit phone number in the format (512) 555-0000.');
+      showToast('Please enter a 10-digit phone number in the format (512) 555-0000.', 'warning');
       return;
     }
     phone = formatUSPhone(phoneDigits);
@@ -330,11 +399,27 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
       notes: notes || null,
     });
 
+    try {
+      await fetch('/.netlify/functions/notify-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category,
+          date_needed,
+          name,
+          phone,
+          email,
+          notes,
+          neighborhood: reqOverlay.dataset.neighborhood,
+        }),
+      });
+    } catch (e) {}
+
     reqSubmitBtn.textContent = 'Submit Request';
     reqSubmitBtn.disabled = false;
 
     if (error) {
-      alert('Something went wrong submitting your request. Please try again.');
+      showToast('Something went wrong submitting your request. Please try again.', 'error');
       return;
     }
 

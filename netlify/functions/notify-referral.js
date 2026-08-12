@@ -19,7 +19,11 @@ export const handler = async (event) => {
   `;
 
   try {
-    await sendEmail({ subject: `${r.subjectPrefix || 'New Referral'}: ${r.name}`, html });
+    await sendEmail({
+      subject: `${r.subjectPrefix || 'New Referral'}: ${r.name}`,
+      html,
+      userEmail: r.referrer_email || r.user_email || r.email,
+    });
   } catch (e) {
     return { statusCode: 502, body: e.message };
   }

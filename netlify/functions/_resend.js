@@ -4,7 +4,20 @@ export function esc(str) {
   })[c]);
 }
 
-export async function sendEmail({ subject, html }) {
+export async function sendEmail({ subject, html, userEmail }) {
+  const envRecipients = process.env.ADMIN_NOTIFICATION_EMAIL || process.env.NOTIFICATION_EMAIL || process.env.RESEND_TO_EMAIL;
+  
+  let recipients = [];
+  if (envRecipients) {
+    recipients = envRecipients.split(',').map((e) => e.trim()).filter(Boolean);
+  } else {
+    recipients = ['hillfamendeavors@gmail.com', 'trustedneighbors.marc@gmail.com'];
+  }
+
+  if (userEmail && typeof userEmail === 'string' && !recipients.includes(userEmail.trim())) {
+    recipients.push(userEmail.trim());
+  }
+
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -12,8 +25,8 @@ export async function sendEmail({ subject, html }) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: process.env.RESEND_FROM_EMAIL,
-      to: ['hillfamendeavors@gmail.com', 'trustedneighbors.marc@gmail.com'],
+      from: process.env.RESEND_FROM_EMAIL || 'notifications@trustedneighbors.net',
+      to: recipients,
       subject,
       html,
     }),

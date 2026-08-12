@@ -154,9 +154,30 @@ if (accessToken) {
       tr:nth-child(even) { background: #F9FAFB; }
       tr:hover td { background: #F3F4F6; }
       
-      select.status {
-        padding: 6px 10px; background: var(--color-background); color: var(--color-foreground);
-        border: 1px solid var(--color-border); border-radius: 4px; font-size: 0.85rem; cursor: pointer;
+      select.status, select.ref-status {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.825rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--color-border);
+        transition: all 0.2s ease;
+        background: #FFFFFF;
+      }
+      select.status[data-value="new"], select.ref-status[data-value="new"] {
+        background: #FEF3C7;
+        color: #92400E;
+        border-color: #FDE68A;
+      }
+      select.status[data-value="contacted"], select.ref-status[data-value="approved"] {
+        background: #D1FAE5;
+        color: #065F46;
+        border-color: #A7F3D0;
+      }
+      select.status[data-value="closed"], select.ref-status[data-value="rejected"] {
+        background: #F3F4F6;
+        color: #374151;
+        border-color: #E5E7EB;
       }
 
       .btn-danger {
@@ -223,6 +244,7 @@ if (accessToken) {
           <div class="tabs-container">
             <div class="tabs">
               <button class="tab-btn active" id="tabRequestsBtn">Service Requests</button>
+              <button class="tab-btn" id="tabReferralsBtn">Referral Suggestions</button>
               <button class="tab-btn" id="tabDirectoryBtn">Directory Config</button>
             </div>
           </div>
@@ -257,6 +279,40 @@ if (accessToken) {
                     </tr>
                   </thead>
                   <tbody id="requestsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-referrals" style="display:none;">
+            <div class="filters">
+              <select id="filterRefNeighborhood" class="select-input"><option value="">All Neighborhoods</option></select>
+              <select id="filterRefStatus" class="select-input">
+                <option value="">All Statuses</option>
+                <option value="new">New</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            
+            <div class="card">
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Submitted</th>
+                      <th>Neighborhood</th>
+                      <th>Business / Person</th>
+                      <th>Category</th>
+                      <th>Phone</th>
+                      <th>Referrer</th>
+                      <th>Referrer Email</th>
+                      <th>Note</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="referralsBody"></tbody>
                 </table>
               </div>
             </div>

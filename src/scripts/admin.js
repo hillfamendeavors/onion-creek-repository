@@ -101,7 +101,7 @@ function renderTable() {
       <td>${esc(r.email)}</td>
       <td>${esc(r.notes)}</td>
       <td>
-        <select class="status" data-id="${r.id}">
+        <select class="status" data-id="${r.id}" data-value="${esc(r.status || 'new')}">
           ${STATUSES.map((s) => `<option value="${s}" ${s === r.status ? 'selected' : ''}>${s}</option>`).join('')}
         </select>
       </td>
@@ -114,10 +114,12 @@ function renderTable() {
   requestsBody.querySelectorAll('select.status').forEach((sel) => {
     sel.addEventListener('change', async () => {
       const previousValue = requests.find((r) => r.id === sel.dataset.id)?.status;
+      sel.dataset.value = sel.value;
       const { error } = await supabase.from('service_requests').update({ status: sel.value }).eq('id', sel.dataset.id);
       if (error) {
         alert('Failed to update status. Please try again.');
         sel.value = previousValue;
+        sel.dataset.value = previousValue;
         return;
       }
       const req = requests.find((r) => r.id === sel.dataset.id);
@@ -184,22 +186,121 @@ if (logoutBtn) {
 
 if (appView) {
   loadRequests();
+  loadReferrals();
 }
 
 const tabRequestsBtn = document.getElementById('tabRequestsBtn');
+const tabReferralsBtn = document.getElementById('tabReferralsBtn');
 const tabDirectoryBtn = document.getElementById('tabDirectoryBtn');
 
-tabRequestsBtn?.addEventListener('click', () => {
-  tabRequestsBtn.classList.add('active');
-  tabDirectoryBtn?.classList.remove('active');
-  document.getElementById('tab-requests').style.display = 'block';
-  document.getElementById('tab-directory').style.display = 'none';
-});
+function switchTab(activeBtn, targetId) {
+  [tabRequestsBtn, tabReferralsBtn, tabDirectoryBtn].forEach((btn) => btn?.classList.remove('active'));
+  ['tab-requests', 'tab-referrals', 'tab-directory'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = id === targetId ? 'block' : 'none';
+  });
+  activeBtn?.classList.add('active');
+}
 
+tabRequestsBtn?.addEventListener('click', () => switchTab(tabRequestsBtn, 'tab-requests'));
+tabReferralsBtn?.addEventListener('click', () => {
+  switchTab(tabReferralsBtn, 'tab-referrals');
+  loadReferrals();
+});
 tabDirectoryBtn?.addEventListener('click', () => {
-  tabDirectoryBtn.classList.add('active');
-  tabRequestsBtn?.classList.remove('active');
-  document.getElementById('tab-directory').style.display = 'block';
-  document.getElementById('tab-requests').style.display = 'none';
+  switchTab(tabDirectoryBtn, 'tab-directory');
   window.dispatchEvent(new Event('directory-tab-shown'));
 });
+
+// ── Referral Suggestions Admin Logic ──
+let referrals = [];
+const referralsBody = document.getElementById('referralsBody');
+const filterRefNeighborhood = document.getElementById('filterRefNeighborhood');
+const filterRefStatus = document.getElementById('filterRefStatus');
+const REFERRAL_STATUSES = ['new', 'approved', 'rejected'];
+
+async function loadReferrals() {
+  if (!referralsBody) return;
+  referralsBody.innerHTML = `<tr><td colspan="10">Loading referrals…</td></tr>`;
+  const { data, error } = await supabase.from('referral_suggestions').select('*').order('created_at', { ascending: false });
+
+  if (error) {
+    referralsBody.innerHTML = `<tr><td colspan="10">No referrals found or failed to load.</td></tr>`;
+    return;
+  }
+
+  referrals = data || [];
+  populateReferralFilters();
+  renderReferralsTable();
+}
+
+function populateReferralFilters() {
+  if (!filterRefNeighborhood) return;
+  const neighborhoods = [...new Set(referrals.map((r) => r.neighborhood).filter(Boolean))].sort();
+  filterRefNeighborhood.innerHTML = '<option value="">All neighborhoods</option>' +
+    neighborhoods.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+}
+
+function renderReferralsTable() {
+  if (!referralsBody) return;
+  const filtered = referrals.filter((r) =>
+    (!filterRefNeighborhood?.value || r.neighborhood === filterRefNeighborhood.value) &&
+    (!filterRefStatus?.value || r.status === filterRefStatus.value)
+  );
+
+  if (filtered.length === 0) {
+    referralsBody.innerHTML = `<tr><td colspan="10">${referrals.length === 0 ? 'No referral suggestions yet.' : 'No referrals match current filters.'}</td></tr>`;
+    return;
+  }
+
+  referralsBody.innerHTML = filtered.map((r) => `
+    <tr data-id="${r.id}">
+      <td>${esc(new Date(r.created_at).toLocaleDateString())}</td>
+      <td>${esc(r.neighborhood || 'N/A')}</td>
+      <td><strong>${esc(r.name)}</strong></td>
+      <td>${esc(r.category || 'General')}</td>
+      <td>${esc(r.phone)}</td>
+      <td>${esc(r.referrer)}</td>
+      <td>${esc(r.referrer_email || '—')}</td>
+      <td>${esc(r.note)}</td>
+      <td>
+        <select class="ref-status" data-id="${r.id}" data-value="${esc(r.status || 'new')}">
+          ${REFERRAL_STATUSES.map((s) => `<option value="${s}" ${s === (r.status || 'new') ? 'selected' : ''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td>
+        <button class="btn-danger btn-delete-ref" data-id="${r.id}">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+
+  referralsBody.querySelectorAll('select.ref-status').forEach((sel) => {
+    sel.addEventListener('change', async () => {
+      sel.dataset.value = sel.value;
+      const { error } = await supabase.from('referral_suggestions').update({ status: sel.value }).eq('id', sel.dataset.id);
+      if (error) {
+        alert('Failed to update status.');
+        return;
+      }
+      const ref = referrals.find((r) => String(r.id) === String(sel.dataset.id));
+      if (ref) ref.status = sel.value;
+    });
+  });
+
+  referralsBody.querySelectorAll('.btn-delete-ref').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('Delete this referral suggestion?')) return;
+      const { error } = await supabase.from('referral_suggestions').delete().eq('id', btn.dataset.id);
+      if (error) {
+        alert('Failed to delete referral.');
+        return;
+      }
+      referrals = referrals.filter((r) => String(r.id) !== String(btn.dataset.id));
+      renderReferralsTable();
+    });
+  });
+}
+
+if (filterRefNeighborhood && filterRefStatus) {
+  [filterRefNeighborhood, filterRefStatus].forEach((el) => el?.addEventListener('change', renderReferralsTable));
+}

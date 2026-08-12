@@ -19,7 +19,11 @@ export const handler = async (event) => {
   `;
 
   try {
-    await sendEmail({ subject: `New service request: ${r.category} in ${r.neighborhood}`, html });
+    await sendEmail({
+      subject: `New service request: ${r.category} in ${r.neighborhood}`,
+      html,
+      userEmail: r.email || r.user_email,
+    });
   } catch (e) {
     return { statusCode: 502, body: e.message };
   }
