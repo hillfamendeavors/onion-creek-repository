@@ -23,3 +23,19 @@ export async function signUp(email, password) {
   if (invalid) return invalid;
   return supabase.auth.signUp({ email, password });
 }
+
+export async function requestPasswordReset(email) {
+  if (!email) {
+    return { error: { message: 'Please enter your email first.' } };
+  }
+  return supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password/`,
+  });
+}
+
+export async function updatePassword(newPassword) {
+  if (!newPassword || newPassword.length < 6) {
+    return { error: { message: 'Password must be at least 6 characters.' } };
+  }
+  return supabase.auth.updateUser({ password: newPassword });
+}
