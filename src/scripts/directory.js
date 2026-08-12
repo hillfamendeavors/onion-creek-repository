@@ -164,8 +164,15 @@ function closeModal() {
   }, 300);
 }
 
+function closeOtherModals() {
+  document.querySelectorAll('.modal-overlay.open').forEach((m) => m.classList.remove('open'));
+}
+
 if (overlay && openBtn && closeBtn) {
-  openBtn.addEventListener('click', () => overlay.classList.add('open'));
+  openBtn.addEventListener('click', () => {
+    closeOtherModals();
+    overlay.classList.add('open');
+  });
   closeBtn.addEventListener('click', closeModal);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
 
@@ -276,6 +283,7 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
   if (dateEl) dateEl.min = new Date().toISOString().split('T')[0];
 
   reqOpenBtn.addEventListener('click', async () => {
+    closeOtherModals();
     reqOverlay.classList.add('open');
     const session = await getSession();
     if (session) {
@@ -349,8 +357,9 @@ const authStatusEl = document.getElementById('authStatus');
 if (authStatusEl) {
   getSession().then((session) => {
     if (session?.user?.email) {
-      authStatusEl.innerHTML = `Logged in as ${escStatus(session.user.email)} &middot; <button id="authStatusLogout">Log out</button>`;
-      document.getElementById('authStatusLogout').addEventListener('click', async () => {
+      const displayName = session.user.user_metadata?.full_name || session.user.email;
+      authStatusEl.innerHTML = `Logged in as <strong>${escStatus(displayName)}</strong> &middot; <a href="/login/" style="color:var(--masters-green);font-weight:600;text-decoration:underline;">My Account</a> &middot; <button id="authStatusLogout" style="background:none;border:none;color:inherit;font-family:inherit;cursor:pointer;text-decoration:underline;padding:0;">Log out</button>`;
+      document.getElementById('authStatusLogout')?.addEventListener('click', async () => {
         await supabase.auth.signOut();
         location.reload();
       });

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Private / Admin routes
+Disallow: /admin/
+Disallow: /login/
+Disallow: /reset-password/
+
+# Sitemap location
+Sitemap: https://trustedneighbors.net/sitemap-index.xml

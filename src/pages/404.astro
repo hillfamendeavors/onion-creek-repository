@@ -1,0 +1,178 @@
+---
+import { neighborhoods } from '../data/neighborhoods.js';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found — Trusted Neighbors</title>
+    <meta name="description" content="The page you were looking for could not be found. Explore local business directories for Austin-area communities." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --masters-green: #1a3a2a;
+        --masters-green-mid: #2d5a3d;
+        --masters-yellow: #f5d06e;
+        --off-white: #f8f8f6;
+        --text: #1a1a18;
+        --border: #d0d0c8;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Source Sans 3', sans-serif;
+        background: var(--off-white);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        background: var(--masters-green);
+        color: white;
+        padding: 24px 20px;
+        text-align: center;
+        border-bottom: 3px solid var(--masters-yellow);
+      }
+      .logo-link {
+        text-decoration: none;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo-icon { width: 36px; height: 36px; }
+      .logo-title {
+        font-family: 'EB Garamond', serif;
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      .logo-title span { color: var(--masters-yellow); }
+      main {
+        max-width: 720px;
+        margin: 60px auto;
+        padding: 0 20px;
+        text-align: center;
+        flex: 1;
+      }
+      .error-code {
+        font-family: 'EB Garamond', serif;
+        font-size: 5rem;
+        color: var(--masters-green);
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+      h1 {
+        font-family: 'EB Garamond', serif;
+        font-size: 2rem;
+        font-weight: 400;
+        margin-bottom: 16px;
+        color: var(--text);
+      }
+      p {
+        font-size: 1.05rem;
+        color: #555;
+        margin-bottom: 36px;
+        line-height: 1.6;
+      }
+      .neighborhood-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 40px;
+      }
+      .neighborhood-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 20px;
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .neighborhood-card:hover {
+        border-color: var(--masters-green);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      }
+      .neighborhood-card svg {
+        width: 16px;
+        height: 16px;
+        stroke: var(--masters-green);
+        transition: transform 0.2s;
+      }
+      .neighborhood-card:hover svg {
+        transform: translateX(4px);
+      }
+      .home-btn {
+        display: inline-block;
+        background: var(--masters-green);
+        color: var(--masters-yellow);
+        text-decoration: none;
+        padding: 12px 28px;
+        border-radius: 4px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        transition: background 0.2s;
+      }
+      .home-btn:hover {
+        background: var(--masters-green-mid);
+      }
+      footer {
+        text-align: center;
+        padding: 24px;
+        font-size: 0.8rem;
+        color: #777;
+        border-top: 1px solid #e0e0e0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="/" class="logo-link">
+        <svg class="logo-icon" viewBox="0 0 100 100" fill="none">
+          <rect width="100" height="100" rx="20" fill="#f5d06e"/>
+          <text x="50" y="72" font-family="'EB Garamond', serif" font-size="70" font-weight="bold" fill="#1a3a2a" text-anchor="middle">T</text>
+        </svg>
+        <div class="logo-title">Trusted <span>Neighbors</span></div>
+      </a>
+    </header>
+
+    <main>
+      <div class="error-code">404</div>
+      <h1>Page Not Found</h1>
+      <p>Sorry, the page you're looking for doesn't exist or has moved. Browse one of our community business directories below:</p>
+
+      <div class="neighborhood-grid">
+        {neighborhoods.map((n) => (
+          <a href={`/${n.slug}/`} class="neighborhood-card">
+            <span>{n.name}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        ))}
+      </div>
+
+      <a href="/" class="home-btn">Return to Homepage</a>
+    </main>
+
+    <footer>
+      &copy; {new Date().getFullYear()} Trusted Neighbors Directory. Hyper-local &middot; 100% neighbor-sourced.
+    </footer>
+  </body>
+</html>

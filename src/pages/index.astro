@@ -11,7 +11,8 @@
   <meta name="description"
     content="Authentic, neighbor-recommended business directories for local communities. No sponsored ads, no fake reviews. Sourced directly from neighbors for Onion Creek, Sunfield, and Circle C." />
   <meta name="keywords"
-    content="neighborhood directory, local recommendations, trusted neighbors, local business referrals, Onion Creek directory, Sunfield, Circle C, Austin local directory" />
+    content="neighborhood directory, local recommendations, trusted neighbors, local business referrals, Onion Creek directory, Sunfield, Circle C, Avery Ranch, Austin local directory" />
+  <link rel="canonical" href="https://trustedneighbors.net/" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
@@ -19,6 +20,13 @@
   <meta property="og:description"
     content="Skip the sponsored ads and fake online reviews. Find authentic, neighbor-recommended businesses in your community." />
   <meta property="og:url" content="https://trustedneighbors.net/" />
+  <meta property="og:image" content="https://trustedneighbors.net/favicon.svg" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Trusted Neighbors | Hyper-Local Neighborhood Directories" />
+  <meta name="twitter:description" content="Skip the sponsored ads and fake online reviews. Find authentic, neighbor-recommended businesses in your community." />
+  <meta name="twitter:image" content="https://trustedneighbors.net/favicon.svg" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1809,11 +1817,12 @@
       <a href="#neighborhoods" onclick="closeMobileMenu()">Neighborhoods</a>
       <a href="#how-it-works" onclick="closeMobileMenu()">How it works</a>
       <a href="#about" onclick="closeMobileMenu()">About</a>
-      <!-- <a href="#meet-our-family" onclick="closeMobileMenu()">Meet Our Family</a> -->
-      <a href="/login/">Log In</a>
+      <a href="/login/" id="navLoginLink">Log In</a>
       <a href="#suggest-neighborhood" class="nav-cta" onclick="closeMobileMenu()">Add Neighborhood</a>
     </div>
   </nav>
+
+  <script src="../scripts/index-auth.js"></script>
 
   <!-- Hero Section -->
   <header class="hero">

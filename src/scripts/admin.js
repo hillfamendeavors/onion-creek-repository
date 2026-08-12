@@ -106,7 +106,7 @@ function renderTable() {
         </select>
       </td>
       <td>
-        <button class="delete-btn" data-id="${r.id}">Delete</button>
+        <button class="btn-danger" data-id="${r.id}">Delete</button>
       </td>
     </tr>
   `).join('');
@@ -125,7 +125,7 @@ function renderTable() {
     });
   });
 
-  requestsBody.querySelectorAll('.delete-btn').forEach((btn) => {
+  requestsBody.querySelectorAll('.btn-danger').forEach((btn) => {
     btn.addEventListener('click', async () => {
       if (!confirm('Delete this request permanently? This cannot be undone.')) return;
       const { error } = await supabase.from('service_requests').delete().eq('id', btn.dataset.id);
@@ -151,45 +151,54 @@ document.querySelectorAll('th.sortable').forEach((th) => {
   });
 });
 
-[filterNeighborhood, filterCategory, filterStatus].forEach((el) => el.addEventListener('change', renderTable));
+if (filterNeighborhood && filterCategory && filterStatus) {
+  [filterNeighborhood, filterCategory, filterStatus].forEach((el) => el?.addEventListener('change', renderTable));
+}
 
-loginBtn.addEventListener('click', async () => {
-  loginError.textContent = '';
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: loginEmail.value.trim(),
-    password: loginPassword.value,
+if (loginBtn) {
+  loginBtn.addEventListener('click', async () => {
+    loginError.textContent = '';
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: loginEmail.value.trim(),
+      password: loginPassword.value,
+    });
+    if (error) {
+      loginError.textContent = 'Invalid email or password.';
+      return;
+    }
+    if (!(await isAdmin(data.user?.email))) {
+      await supabase.auth.signOut();
+      loginError.textContent = 'This account does not have admin access.';
+      return;
+    }
+    window.location.reload();
   });
-  if (error) {
-    loginError.textContent = 'Invalid email or password.';
-    return;
-  }
-  if (!(await isAdmin(data.user?.email))) {
+}
+
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
     await supabase.auth.signOut();
-    loginError.textContent = 'This account does not have admin access.';
-    return;
-  }
-  showApp();
-});
+    window.location.reload();
+  });
+}
 
-logoutBtn.addEventListener('click', async () => {
-  await supabase.auth.signOut();
-  showLogin();
-});
+if (appView) {
+  loadRequests();
+}
 
-supabase.auth.getSession().then(async ({ data: { session } }) => {
-  if (session?.user?.email && (await isAdmin(session.user.email))) showApp();
-});
+const tabRequestsBtn = document.getElementById('tabRequestsBtn');
+const tabDirectoryBtn = document.getElementById('tabDirectoryBtn');
 
-document.getElementById('tabRequestsBtn').addEventListener('click', () => {
-  document.getElementById('tabRequestsBtn').classList.add('active');
-  document.getElementById('tabDirectoryBtn').classList.remove('active');
+tabRequestsBtn?.addEventListener('click', () => {
+  tabRequestsBtn.classList.add('active');
+  tabDirectoryBtn?.classList.remove('active');
   document.getElementById('tab-requests').style.display = 'block';
   document.getElementById('tab-directory').style.display = 'none';
 });
 
-document.getElementById('tabDirectoryBtn').addEventListener('click', () => {
-  document.getElementById('tabDirectoryBtn').classList.add('active');
-  document.getElementById('tabRequestsBtn').classList.remove('active');
+tabDirectoryBtn?.addEventListener('click', () => {
+  tabDirectoryBtn.classList.add('active');
+  tabRequestsBtn?.classList.remove('active');
   document.getElementById('tab-directory').style.display = 'block';
   document.getElementById('tab-requests').style.display = 'none';
   window.dispatchEvent(new Event('directory-tab-shown'));

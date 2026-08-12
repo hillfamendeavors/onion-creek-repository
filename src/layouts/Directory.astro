@@ -5,9 +5,14 @@ interface Props {
   title: string;
   footerLabel: string;
   theme: Record<string, string>;
+  description?: string;
 }
 
-const { title, footerLabel, theme } = Astro.props;
+const { title, footerLabel, theme, description } = Astro.props;
+
+const metaDescription = description || `100% neighbor-sourced local business directory for ${title}. Discover community-recommended local service providers in Austin, TX.`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://trustedneighbors.net').href;
+const ogImageUrl = new URL('/favicon.svg', Astro.site || 'https://trustedneighbors.net').href;
 
 // Per-neighborhood color palette, emitted as a global :root block.
 const themeCss = `:root{${Object.entries(theme)
@@ -21,6 +26,22 @@ const themeCss = `:root{${Object.entries(theme)
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <meta name="description" content={metaDescription} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <style is:global set:html={themeCss}></style>
     <link

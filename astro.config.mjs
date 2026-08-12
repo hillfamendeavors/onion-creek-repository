@@ -15,12 +15,23 @@ const logRoutes = {
   },
 };
 
+import sitemap from '@astrojs/sitemap';
+import netlify from '@astrojs/netlify';
+
 // Static output (default). Each neighborhood is pre-rendered to /<slug>/index.html
 // with all listings baked into the HTML, so crawlers and AI readers see real content.
-//
-// For GitHub Pages, set `site` (and `base` if served from a sub-path), e.g.:
-//   site: 'https://trustedneighbors.net',
 export default defineConfig({
+  site: 'https://trustedneighbors.net',
   trailingSlash: 'always',
-  integrations: [logRoutes],
+  adapter: netlify(),
+  integrations: [
+    logRoutes,
+    sitemap({
+      filter: (page) =>
+        !page.includes('/admin/') &&
+        !page.includes('/login/') &&
+        !page.includes('/reset-password/'),
+    }),
+  ],
 });
+

@@ -5,6 +5,21 @@ export async function getSession() {
   return session;
 }
 
+if (typeof window !== 'undefined') {
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      if (session) {
+        const maxAge = 100 * 365 * 24 * 60 * 60; // 100 years
+        document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${maxAge}; SameSite=Lax; secure`;
+        document.cookie = `sb-refresh-token=${session.refresh_token}; path=/; max-age=${maxAge}; SameSite=Lax; secure`;
+      }
+    } else if (event === 'SIGNED_OUT') {
+      document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'sb-refresh-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    }
+  });
+}
+
 function checkCredentials(email, password) {
   if (!email || !password) {
     return { error: { message: 'Please enter an email and password.' } };
@@ -18,10 +33,28 @@ export async function signIn(email, password) {
   return supabase.auth.signInWithPassword({ email, password });
 }
 
-export async function signUp(email, password) {
+export async function signUp(email, password, metadata = {}) {
   const invalid = checkCredentials(email, password);
   if (invalid) return invalid;
-  return supabase.auth.signUp({ email, password });
+  return supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: metadata.full_name || '',
+        phone: metadata.phone || '',
+      },
+    },
+  });
+}
+
+export async function updateProfile(metadata = {}) {
+  return supabase.auth.updateUser({
+    data: {
+      full_name: metadata.full_name,
+      phone: metadata.phone,
+    },
+  });
 }
 
 export async function requestPasswordReset(email) {

@@ -64,15 +64,15 @@ function renderGroups() {
       </h3>
       ${subcategories.filter((s) => s.group_id === g.id).map((s) => renderSubcatRow(s)).join('')}
       <div class="dir-row">
-        <input type="text" class="new-subcat-name" placeholder="New subcategory name" data-group-id="${g.id}" />
+        <input type="text" class="input new-subcat-name" placeholder="New subcategory name" data-group-id="${g.id}" />
         <button class="icon-btn add-subcat" data-group-id="${g.id}">+ Add Subcategory</button>
       </div>
     </div>
   `).join('') + `
     <div class="dir-row" style="margin-top:16px;">
-      <input type="text" id="newGroupSlug" placeholder="slug (e.g. home)" />
-      <input type="text" id="newGroupLabel" placeholder="Label (e.g. Home & Repair)" />
-      <input type="text" id="newGroupIcon" placeholder="Icon" style="width:60px;" />
+      <input type="text" class="input" id="newGroupSlug" placeholder="slug (e.g. home)" />
+      <input type="text" class="input" id="newGroupLabel" placeholder="Label (e.g. Home & Repair)" />
+      <input type="text" class="input" id="newGroupIcon" placeholder="Icon" style="width:60px;" />
     </div>
   `;
   wireGroupHandlers();
@@ -90,7 +90,7 @@ function renderSubcatRow(s) {
         ${NEIGHBORHOODS.map((n) => `
           <label>
             <input type="checkbox" class="nb-toggle" data-subcat-id="${s.id}" data-neighborhood="${n.slug}" ${enabled.has(n.slug) ? 'checked' : ''} />
-            ${esc(n.name)}
+            <span>${esc(n.name)}</span>
           </label>
         `).join('')}
       </div>
@@ -162,10 +162,10 @@ function wireGroupHandlers() {
   });
 }
 
-document.getElementById('addGroupBtn').addEventListener('click', async () => {
-  const slug = document.getElementById('newGroupSlug').value.trim();
-  const label = document.getElementById('newGroupLabel').value.trim();
-  const icon = document.getElementById('newGroupIcon').value.trim();
+document.getElementById('addGroupBtn')?.addEventListener('click', async () => {
+  const slug = document.getElementById('newGroupSlug')?.value?.trim();
+  const label = document.getElementById('newGroupLabel')?.value?.trim();
+  const icon = document.getElementById('newGroupIcon')?.value?.trim();
   if (!slug || !label) { alert('Slug and label are required.'); return; }
   const { error } = await supabase.from('groups').insert({ slug, label, icon, sort_order: groups.length });
   if (error) { alert('Failed to add group. Slug may already be in use.'); return; }
@@ -174,16 +174,16 @@ document.getElementById('addGroupBtn').addEventListener('click', async () => {
   triggerRebuild();
 });
 
-document.getElementById('subTabCategoriesBtn').addEventListener('click', () => {
-  document.getElementById('subTabCategoriesBtn').classList.add('active');
-  document.getElementById('subTabListingsBtn').classList.remove('active');
+document.getElementById('subTabCategoriesBtn')?.addEventListener('click', () => {
+  document.getElementById('subTabCategoriesBtn')?.classList.add('active');
+  document.getElementById('subTabListingsBtn')?.classList.remove('active');
   document.getElementById('dir-categories').style.display = 'block';
   document.getElementById('dir-listings').style.display = 'none';
 });
 
-document.getElementById('subTabListingsBtn').addEventListener('click', () => {
-  document.getElementById('subTabListingsBtn').classList.add('active');
-  document.getElementById('subTabCategoriesBtn').classList.remove('active');
+document.getElementById('subTabListingsBtn')?.addEventListener('click', () => {
+  document.getElementById('subTabListingsBtn')?.classList.add('active');
+  document.getElementById('subTabCategoriesBtn')?.classList.remove('active');
   document.getElementById('dir-listings').style.display = 'block';
   document.getElementById('dir-categories').style.display = 'none';
 });
@@ -232,20 +232,20 @@ function renderListingSubcat(s, slug) {
       <h4><span>${esc(s.name)} (${rows.length})</span></h4>
       ${rows.map((l) => `
         <div class="dir-row" data-id="${l.id}">
-          <input type="text" class="name" value="${esc(l.name)}" data-field="name" />
-          <input type="tel" value="${esc(l.phone)}" data-field="phone" style="width:130px;" />
-          <input type="text" class="note" value="${esc(l.note)}" data-field="note" />
-          <input type="email" value="${esc(l.email || '')}" data-field="email" placeholder="email" style="width:140px;" />
-          <input type="url" value="${esc(l.website || '')}" data-field="website" placeholder="website" style="width:140px;" />
+          <input type="text" class="input name" value="${esc(l.name)}" data-field="name" />
+          <input type="tel" class="input" value="${esc(l.phone)}" data-field="phone" style="width:130px;" />
+          <input type="text" class="input note" value="${esc(l.note)}" data-field="note" />
+          <input type="email" class="input" value="${esc(l.email || '')}" data-field="email" placeholder="email" style="width:140px;" />
+          <input type="url" class="input" value="${esc(l.website || '')}" data-field="website" placeholder="website" style="width:140px;" />
           <label><input type="checkbox" data-field="featured" ${l.featured ? 'checked' : ''} /> Featured</label>
           <button class="icon-btn save-listing" data-id="${l.id}">Save</button>
           <button class="icon-btn danger delete-listing" data-id="${l.id}">Delete</button>
         </div>
       `).join('')}
       <div class="dir-row new-listing" data-subcat-id="${s.id}">
-        <input type="text" class="name" placeholder="Business name" data-field="name" />
-        <input type="tel" placeholder="Phone" data-field="phone" style="width:130px;" />
-        <input type="text" class="note" placeholder="Note / recommendation" data-field="note" />
+        <input type="text" class="input name" placeholder="Business name" data-field="name" />
+        <input type="tel" class="input" placeholder="Phone" data-field="phone" style="width:130px;" />
+        <input type="text" class="input note" placeholder="Note / recommendation" data-field="note" />
         <button class="icon-btn add-listing" data-subcat-id="${s.id}" data-neighborhood="${slug}">+ Add</button>
       </div>
     </div>
