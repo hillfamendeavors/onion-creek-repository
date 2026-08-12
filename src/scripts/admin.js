@@ -179,3 +179,18 @@ logoutBtn.addEventListener('click', async () => {
 supabase.auth.getSession().then(async ({ data: { session } }) => {
   if (session?.user?.email && (await isAdmin(session.user.email))) showApp();
 });
+
+document.getElementById('tabRequestsBtn').addEventListener('click', () => {
+  document.getElementById('tabRequestsBtn').classList.add('active');
+  document.getElementById('tabDirectoryBtn').classList.remove('active');
+  document.getElementById('tab-requests').style.display = 'block';
+  document.getElementById('tab-directory').style.display = 'none';
+});
+
+document.getElementById('tabDirectoryBtn').addEventListener('click', () => {
+  document.getElementById('tabDirectoryBtn').classList.add('active');
+  document.getElementById('tabRequestsBtn').classList.remove('active');
+  document.getElementById('tab-directory').style.display = 'block';
+  document.getElementById('tab-requests').style.display = 'none';
+  window.dispatchEvent(new Event('directory-tab-shown'));
+});
