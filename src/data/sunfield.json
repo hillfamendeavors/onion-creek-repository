@@ -396,6 +396,17 @@
             "note": "Integrity, honesty and commitment are essential to each job big or small."
           }
         ]
+      },
+      {
+        "name": "Interior Designers",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Doubet Interiors",
+            "phone": "(832) 896-6922",
+            "note": "Community Verified"
+          }
+        ]
       }
     ]
   },
