@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase.js';
-import { getSession, signIn, signUp } from '../lib/auth.js';
+import { getSession, signIn, signUp, requestPasswordReset } from '../lib/auth.js';
 
 const main = document.querySelector('main[data-neighborhood]');
 const neighborhood = main.dataset.neighborhood;
@@ -11,6 +11,7 @@ const authEmailEl = document.getElementById('rp-auth-email');
 const authPasswordEl = document.getElementById('rp-auth-password');
 const authErrorEl = document.getElementById('rpAuthError');
 const signupNoticeEl = document.getElementById('rpSignupNotice');
+const resetNoticeEl = document.getElementById('rpResetNotice');
 
 function esc(str) {
   const div = document.createElement('div');
@@ -94,6 +95,16 @@ document.getElementById('rpSignUpBtn').addEventListener('click', async () => {
     return;
   }
   signupNoticeEl.style.display = 'block';
+});
+
+document.getElementById('rpForgotBtn').addEventListener('click', async () => {
+  authErrorEl.textContent = '';
+  const { error } = await requestPasswordReset(authEmailEl.value.trim());
+  if (error) {
+    authErrorEl.textContent = error.message;
+    return;
+  }
+  resetNoticeEl.style.display = 'block';
 });
 
 render();

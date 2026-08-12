@@ -591,6 +591,8 @@ body.all-tab-active .listings-table { max-height: 350px; }
 .thank-you p { font-size: 0.85rem; color: var(--mid-gray); }
 .auth-error { color: #b00020; font-size: 0.85rem; min-height: 1.2em; }
 .auth-notice { font-size: 0.85rem; color: var(--masters-green); }
+.link-btn { background: none; border: none; padding: 0; margin-top: -8px; margin-bottom: 16px; color: var(--phone); text-decoration: underline; font-size: 0.8rem; cursor: pointer; display: block; }
+.link-btn:hover { color: var(--phone-hover); }
 .request-count-row { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
 .request-card { padding: 16px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 12px; }
 .request-card a { color: var(--phone); text-decoration: none; }

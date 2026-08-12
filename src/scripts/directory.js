@@ -6,7 +6,7 @@
 // collapse, copy-phone, "Suggest a Referral", and "Need a Service?" behaviors.
 
 import { supabase } from '../lib/supabase.js';
-import { getSession, signIn, signUp } from '../lib/auth.js';
+import { getSession, signIn, signUp, requestPasswordReset } from '../lib/auth.js';
 
 const pillsEl = document.getElementById('groupPills');
 const container = document.getElementById('listingsContainer');
@@ -252,6 +252,8 @@ const authErrorEl = document.getElementById('authError');
 const authSignupNoticeEl = document.getElementById('authSignupNotice');
 const authSignInBtn = document.getElementById('authSignInBtn');
 const authSignUpBtn = document.getElementById('authSignUpBtn');
+const authForgotBtn = document.getElementById('authForgotBtn');
+const authResetNoticeEl = document.getElementById('authResetNotice');
 
 function showRequestForm() {
   reqAuthView.style.display = 'none';
@@ -275,6 +277,7 @@ function closeRequestModal() {
     });
     authErrorEl.textContent = '';
     authSignupNoticeEl.style.display = 'none';
+    authResetNoticeEl.style.display = 'none';
   }, 300);
 }
 
@@ -312,6 +315,16 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
       return;
     }
     authSignupNoticeEl.style.display = 'block';
+  });
+
+  authForgotBtn.addEventListener('click', async () => {
+    authErrorEl.textContent = '';
+    const { error } = await requestPasswordReset(authEmailEl.value.trim());
+    if (error) {
+      authErrorEl.textContent = error.message;
+      return;
+    }
+    authResetNoticeEl.style.display = 'block';
   });
 
   reqSubmitBtn.addEventListener('click', async () => {

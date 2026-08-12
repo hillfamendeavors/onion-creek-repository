@@ -22,8 +22,10 @@ const { groups, neighborhood } = Astro.props;
       </div>
       <button class="submit-btn" id="authSignInBtn">Log In</button>
       <button class="submit-btn" id="authSignUpBtn">Sign Up</button>
+      <button type="button" class="link-btn" id="authForgotBtn">Forgot password?</button>
       <p class="auth-error" id="authError"></p>
       <p class="auth-notice" id="authSignupNotice" style="display:none;">Check your email to confirm your account, then log in above.</p>
+      <p class="auth-notice" id="authResetNotice" style="display:none;">Check your email for a password reset link.</p>
     </div>
     <div id="requestFormView" style="display:none;">
       <h3>Need a Service?</h3>
