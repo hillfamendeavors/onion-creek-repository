@@ -292,6 +292,17 @@
             "note": "Very affordable and reliable. Great at color matching and trim work."
           }
         ]
+      },
+      {
+        "name": "Interior Designers",
+        "icon": "",
+        "listings": [
+          {
+            "name": "Doubet Interiors",
+            "phone": "(832) 896-6922",
+            "note": "Community Verified"
+          }
+        ]
       }
     ]
   },
