@@ -249,7 +249,8 @@ if (accessToken) {
             <div class="tabs">
               <button class="tab-btn active" id="tabRequestsBtn">Service Requests</button>
               <button class="tab-btn" id="tabReferralsBtn">Referral Suggestions</button>
-              <button class="tab-btn" id="tabDirectoryBtn">Directory Config</button>
+              <button class="tab-btn" id="tabRolesBtn">Admin Roles</button>
+              <button class="tab-btn" id="tabDirectoryBtn">Directory CMS</button>
             </div>
           </div>
 
@@ -322,27 +323,117 @@ if (accessToken) {
             </div>
           </div>
 
-          <div id="tab-directory" style="display:none;">
-            <div class="dir-subtabs" style="margin-bottom: var(--space-lg);">
-              <button class="btn-secondary active" id="subTabCategoriesBtn" style="background:var(--color-border); border-color:var(--color-border)">Categories</button>
-              <button class="btn-secondary" id="subTabListingsBtn">Listings</button>
+          <div id="tab-roles" style="display:none;">
+            <div class="card" style="margin-bottom: var(--space-lg); max-width: 540px;">
+              <h3 style="margin-top: 0; margin-bottom: var(--space-sm); color: var(--color-primary);">Grant Admin Access</h3>
+              <p style="font-size: 0.88rem; color: #4B5563; margin-bottom: var(--space-md);">Registered users added here can log into this Operations Console to manage directory content, requests, and referrals.</p>
+              <div style="display: flex; gap: var(--space-sm);">
+                <input type="email" id="grantAdminEmail" class="input" placeholder="user@example.com" style="margin-bottom: 0;" />
+                <button id="grantAdminBtn" class="btn-primary" style="white-space: nowrap; width: auto;">Grant Admin Role</button>
+              </div>
+              <div id="grantAdminNotice" style="margin-top: var(--space-sm); font-size: 0.85rem;"></div>
             </div>
 
-            <div id="dir-categories">
+            <div class="card">
+              <h3 style="margin-top: 0; margin-bottom: var(--space-md);">Authorized Administrators</h3>
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Email Address</th>
+                      <th>Role</th>
+                      <th>Added Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-directory" style="display:none;">
+            <div class="dir-subtabs" style="margin-bottom: var(--space-lg);">
+              <button class="btn-secondary active" id="subTabListingsBtn" style="background:var(--color-border); border-color:var(--color-border)">Business Listings</button>
+              <button class="btn-secondary" id="subTabCategoriesBtn">Categories & Groups</button>
+            </div>
+
+            <div id="dir-listings">
+              <div class="filters" style="margin-bottom: var(--space-md); flex-wrap: wrap;">
+                <select id="dirNeighborhood" class="select-input" style="flex: 1; min-width: 180px;"><option value="">All Neighborhoods</option></select>
+                <select id="dirCategoryFilter" class="select-input" style="flex: 1; min-width: 180px;"><option value="">All Categories</option></select>
+                <input type="text" id="dirSearch" class="input" placeholder="Search listing by name/phone…" style="flex: 2; min-width: 220px; margin-bottom: 0;" />
+                <button class="btn-primary" id="openAddListingModalBtn" style="width: auto;">+ Add Listing</button>
+              </div>
+              
+              <div class="card">
+                <div class="table-scroll">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Neighborhood</th>
+                        <th>Category</th>
+                        <th>Business Name</th>
+                        <th>Phone</th>
+                        <th>Note / Description</th>
+                        <th>Featured</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="listingsBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div id="dir-categories" style="display:none;">
               <div style="margin-bottom: var(--space-md); text-align: right;">
                 <button class="btn-primary" id="addGroupBtn" style="width: auto;">+ Add Group</button>
               </div>
               <div id="groupsList"></div>
             </div>
-
-            <div id="dir-listings" style="display:none;">
-              <select id="dirNeighborhood" class="select-input" style="margin-bottom: var(--space-md);"></select>
-              <div id="listingsBySubcat"></div>
-            </div>
           </div>
         </div>
       </div>
     )}
+
+    <!-- Modal: Add Listing -->
+    <div id="addListingModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+      <div class="card" style="max-width:540px; width:90%; max-height:90vh; overflow-y:auto; padding:var(--space-xl); background:white;">
+        <h3 style="margin-top:0; color:var(--color-primary);">+ Add Business Listing</h3>
+        <form id="addListingForm">
+          <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:4px;">Neighborhood *</label>
+          <select id="addListNeighborhood" class="select-input" required style="margin-bottom:var(--space-md);"></select>
+
+          <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:4px;">Subcategory *</label>
+          <select id="addListSubcat" class="select-input" required style="margin-bottom:var(--space-md);"></select>
+
+          <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:4px;">Business Name *</label>
+          <input type="text" id="addListName" class="input" required placeholder="e.g. Austin Premier Plumbing" />
+
+          <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:4px;">Phone Number *</label>
+          <input type="text" id="addListPhone" class="input" required placeholder="(512) 555-0199" />
+
+          <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:4px;">Email (Optional)</label>
+          <input type="email" id="addListEmail" class="input" placeholder="contact@business.com" />
+
+          <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:4px;">Website (Optional)</label>
+          <input type="url" id="addListWebsite" class="input" placeholder="https://www.business.com" />
+
+          <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:4px;">Note / Description (Optional)</label>
+          <input type="text" id="addListNote" class="input" placeholder="e.g. Master plumber, 24/7 emergency service" />
+
+          <label style="font-size:0.85rem; font-weight:600; display:inline-flex; align-items:center; gap:8px; margin-bottom:var(--space-lg); cursor:pointer;">
+            <input type="checkbox" id="addListFeatured" /> Highlight as Featured Provider
+          </label>
+
+          <div style="display:flex; justify-content:flex-end; gap:var(--space-md);">
+            <button type="button" class="btn-secondary" id="closeAddListingModalBtn" style="width:auto;">Cancel</button>
+            <button type="submit" class="btn-primary" style="width:auto;">Save Listing</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <script src="../scripts/admin.js"></script>
     <script src="../scripts/admin-directory.js"></script>

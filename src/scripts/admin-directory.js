@@ -197,103 +197,188 @@ function populateNeighborhoodSelect() {
 
 let listings = [];
 
-async function loadListingsFor(neighborhoodSlug) {
-  const { data } = await supabase.from('listings').select('*').eq('neighborhood_slug', neighborhoodSlug).order('sort_order');
-  listings = data || [];
+let allListings = [];
+
+async function loadAllListings() {
+  const { data, error } = await supabase.from('listings').select('*').order('created_at', { ascending: false });
+  if (!error && data) {
+    allListings = data;
+  }
 }
 
-async function renderListings() {
-  const slug = document.getElementById('dirNeighborhood').value;
-  await loadListingsFor(slug);
+window.addEventListener('directory-tab-shown', async () => {
+  if (loaded) return;
+  loaded = true;
+  await loadDirectoryData();
+  await loadAllListings();
+  renderGroups();
+  populateNeighborhoodSelects();
+  populateCategorySelects();
+  renderListingsTable();
+});
 
-  const enabledSubIds = new Set(
-    neighborhoodSubcats.filter((ns) => ns.neighborhood_slug === slug).map((ns) => ns.subcategory_id)
-  );
+// Subtab switching
+const subTabListingsBtn = document.getElementById('subTabListingsBtn');
+const subTabCategoriesBtn = document.getElementById('subTabCategoriesBtn');
+const dirListingsView = document.getElementById('dir-listings');
+const dirCategoriesView = document.getElementById('dir-categories');
 
-  const el = document.getElementById('listingsBySubcat');
-  el.innerHTML = groups.map((g) => {
-    const subs = subcategories.filter((s) => s.group_id === g.id && enabledSubIds.has(s.id));
-    if (subs.length === 0) return '';
-    return `
-      <div class="dir-group">
-        <h3><span>${esc(g.icon)} ${esc(g.label)}</span></h3>
-        ${subs.map((s) => renderListingSubcat(s, slug)).join('')}
-      </div>
-    `;
-  }).join('');
+subTabListingsBtn?.addEventListener('click', () => {
+  subTabListingsBtn.classList.add('active');
+  subTabListingsBtn.style.background = 'var(--color-border)';
+  subTabCategoriesBtn.classList.remove('active');
+  subTabCategoriesBtn.style.background = 'transparent';
+  if (dirListingsView) dirListingsView.style.display = 'block';
+  if (dirCategoriesView) dirCategoriesView.style.display = 'none';
+});
 
-  wireListingHandlers(slug);
+subTabCategoriesBtn?.addEventListener('click', () => {
+  subTabCategoriesBtn.classList.add('active');
+  subTabCategoriesBtn.style.background = 'var(--color-border)';
+  subTabListingsBtn.classList.remove('active');
+  subTabListingsBtn.style.background = 'transparent';
+  if (dirCategoriesView) dirCategoriesView.style.display = 'block';
+  if (dirListingsView) dirListingsView.style.display = 'none';
+});
+
+function populateNeighborhoodSelects() {
+  const dirNeighborhood = document.getElementById('dirNeighborhood');
+  const addListNeighborhood = document.getElementById('addListNeighborhood');
+  
+  const optionsHtml = '<option value="">All Neighborhoods</option>' +
+    NEIGHBORHOODS.map((n) => `<option value="${esc(n.slug)}">${esc(n.name)}</option>`).join('');
+
+  if (dirNeighborhood) dirNeighborhood.innerHTML = optionsHtml;
+  if (addListNeighborhood) addListNeighborhood.innerHTML = NEIGHBORHOODS.map((n) => `<option value="${esc(n.slug)}">${esc(n.name)}</option>`).join('');
 }
 
-function renderListingSubcat(s, slug) {
-  const rows = listings.filter((l) => l.subcategory_id === s.id);
-  return `
-    <div class="dir-subcat">
-      <h4><span>${esc(s.name)} (${rows.length})</span></h4>
-      ${rows.map((l) => `
-        <div class="dir-row" data-id="${l.id}">
-          <input type="text" class="input name" value="${esc(l.name)}" data-field="name" />
-          <input type="tel" class="input" value="${esc(l.phone)}" data-field="phone" style="width:130px;" />
-          <input type="text" class="input note" value="${esc(l.note)}" data-field="note" />
-          <input type="email" class="input" value="${esc(l.email || '')}" data-field="email" placeholder="email" style="width:140px;" />
-          <input type="url" class="input" value="${esc(l.website || '')}" data-field="website" placeholder="website" style="width:140px;" />
-          <label><input type="checkbox" data-field="featured" ${l.featured ? 'checked' : ''} /> Featured</label>
-          <button class="icon-btn save-listing" data-id="${l.id}">Save</button>
-          <button class="icon-btn danger delete-listing" data-id="${l.id}">Delete</button>
-        </div>
-      `).join('')}
-      <div class="dir-row new-listing" data-subcat-id="${s.id}">
-        <input type="text" class="input name" placeholder="Business name" data-field="name" />
-        <input type="tel" class="input" placeholder="Phone" data-field="phone" style="width:130px;" />
-        <input type="text" class="input note" placeholder="Note / recommendation" data-field="note" />
-        <button class="icon-btn add-listing" data-subcat-id="${s.id}" data-neighborhood="${slug}">+ Add</button>
-      </div>
-    </div>
-  `;
+function populateCategorySelects() {
+  const dirCategoryFilter = document.getElementById('dirCategoryFilter');
+  const addListSubcat = document.getElementById('addListSubcat');
+
+  if (dirCategoryFilter) {
+    dirCategoryFilter.innerHTML = '<option value="">All Categories</option>' +
+      subcategories.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  }
+
+  if (addListSubcat) {
+    addListSubcat.innerHTML = subcategories.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  }
 }
 
-function wireListingHandlers(slug) {
-  document.getElementById('listingsBySubcat').querySelectorAll('.save-listing').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const row = btn.closest('.dir-row');
-      const fields = {};
-      row.querySelectorAll('[data-field]').forEach((input) => {
-        const key = input.dataset.field;
-        fields[key] = input.type === 'checkbox' ? input.checked : input.value.trim() || null;
-      });
-      if (!fields.name || !fields.phone) { alert('Name and phone are required.'); return; }
-      const { error } = await supabase.from('listings').update(fields).eq('id', Number(btn.dataset.id));
-      if (error) { alert('Failed to save listing.'); return; }
-      triggerRebuild();
-      btn.textContent = 'Saved ✓';
-      setTimeout(() => { btn.textContent = 'Save'; }, 1500);
-    });
+function renderListingsTable() {
+  const listingsBody = document.getElementById('listingsBody');
+  if (!listingsBody) return;
+
+  const selectedNeighborhood = document.getElementById('dirNeighborhood')?.value || '';
+  const selectedCategory = document.getElementById('dirCategoryFilter')?.value || '';
+  const searchKeyword = (document.getElementById('dirSearch')?.value || '').toLowerCase().trim();
+
+  const filtered = allListings.filter((l) => {
+    const matchNeighborhood = !selectedNeighborhood || l.neighborhood_slug === selectedNeighborhood;
+    const matchCategory = !selectedCategory || String(l.subcategory_id) === String(selectedCategory);
+    const matchSearch = !searchKeyword ||
+      (l.name && l.name.toLowerCase().includes(searchKeyword)) ||
+      (l.phone && l.phone.includes(searchKeyword)) ||
+      (l.note && l.note.toLowerCase().includes(searchKeyword));
+    return matchNeighborhood && matchCategory && matchSearch;
   });
 
-  document.getElementById('listingsBySubcat').querySelectorAll('.delete-listing').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      if (!confirm('Delete this listing? This cannot be undone.')) return;
-      const { error } = await supabase.from('listings').delete().eq('id', Number(btn.dataset.id));
-      if (error) { alert('Failed to delete listing.'); return; }
-      await renderListings();
-      triggerRebuild();
-    });
-  });
+  if (filtered.length === 0) {
+    listingsBody.innerHTML = `<tr><td colspan="7">No listings found matching criteria.</td></tr>`;
+    return;
+  }
 
-  document.getElementById('listingsBySubcat').querySelectorAll('.add-listing').forEach((btn) => {
+  const subcatMap = new Map(subcategories.map((s) => [s.id, s.name]));
+  const neighMap = new Map(NEIGHBORHOODS.map((n) => [n.slug, n.name]));
+
+  listingsBody.innerHTML = filtered.map((l) => `
+    <tr data-id="${l.id}">
+      <td>${esc(neighMap.get(l.neighborhood_slug) || l.neighborhood_slug)}</td>
+      <td>${esc(subcatMap.get(l.subcategory_id) || 'General')}</td>
+      <td><strong>${esc(l.name)}</strong></td>
+      <td>${esc(l.phone)}</td>
+      <td>${esc(l.note || '—')}</td>
+      <td>${l.featured ? '<span style="background:#FEF3C7; color:#92400E; padding:2px 8px; border-radius:12px; font-weight:600; font-size:0.8rem;">Featured ⭐</span>' : '—'}</td>
+      <td>
+        <button class="btn-danger btn-delete-listing" data-id="${l.id}">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+
+  listingsBody.querySelectorAll('.btn-delete-listing').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const row = btn.closest('.new-listing');
-      const fields = {};
-      row.querySelectorAll('[data-field]').forEach((input) => { fields[input.dataset.field] = input.value.trim() || null; });
-      if (!fields.name || !fields.phone) { alert('Name and phone are required.'); return; }
-      const { error } = await supabase.from('listings').insert({
-        ...fields,
-        subcategory_id: Number(btn.dataset.subcatId),
-        neighborhood_slug: btn.dataset.neighborhood,
-      });
-      if (error) { alert('Failed to add listing.'); return; }
-      await renderListings();
+      const id = Number(btn.dataset.id);
+      if (!confirm('Delete this business listing permanently?')) return;
+      const { error } = await supabase.from('listings').delete().eq('id', id);
+      if (error) {
+        alert('Failed to delete listing: ' + error.message);
+        return;
+      }
+      allListings = allListings.filter((l) => l.id !== id);
+      renderListingsTable();
       triggerRebuild();
     });
   });
 }
+
+// Listing Search & Filters
+['dirNeighborhood', 'dirCategoryFilter'].forEach((id) => {
+  document.getElementById(id)?.addEventListener('change', renderListingsTable);
+});
+document.getElementById('dirSearch')?.addEventListener('input', renderListingsTable);
+
+// Modal Controls for Add Listing
+const openAddListingModalBtn = document.getElementById('openAddListingModalBtn');
+const closeAddListingModalBtn = document.getElementById('closeAddListingModalBtn');
+const addListingModal = document.getElementById('addListingModal');
+const addListingForm = document.getElementById('addListingForm');
+
+openAddListingModalBtn?.addEventListener('click', () => {
+  if (addListingModal) addListingModal.style.display = 'flex';
+});
+
+closeAddListingModalBtn?.addEventListener('click', () => {
+  if (addListingModal) addListingModal.style.display = 'none';
+});
+
+addListingForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const neighborhood_slug = document.getElementById('addListNeighborhood')?.value;
+  const subcategory_id = Number(document.getElementById('addListSubcat')?.value);
+  const name = document.getElementById('addListName')?.value.trim();
+  const phone = document.getElementById('addListPhone')?.value.trim();
+  const email = document.getElementById('addListEmail')?.value.trim() || null;
+  const website = document.getElementById('addListWebsite')?.value.trim() || null;
+  const note = document.getElementById('addListNote')?.value.trim() || null;
+  const featured = document.getElementById('addListFeatured')?.checked || false;
+
+  if (!name || !phone || !subcategory_id || !neighborhood_slug) {
+    alert('Please complete all required fields.');
+    return;
+  }
+
+  const { data, error } = await supabase.from('listings').insert({
+    neighborhood_slug,
+    subcategory_id,
+    name,
+    phone,
+    email,
+    website,
+    note,
+    featured,
+  }).select('*').single();
+
+  if (error) {
+    alert('Failed to add business listing: ' + error.message);
+    return;
+  }
+
+  if (data) {
+    allListings.unshift(data);
+  }
+  if (addListingModal) addListingModal.style.display = 'none';
+  addListingForm.reset();
+  renderListingsTable();
+  triggerRebuild();
+});

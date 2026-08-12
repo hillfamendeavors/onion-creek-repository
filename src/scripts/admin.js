@@ -202,14 +202,112 @@ function switchTab(activeBtn, targetId) {
   activeBtn?.classList.add('active');
 }
 
+const tabRolesBtn = document.getElementById('tabRolesBtn');
+
 tabRequestsBtn?.addEventListener('click', () => switchTab(tabRequestsBtn, 'tab-requests'));
 tabReferralsBtn?.addEventListener('click', () => {
   switchTab(tabReferralsBtn, 'tab-referrals');
   loadReferrals();
 });
+tabRolesBtn?.addEventListener('click', () => {
+  switchTab(tabRolesBtn, 'tab-roles');
+  loadAdminRoles();
+});
 tabDirectoryBtn?.addEventListener('click', () => {
   switchTab(tabDirectoryBtn, 'tab-directory');
   window.dispatchEvent(new Event('directory-tab-shown'));
+});
+
+// ── Admin Roles & Accounts Management ──
+let adminUsers = [];
+const adminsBody = document.getElementById('adminsBody');
+const grantAdminEmail = document.getElementById('grantAdminEmail');
+const grantAdminBtn = document.getElementById('grantAdminBtn');
+const grantAdminNotice = document.getElementById('grantAdminNotice');
+
+const SUPER_ADMINS = ['marconidominyx@gmail.com', 'hillfamendeavors@gmail.com'];
+
+async function loadAdminRoles() {
+  if (!adminsBody) return;
+  adminsBody.innerHTML = `<tr><td colspan="4">Loading admin accounts…</td></tr>`;
+  const { data, error } = await supabase.from('admins').select('*').order('created_at', { ascending: false });
+
+  if (error) {
+    adminsBody.innerHTML = `<tr><td colspan="4">Failed to load admin accounts: ${esc(error.message)}</td></tr>`;
+    return;
+  }
+
+  adminUsers = data || [];
+  renderAdminsTable();
+}
+
+function renderAdminsTable() {
+  if (!adminsBody) return;
+
+  if (adminUsers.length === 0) {
+    adminsBody.innerHTML = `<tr><td colspan="4">No admin accounts configured.</td></tr>`;
+    return;
+  }
+
+  adminsBody.innerHTML = adminUsers.map((a) => {
+    const isSuper = SUPER_ADMINS.includes(a.email.toLowerCase());
+    const roleBadge = isSuper ? '<span style="background:#FEF3C7; color:#92400E; padding:2px 8px; border-radius:12px; font-weight:600; font-size:0.8rem;">Super Admin</span>' : '<span style="background:#D1FAE5; color:#065F46; padding:2px 8px; border-radius:12px; font-weight:600; font-size:0.8rem;">Admin</span>';
+    const dateStr = a.created_at ? new Date(a.created_at).toLocaleDateString() : 'System';
+
+    return `
+      <tr data-email="${esc(a.email)}">
+        <td><strong>${esc(a.email)}</strong></td>
+        <td>${roleBadge}</td>
+        <td>${esc(dateStr)}</td>
+        <td>
+          ${isSuper ? '<span style="color:#9CA3AF; font-size:0.85rem;">Protected</span>' : `<button class="btn-danger btn-revoke-admin" data-email="${esc(a.email)}">Revoke Role</button>`}
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  adminsBody.querySelectorAll('.btn-revoke-admin').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const email = btn.dataset.email;
+      if (!email) return;
+      if (!confirm(`Revoke admin access for ${email}?`)) return;
+
+      const { error } = await supabase.from('admins').delete().eq('email', email);
+      if (error) {
+        alert('Failed to revoke admin role: ' + error.message);
+        return;
+      }
+
+      adminUsers = adminUsers.filter((a) => a.email !== email);
+      renderAdminsTable();
+    });
+  });
+}
+
+grantAdminBtn?.addEventListener('click', async () => {
+  if (!grantAdminEmail) return;
+  const email = grantAdminEmail.value.trim().toLowerCase();
+  if (!email || !email.includes('@')) {
+    if (grantAdminNotice) grantAdminNotice.innerHTML = '<span style="color:red;">Please enter a valid email address.</span>';
+    return;
+  }
+
+  grantAdminBtn.disabled = true;
+  grantAdminBtn.textContent = 'Granting…';
+
+  const { error } = await supabase.from('admins').insert({ email, role: 'admin' });
+
+  grantAdminBtn.disabled = false;
+  grantAdminBtn.textContent = 'Grant Admin Role';
+
+  if (error) {
+    if (grantAdminNotice) grantAdminNotice.innerHTML = `<span style="color:red;">Error: ${esc(error.message)}</span>`;
+    return;
+  }
+
+  grantAdminEmail.value = '';
+  if (grantAdminNotice) grantAdminNotice.innerHTML = `<span style="color:green;">✓ Admin role granted to <strong>${esc(email)}</strong>.</span>`;
+  loadAdminRoles();
 });
 
 // ── Referral Suggestions Admin Logic ──
