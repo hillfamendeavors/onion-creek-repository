@@ -36,10 +36,15 @@ export async function signIn(email, password) {
 export async function signUp(email, password, metadata = {}) {
   const invalid = checkCredentials(email, password);
   if (invalid) return invalid;
+  const redirectTo = typeof window !== 'undefined'
+    ? `${window.location.origin}/login/`
+    : 'https://trustedneighbors.net/login/';
+
   return supabase.auth.signUp({
     email,
     password,
     options: {
+      emailRedirectTo: redirectTo,
       data: {
         full_name: metadata.full_name || '',
         phone: metadata.phone || '',

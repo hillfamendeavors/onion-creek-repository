@@ -290,6 +290,14 @@ async function loadUserServiceRequests(userEmail) {
 
 // Page Initialization
 async function initPage() {
+  // Check URL hash for confirmation token or password reset
+  if (window.location.hash.includes('access_token=') || window.location.search.includes('code=')) {
+    if (authNotice) {
+      authNotice.style.display = 'block';
+      authNotice.textContent = 'Verifying your account session…';
+    }
+  }
+
   const session = await getSession();
 
   if (session && session.user) {
@@ -317,5 +325,14 @@ async function initPage() {
     if (profileCard) profileCard.style.display = 'none';
   }
 }
+
+// React to auth state changes dynamically
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+    initPage();
+  } else if (event === 'SIGNED_OUT') {
+    initPage();
+  }
+});
 
 initPage();

@@ -439,18 +439,31 @@ function escStatus(str) {
 }
 
 const authStatusEl = document.getElementById('authStatus');
-if (authStatusEl) {
-  getSession().then((session) => {
-    if (session?.user?.email) {
-      const displayName = session.user.user_metadata?.full_name || session.user.email;
+const navLoginLink = document.getElementById('navLoginLink');
+
+getSession().then((session) => {
+  if (session?.user?.email) {
+    const displayName = session.user.user_metadata?.full_name || session.user.email;
+    if (navLoginLink) {
+      navLoginLink.textContent = 'My Account';
+      navLoginLink.href = '/login/';
+    }
+    if (authStatusEl) {
       authStatusEl.innerHTML = `Logged in as <strong>${escStatus(displayName)}</strong> &middot; <a href="/login/" style="color:var(--masters-green);font-weight:600;text-decoration:underline;">My Account</a> &middot; <button id="authStatusLogout" style="background:none;border:none;color:inherit;font-family:inherit;cursor:pointer;text-decoration:underline;padding:0;">Log out</button>`;
       document.getElementById('authStatusLogout')?.addEventListener('click', async () => {
         await supabase.auth.signOut();
         location.reload();
       });
-    } else {
-      authStatusEl.innerHTML = `<a href="/login/?next=${encodeURIComponent(location.pathname)}">Log in</a>`;
+      authStatusEl.classList.add('visible');
     }
-    authStatusEl.classList.add('visible');
-  });
-}
+  } else {
+    if (navLoginLink) {
+      navLoginLink.textContent = 'Log In';
+      navLoginLink.href = '/login/';
+    }
+    if (authStatusEl) {
+      authStatusEl.innerHTML = `<a href="/login/?next=${encodeURIComponent(location.pathname)}">Log in</a>`;
+      authStatusEl.classList.add('visible');
+    }
+  }
+});
