@@ -9,17 +9,21 @@ const accessToken = Astro.cookies.get('sb-access-token')?.value;
 let isAdminSession = false;
 
 if (accessToken) {
-  const authSupabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: { headers: { Authorization: `Bearer ${accessToken}` } },
-    auth: { persistSession: false }
-  });
+  try {
+    const authSupabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: `Bearer ${accessToken}` } },
+      auth: { persistSession: false }
+    });
 
-  const { data: { user }, error: userError } = await authSupabase.auth.getUser(accessToken);
-  if (user && !userError) {
-    const { data: isAdmin } = await authSupabase.rpc('is_admin');
-    if (isAdmin) {
-      isAdminSession = true;
+    const { data: { user }, error: userError } = await authSupabase.auth.getUser(accessToken);
+    if (user && !userError) {
+      const { data: isAdmin } = await authSupabase.rpc('is_admin');
+      if (isAdmin) {
+        isAdminSession = true;
+      }
     }
+  } catch (e) {
+    console.warn('Admin token check error during SSR:', e);
   }
 }
 ---
