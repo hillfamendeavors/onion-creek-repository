@@ -42,6 +42,7 @@ function showLogin() {
 }
 
 async function loadRequests() {
+  requestsBody.innerHTML = `<tr><td colspan="10">Loading…</td></tr>`;
   const { data, error } = await supabase.from('service_requests').select('*');
 
   if (error) {
@@ -84,6 +85,11 @@ function renderTable() {
     th.querySelector('.arrow').textContent = active ? (sortDir === 'asc' ? '▲' : '▼') : '';
   });
 
+  if (filtered.length === 0) {
+    requestsBody.innerHTML = `<tr><td colspan="10">${requests.length === 0 ? 'No requests yet.' : 'No requests match the current filters.'}</td></tr>`;
+    return;
+  }
+
   requestsBody.innerHTML = filtered.map((r) => `
     <tr data-id="${r.id}">
       <td>${esc(new Date(r.created_at).toLocaleDateString())}</td>
@@ -107,7 +113,13 @@ function renderTable() {
 
   requestsBody.querySelectorAll('select.status').forEach((sel) => {
     sel.addEventListener('change', async () => {
-      await supabase.from('service_requests').update({ status: sel.value }).eq('id', sel.dataset.id);
+      const previousValue = requests.find((r) => r.id === sel.dataset.id)?.status;
+      const { error } = await supabase.from('service_requests').update({ status: sel.value }).eq('id', sel.dataset.id);
+      if (error) {
+        alert('Failed to update status. Please try again.');
+        sel.value = previousValue;
+        return;
+      }
       const req = requests.find((r) => r.id === sel.dataset.id);
       if (req) req.status = sel.value;
     });
