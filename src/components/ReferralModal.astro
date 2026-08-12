@@ -3,7 +3,7 @@
 // email subject prefix are passed through to the client via data attributes
 // on #modalOverlay (read by directory.js on submit, sent to the
 // notify-referral Netlify function).
-const { neighborhoodName, subjectPrefix } = Astro.props;
+const { neighborhoodName, subjectPrefix, groups } = Astro.props;
 ---
 
 <button class="fab" id="openModal">+ Suggest a Referral</button>
@@ -30,35 +30,47 @@ const { neighborhoodName, subjectPrefix } = Astro.props;
         <label>Category <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
         <select id="f-category">
           <option value="">— Select a category —</option>
-          <optgroup label="Home &amp; Repair">
-            <option>Plumbers</option><option>Electricians</option><option>Appliance Repair</option><option>Roofers</option><option>Gutters</option>
-            <option>Handyman</option><option>Construction</option><option>Fencing &amp; Decks</option>
-            <option>AC &amp; Heating</option><option>Painters</option>
-          </optgroup>
-          <optgroup label="Outdoor &amp; Lawn">
-            <option>Landscaping</option><option>Window Cleaning/Exterior Cleaning</option><option>Tree Care</option><option>Mosquito &amp; Pest Control</option><option>Pool Cleaning &amp; Service</option><option>Irrigation</option>
-          </optgroup>
-          <optgroup label="Auto &amp; Transport">
-            <option>Mechanics &amp; Auto Repair</option><option>Golf Cart Sales &amp; Repair</option>
-          </optgroup>
-          <optgroup label="Professional Services">
-            <option>Accounting &amp; Tax Services</option>
-            <option>Real Estate Agents</option><option>Real Estate Attorney</option><option>Insurance Agents</option><option>Notary Services</option>
-          </optgroup>
-          <optgroup label="Health &amp; Wellness">
-            <option>Doctors &amp; Healthcare</option><option>Gyms</option><option>Travel Agent</option>
-          </optgroup>
-          <optgroup label="Kids &amp; Education">
-            <option>Childcare</option><option>Babysitting &amp; Nannies</option>
-            <option>Camps &amp; Sports Leagues</option><option>Hobby &amp; Entertainment</option>
-          </optgroup>
-          <optgroup label="Home Life">
-            <option>House Cleaning</option>
-            <option>Junk Removal</option><option>Tailors &amp; Alterations</option><option>Movers</option>
-          </optgroup>
-          <optgroup label="Pets">
-            <option>Veterinarians</option><option>Pet Services</option>
-          </optgroup>
+          {groups ? (
+            groups.map((g) => (
+              <optgroup label={g.label}>
+                {g.subcategories.map((sub) => (
+                  <option>{sub.name}</option>
+                ))}
+              </optgroup>
+            ))
+          ) : (
+            <>
+              <optgroup label="Home &amp; Repair">
+                <option>Plumbers</option><option>Electricians</option><option>Appliance Repair</option><option>Roofers</option><option>Gutters</option>
+                <option>Handyman</option><option>Construction</option><option>Fencing &amp; Decks</option>
+                <option>AC &amp; Heating</option><option>Painters</option><option>Interior Designers</option>
+              </optgroup>
+              <optgroup label="Outdoor &amp; Lawn">
+                <option>Landscaping</option><option>Window Cleaning/Exterior Cleaning</option><option>Tree Care</option><option>Mosquito &amp; Pest Control</option><option>Pool Cleaning &amp; Service</option><option>Irrigation</option>
+              </optgroup>
+              <optgroup label="Auto &amp; Transport">
+                <option>Mechanics &amp; Auto Repair</option><option>Golf Cart Sales &amp; Repair</option>
+              </optgroup>
+              <optgroup label="Professional Services">
+                <option>Accounting &amp; Tax Services</option>
+                <option>Real Estate Agents</option><option>Real Estate Attorney</option><option>Insurance Agents</option><option>Notary Services</option>
+              </optgroup>
+              <optgroup label="Health &amp; Wellness">
+                <option>Doctors &amp; Healthcare</option><option>Gyms</option><option>Travel Agent</option>
+              </optgroup>
+              <optgroup label="Kids &amp; Education">
+                <option>Childcare</option><option>Babysitting &amp; Nannies</option>
+                <option>Camps & Sports Leagues</option><option>Hobby &amp; Entertainment</option>
+              </optgroup>
+              <optgroup label="Home Life">
+                <option>House Cleaning</option>
+                <option>Junk Removal</option><option>Tailors &amp; Alterations</option><option>Movers</option>
+              </optgroup>
+              <optgroup label="Pets">
+                <option>Veterinarians</option><option>Pet Services</option>
+              </optgroup>
+            </>
+          )}
           <option value="Other">Other</option>
         </select>
       </div>
