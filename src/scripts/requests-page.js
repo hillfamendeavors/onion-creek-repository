@@ -83,7 +83,20 @@ async function render() {
   }
 }
 
-document.getElementById('rpSignInBtn').addEventListener('click', async () => {
+async function withButtonLock(btn, fn) {
+  btn.disabled = true;
+  try {
+    await fn();
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+const rpSignInBtn = document.getElementById('rpSignInBtn');
+const rpSignUpBtn = document.getElementById('rpSignUpBtn');
+const rpForgotBtn = document.getElementById('rpForgotBtn');
+
+rpSignInBtn.addEventListener('click', () => withButtonLock(rpSignInBtn, async () => {
   authErrorEl.textContent = '';
   const { error } = await signIn(authEmailEl.value.trim(), authPasswordEl.value);
   if (error) {
@@ -91,9 +104,9 @@ document.getElementById('rpSignInBtn').addEventListener('click', async () => {
     return;
   }
   render();
-});
+}));
 
-document.getElementById('rpSignUpBtn').addEventListener('click', async () => {
+rpSignUpBtn.addEventListener('click', () => withButtonLock(rpSignUpBtn, async () => {
   authErrorEl.textContent = '';
   const { error } = await signUp(authEmailEl.value.trim(), authPasswordEl.value);
   if (error) {
@@ -101,9 +114,9 @@ document.getElementById('rpSignUpBtn').addEventListener('click', async () => {
     return;
   }
   signupNoticeEl.style.display = 'block';
-});
+}));
 
-document.getElementById('rpForgotBtn').addEventListener('click', async () => {
+rpForgotBtn.addEventListener('click', () => withButtonLock(rpForgotBtn, async () => {
   authErrorEl.textContent = '';
   const { error } = await requestPasswordReset(authEmailEl.value.trim());
   if (error) {
@@ -111,6 +124,6 @@ document.getElementById('rpForgotBtn').addEventListener('click', async () => {
     return;
   }
   resetNoticeEl.style.display = 'block';
-});
+}));
 
 render();

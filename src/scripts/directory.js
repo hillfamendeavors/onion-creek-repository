@@ -297,7 +297,16 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
   reqCloseBtn.addEventListener('click', closeRequestModal);
   reqOverlay.addEventListener('click', (e) => { if (e.target === reqOverlay) closeRequestModal(); });
 
-  authSignInBtn.addEventListener('click', async () => {
+  async function withButtonLock(btn, fn) {
+    btn.disabled = true;
+    try {
+      await fn();
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  authSignInBtn.addEventListener('click', () => withButtonLock(authSignInBtn, async () => {
     authErrorEl.textContent = '';
     const { error } = await signIn(authEmailEl.value.trim(), authPasswordEl.value);
     if (error) {
@@ -305,9 +314,9 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
       return;
     }
     showRequestForm();
-  });
+  }));
 
-  authSignUpBtn.addEventListener('click', async () => {
+  authSignUpBtn.addEventListener('click', () => withButtonLock(authSignUpBtn, async () => {
     authErrorEl.textContent = '';
     const { error } = await signUp(authEmailEl.value.trim(), authPasswordEl.value);
     if (error) {
@@ -315,9 +324,9 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
       return;
     }
     authSignupNoticeEl.style.display = 'block';
-  });
+  }));
 
-  authForgotBtn.addEventListener('click', async () => {
+  authForgotBtn.addEventListener('click', () => withButtonLock(authForgotBtn, async () => {
     authErrorEl.textContent = '';
     const { error } = await requestPasswordReset(authEmailEl.value.trim());
     if (error) {
@@ -325,7 +334,7 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
       return;
     }
     authResetNoticeEl.style.display = 'block';
-  });
+  }));
 
   reqSubmitBtn.addEventListener('click', async () => {
     const category = document.getElementById('r-category').value;

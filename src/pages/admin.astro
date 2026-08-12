@@ -17,8 +17,9 @@
       #loginView { max-width: 320px; margin: 80px auto; }
       #loginView input { display: block; width: 100%; box-sizing: border-box; margin-bottom: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
       #loginView button, #logoutBtn { padding: 8px 16px; border: none; border-radius: 4px; background: #1a3a2a; color: #fff; cursor: pointer; }
-      #loginError { color: #b00020; font-size: 0.85rem; min-height: 1.2em; }
+      #loginError { color: #b00020; font-size: 0.9rem; min-height: 1.2em; }
       #appView { display: none; }
+      .table-scroll { overflow-x: auto; }
       table { width: 100%; border-collapse: collapse; background: #fff; font-size: 0.8rem; }
       th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e5e5e0; vertical-align: top; }
       th { background: #eeeee8; }
@@ -28,6 +29,9 @@
       .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
       .filters { display: flex; gap: 10px; margin-bottom: 12px; }
       .filters select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+      @media (max-width: 700px) {
+        .filters { flex-wrap: wrap; }
+      }
       th.sortable { cursor: pointer; user-select: none; }
       th.sortable .arrow { font-size: 0.7em; }
     </style>
@@ -56,6 +60,7 @@
           <option value="closed">closed</option>
         </select>
       </div>
+      <div class="table-scroll">
       <table>
         <thead>
           <tr>
@@ -73,6 +78,7 @@
         </thead>
         <tbody id="requestsBody"></tbody>
       </table>
+      </div>
     </div>
 
     <script src="../scripts/admin.js"></script>
