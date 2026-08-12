@@ -20,12 +20,17 @@ function esc(str) {
 }
 
 async function renderCounts() {
+  countsEl.innerHTML = '<p class="request-loading">Loading…</p>';
   const { data, error } = await supabase
     .from('service_requests_public_counts')
     .select('*')
     .eq('neighborhood', neighborhood);
 
-  if (error || !data || data.length === 0) {
+  if (error) {
+    countsEl.innerHTML = '<p>Something went wrong loading requests. Please refresh the page.</p>';
+    return;
+  }
+  if (!data || data.length === 0) {
     countsEl.innerHTML = '<p>No open requests right now.</p>';
     return;
   }
@@ -37,6 +42,7 @@ async function renderCounts() {
 }
 
 async function renderFullList() {
+  fullEl.innerHTML = '<p class="request-loading">Loading…</p>';
   const { data, error } = await supabase
     .from('service_requests')
     .select('*')
@@ -45,7 +51,7 @@ async function renderFullList() {
     .order('date_needed', { ascending: true });
 
   if (error) {
-    fullEl.innerHTML = '<p>Failed to load requests.</p>';
+    fullEl.innerHTML = '<p>Something went wrong loading requests. Please refresh the page.</p>';
     return;
   }
   if (data.length === 0) {
