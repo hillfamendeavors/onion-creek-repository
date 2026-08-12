@@ -5,17 +5,43 @@ import ReferralModal from '../components/ReferralModal.astro';
 import RequestModal from '../components/RequestModal.astro';
 import OrderModal from '../components/OrderModal.astro';
 import { neighborhoods } from '../data/neighborhoods.js';
+import { supabase } from '../lib/supabase.js';
 
-export function getStaticPaths() {
-  // Load every listings file at build time and key it by slug.
-  const dataModules = import.meta.glob('../data/*.json', { eager: true });
-  return neighborhoods.map((n) => ({
-    params: { neighborhood: n.slug },
-    props: {
-      neighborhood: n,
-      groups: dataModules[`../data/${n.slug}.json`].default,
-    },
-  }));
+export async function getStaticPaths() {
+  const { data: groupRows } = await supabase.from('groups').select('id, slug, label, icon').order('sort_order');
+  const { data: subRows } = await supabase.from('subcategories').select('id, group_id, name, icon').order('sort_order');
+  const { data: nsRows } = await supabase.from('neighborhood_subcategories').select('neighborhood_slug, subcategory_id');
+  const { data: listingRows } = await supabase.from('listings').select('*').order('sort_order');
+
+  return neighborhoods.map((n) => {
+    const enabledSubIds = new Set(
+      nsRows.filter((r) => r.neighborhood_slug === n.slug).map((r) => r.subcategory_id)
+    );
+
+    const groups = groupRows.map((g) => ({
+      id: g.slug,
+      label: g.label,
+      icon: g.icon,
+      subcategories: subRows
+        .filter((s) => s.group_id === g.id && enabledSubIds.has(s.id))
+        .map((s) => ({
+          name: s.name,
+          icon: s.icon,
+          listings: listingRows
+            .filter((l) => l.subcategory_id === s.id && l.neighborhood_slug === n.slug)
+            .map((l) => ({
+              name: l.name,
+              phone: l.phone,
+              note: l.note,
+              ...(l.email ? { email: l.email } : {}),
+              ...(l.website ? { website: l.website } : {}),
+              ...(l.featured ? { featured: true } : {}),
+            })),
+        })),
+    }));
+
+    return { params: { neighborhood: n.slug }, props: { neighborhood: n, groups } };
+  });
 }
 
 const { neighborhood, groups } = Astro.props;
