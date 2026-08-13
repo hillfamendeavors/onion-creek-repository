@@ -1,6 +1,6 @@
 # Trusted Neighbors — Status & Roadmap
 
-_As of 13 August 2026 (updated after the admin CMS build)._
+_As of 14 August 2026 (updated after a full auth/admin UI-UX fix pass and an admin console overhaul — sidebar nav, Users tab, Overview tab)._
 
 Neighbor-sourced business directories for four Austin-area communities (Avery Ranch, Circle C, Onion Creek, Sunfield), live at **trustedneighbors.net**. 502 listings across 8 categories and 37 subcategories, plus a neighbor-to-neighbor service-request board and a full admin CMS.
 
@@ -10,7 +10,7 @@ See also: [`HANDOFF.md`](../HANDOFF.md) at the repo root — a session-specific 
 
 ## ⚠️ Read this first
 
-**17 commits are built, tested, and committed — but not pushed.** Nothing since the service-request feature is live in production. Verified against the live site earlier: `/login/` returns **404** in production while working locally — the same is true of everything listed below.
+**20 commits are built, tested, and committed — but not pushed.** Nothing since the service-request feature is live in production. Verified against the live site earlier: `/login/` returns **404** in production while working locally — the same is true of everything listed below.
 
 ```bash
 git push origin main   # Netlify auto-deploys from main
@@ -42,6 +42,10 @@ Nothing else in this roadmap matters until that happens.
 - Password reset, one global `/login/` page, site-wide login-status bar.
 - Interior Designers category + Doubet Interiors listing (content fix, now migrated into the DB too).
 - Security hardening: locked `search_path` on the notification trigger, revoked its public RPC access, replaced a `SECURITY DEFINER` view bypass with column-scoped anonymous grants (anonymous users cannot read `name`/`phone`/`email`/`notes` on `service_requests` — enforced by the database, verified by direct API calls), same public-read/admin-write RLS pattern applied to all 4 new directory tables via one shared `private.is_admin()` helper.
+- **Admin login bug fixed (14 Aug):** `admin.js` never imported `lib/auth.js`, so the cookie-sync listener the SSR gate depends on never registered — a successful login would reload straight back to the login screen. Fixed by routing through the existing `signIn()` wrapper. Confirmed working live by the site owner.
+- **Site-wide auth/admin UI-UX pass (14 Aug):** every native `alert()`/`confirm()`/`prompt()` replaced with a styled toast/confirm-dialog/inline-edit-form; confirm-password field on registration; `/reset-password/` restyled to match `/login/`'s branding; calendar day cells are now keyboard-accessible `<button>`s; all modals get focus-trap + Escape-to-close. Full findings: `docs/superpowers/specs/2026-08-14-auth-admin-uiux-fixes-design.md`.
+- **Admin console overhaul (14 Aug):** top tab bar replaced with a left sidebar (collapses to horizontal scroll under 768px); new **Users** tab listing every registered account with their service requests, backed by a new `public.profiles` table (auto-populated via an `auth.users` trigger, same RLS pattern as `private.is_admin()`); new **Overview** tab (now the default landing view) showing live counts of users/open requests/pending referrals; Users tab gained Send-Password-Reset and Grant-Admin row actions plus mailto email links. Fixed two latent bugs found in the process: `admins` was missing `created_at`, and the grant-admin insert referenced a nonexistent `role` column. Full findings: `docs/superpowers/specs/2026-08-14-admin-users-actions-design.md`.
+- **Typography restored (14 Aug):** admin/login/reset-password had drifted to a generic `Inter` default instead of the site's own established `EB Garamond` + `Source Sans 3` pairing (already used everywhere in `directory.css`) — now consistent across all pages.
 
 ---
 
@@ -51,9 +55,9 @@ Nothing else in this roadmap matters until that happens.
 
 | # | Gap | Why it matters |
 |---|---|---|
-| 1.1 | **17 unpushed commits** | Including the entire admin CMS — invisible to users until pushed |
+| 1.1 | **20 unpushed commits** | Including the entire admin CMS and the 14 Aug auth/admin overhaul — invisible to users until pushed |
 | 1.2 | **Netlify build hook not created** | `trigger-rebuild.js` needs `NETLIFY_BUILD_HOOK_URL` set as an env var, or admin saves succeed in the DB but never republish the site |
-| 1.3 | **Admin CMS never click-tested in a real browser** | Verified via build output + direct API calls only — no interactive session actually exercised the Directory tab end to end |
+| 1.3 | **Directory CMS specifically never click-tested in a real browser** | As of 14 Aug: admin login, Service Requests, and the new Users tab are all confirmed working live by the site owner. The Directory CMS tab's add/edit/delete-listing flow and the auto-rebuild trigger are the one piece of `/admin/` still unverified outside build output + code review |
 | 1.4 | **Leaked-password protection still off** | Confirmed disabled by Supabase advisor. Public signup is open. Dashboard toggle — Authentication → Password settings |
 | 1.5 | **Reset-password redirect URLs unverified** | Supabase must allowlist `https://trustedneighbors.net/reset-password/` and `http://localhost:4321/reset-password/`, or reset links silently go to the wrong place |
 | 1.6 | **Referral + suggestion emails never tested in production** | The functions respond, but no confirmed end-to-end send since the Formspree→Resend swap. Only `notify-request` was verified |
@@ -116,9 +120,11 @@ All four are small. Still the highest value-per-hour work remaining once the CMS
 
 Directory content lives in Supabase (`groups`/`subcategories`/`neighborhood_subcategories`/`listings`), admin has full CRUD, saves trigger an admin-gated rebuild via Netlify Function. See `HANDOFF.md` for the exact schema and file list. Remaining: the click-through verification and build-hook setup listed under Phase 2 above — this phase is code-complete but operationally unverified.
 
-### Phase 5 — Polish and hardening, not started
+### Phase 5 — Polish and hardening, partially done
 
-Automated tests around the auth/request/CMS paths (now the highest-value test target, given 4.2) · request expiry (past-dated requests still show as open) · admin pagination (fine at 502 rows, worth revisiting at scale) · rate-limiting on request submission · public display of listing `email`/`website` (3.3) · resolve or remove `address`/`serviceArea` (3.4) · `@astrojs/netlify` + server-gated `/admin/` (4.1) · accessibility pass.
+**Done (14 Aug):** native `alert`/`confirm`/`prompt` replaced site-wide with styled UI; keyboard accessibility for calendar cells; focus-trap + Escape-to-close on all modals; admin login bug fixed.
+
+**Still not started:** automated tests around the auth/request/CMS paths (now the highest-value test target, given 4.2) · request expiry (past-dated requests still show as open) · admin pagination (fine at 502 rows, worth revisiting at scale) · rate-limiting on request submission · public display of listing `email`/`website` (3.3) · resolve or remove `address`/`serviceArea` (3.4) · `@astrojs/netlify` + server-gated `/admin/` (4.1) · a full accessibility pass beyond the keyboard/focus fixes above (contrast audit, screen-reader testing).
 
 ---
 
@@ -138,6 +144,9 @@ Recorded so they don't get relitigated:
 | **Admin gated by `admins` table** | Not a role system. Add a row to grant access |
 | **Resend for all email** | Formspree fully removed. Domain verified; Supabase SMTP routes through it |
 | **Rebuild-on-save, no debouncing** | Each CMS save triggers its own rebuild call. Add batching only if build-minute usage becomes a real problem at 2-admin scale |
+| **`profiles` table + `auth.users` trigger, not the Supabase Admin API** | Lets admin see registered users without a service-role secret or a Netlify Function — stays static-first, reuses the existing `private.is_admin()` RLS pattern |
+| **Admin sidebar nav, Overview tab as default landing view** | Standard admin-console convention; replaced the horizontal tab bar as the console gained a 5th/6th tab |
+| **`EB Garamond` + `Source Sans 3` restored on admin/login/reset-password (14 Aug)** | These pages had drifted to a generic `Inter` default; the rest of the site (`directory.css`) already established this pairing as the real brand typography |
 
 ## Open questions
 

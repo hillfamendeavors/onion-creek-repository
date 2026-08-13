@@ -32,9 +32,9 @@ git log --oneline -20        # what's committed
 git status -sb               # ahead/behind origin — check "ahead N" carefully
 ```
 
-As of this handoff: **working tree clean, 17 commits ahead of `origin/main`, nothing pushed.** The user explicitly chose not to push yet (working from the same local folder in the new tool, so a push isn't required for continuity — but production is still running code from well before this session's work).
+As of the original handoff: working tree clean, 17 commits ahead of `origin/main`, nothing pushed. **As of 14 August 2026 (see "What happened since this handoff" below): 20 commits ahead, still nothing pushed.** Production is still running code from well before this session's work — see Immediate Next Steps.
 
-Supabase: 4 new tables exist and are populated (`groups`: 8 rows, `subcategories`: 37, `neighborhood_subcategories`: 145, `listings`: 502 — split 100/118/121/163 across the four neighborhoods). Verified via direct count queries, exact match against the source JSON.
+Supabase: 4 directory tables exist and are populated (`groups`: 8 rows, `subcategories`: 37, `neighborhood_subcategories`: 145, `listings`: 502 — split 100/118/121/163 across the four neighborhoods). Verified via direct count queries, exact match against the source JSON. A 5th table, `profiles`, was added 14 August 2026 (see below) — 2 rows, one per registered account, auto-populated via an `auth.users` trigger.
 
 ## What happened in the session before this handoff (chronological, condensed)
 
@@ -47,6 +47,27 @@ This project went through several extended work sessions. Summarizing because th
 5. **Consolidated auth into one `/login/` page**, deleting two duplicated inline auth forms (net code reduction, not a new abstraction — see PRODUCT principle: prefer deletion).
 6. **Security hardening pass**: Supabase's advisor flagged a `SECURITY DEFINER` view bypassing RLS and an over-privileged trigger function. Fixed by column-scoping anonymous grants and locking `search_path`. Learned the hard way that **Supabase's default table-level `GRANT SELECT` to `anon` is broader than an RLS policy alone** — a `create policy ... for select` restricting to certain columns does nothing if the blanket table grant still covers all columns; you must `revoke select on <table> from anon` first, then grant only the specific columns.
 7. **Just-completed: the admin CMS.** Moved all 502 listings out of static JSON (`src/data/*.json`) into Supabase, gave the admin full CRUD (groups/subcategories/listings) at `/admin/`'s new "Directory" tab, and wired saves to trigger a real Netlify rebuild via an admin-gated function. Full design reasoning below.
+
+## What happened since this handoff (14 August 2026 session)
+
+A new session, working from the same local folder, ran a full UI/UX audit-and-fix pass plus new admin features. Chronological, condensed:
+
+1. **Found and fixed a real admin login bug.** `src/pages/admin.astro` gates the console server-side by reading an `sb-access-token` cookie; that cookie is only ever set by an `onAuthStateChange` listener living in `src/lib/auth.js`. `admin.js` signed in by calling `supabase.auth.signInWithPassword()` directly and never imported `auth.js`, so the listener never registered on `/admin/` — a successful login would `window.location.reload()` straight back to the login screen. Fixed by routing the login handler through the existing `signIn()` wrapper instead of duplicating the Supabase call. This was likely why admin login looked broken.
+2. **Replaced every native `alert()`/`confirm()`/`prompt()`** across `admin.js`, `admin-directory.js`, and `login-page.js` with a small shared `src/scripts/ui-feedback.js` (`showToast`, `confirmDialog`) and, for Directory CMS group editing, an inline edit form instead of `prompt()`.
+3. **Auth-page fixes:** confirm-password field + match validation on registration; `/reset-password/` restyled to match `/login/`'s branding (was a plain, unbranded page); fixed a stuck "Verifying your account session…" notice.
+4. **Accessibility:** calendar day cells with requests are now real `<button>` elements (were `<div>`s with only a click handler — not keyboard reachable); a shared `src/scripts/modal-a11y.js` adds focus-trap + Escape-to-close + focus-return to every modal (request detail, Add Listing, the new confirm dialog).
+5. **Admin console overhaul:**
+   - Converted the top tab bar into a left sidebar nav, collapsing to horizontal scroll under 768px.
+   - New **Users** tab: every registered account (name/email/phone/registered date) with their service requests as inline badges — backed by a new `public.profiles` table, auto-populated via an `auth.users` insert trigger (RLS: admin reads all, user reads own; mirrors the existing `private.is_admin()` pattern, no service-role key needed).
+   - New **Overview** tab, now the sidebar's default landing view: three live stat counts (registered users, open service requests, pending referral suggestions) via `count: 'exact', head: true` queries.
+   - Users tab row actions: **Send Reset** (calls the existing public `requestPasswordReset()` — no new backend) and **Grant Admin** (reuses the existing `admins`-insert pattern, shows "Already Admin" once granted); user emails are now `mailto:` links.
+   - Fixed two latent bugs found while touching this area: `admins` was missing `created_at` (the Admin Roles tab queried/sorted/displayed it against a column that didn't exist), and `grantAdminBtn` inserted a nonexistent `role` column.
+6. **Typography:** admin/login/reset-password had drifted to a generic `Inter` default. Restored the site's own established pairing — `EB Garamond` (headings, already used in `directory.css` for `header h1`/listing names) + `Source Sans 3` (body/UI) — rather than introducing a new identity.
+7. Softened (not removed) a `.toast` component's `border-left` from 4px to 2px — it's a functional severity indicator (error/warning/success color, paired with an icon), not decoration, so kept rather than stripped like the purely-decorative `.dir-subcat` border that was removed.
+
+Full findings/reasoning: `docs/superpowers/specs/2026-08-14-auth-admin-uiux-fixes-design.md` and `docs/superpowers/specs/2026-08-14-admin-users-actions-design.md`, plans in the matching `docs/superpowers/plans/` files.
+
+**Verification gap:** every change built successfully (`npm run build`) and was checked with a headless Playwright pass for pages reachable without real credentials (login, register, reset-password, the public calendar — including a real keyboard-navigation + focus-trap test against live calendar data). The admin-only surfaces (login success, Users tab data accuracy, Send Reset actually delivering email, Grant Admin) were confirmed by the user directly in their own logged-in session, not by this agent — this agent never had admin credentials.
 
 ## The admin CMS — what it is and why it's shaped this way
 
@@ -90,12 +111,14 @@ Every new table: `for select to anon, authenticated using (true)` (public direct
 - **Postgres migrations are transactional** — a mid-migration constraint violation rolls back the *entire* `apply_migration` call, including statements that "succeeded" earlier in the same call. Don't assume partial application; always re-check row counts after a failure before retrying.
 - **The Supabase MCP connector gateway occasionally 502s** (Cloudflare-level, not a data issue) — back off ~60s+ and retry; it resolved cleanly both times it happened, no data was ever partially written when this occurred.
 - **`revoke select on <table> from anon` before column-scoping a grant** — see item 6 in the session summary above. Forgetting this step makes a "column-scoped" grant silently ineffective.
+- **Client-side auth listeners only run if their module is actually imported.** `src/lib/auth.js`'s module-level `onAuthStateChange` listener is what syncs the Supabase session into the `sb-access-token`/`sb-refresh-token` cookies `admin.astro`'s SSR gate reads. A page whose script signs in via `supabase.auth.signInWithPassword()` directly instead of importing `auth.js`'s `signIn()` never registers that listener — the cookie never gets set, and any SSR check gating on it silently sees no session. This bit `/admin/` specifically (see session summary above); every other auth-gated page happened to already import `auth.js` for other reasons. If a fresh SSR gate is added anywhere else, make sure the page's client script actually imports `auth.js`.
+- **Every new `SECURITY DEFINER` function needs its `EXECUTE` grant revoked from `anon`/`authenticated` explicitly** — this is the same landmine as the already-documented `private.is_admin()` case, but it recurs per-function, not just once. The `handle_new_user()` trigger added 14 August 2026 was initially left callable directly via `/rest/v1/rpc/handle_new_user` by any client until the Supabase security advisor caught it post-migration. Run `get_advisors(type: 'security')` after every migration that adds a `SECURITY DEFINER` function, not just once per project.
 
 ## Immediate next steps, in priority order
 
 1. **Create the Netlify build hook.** Netlify dashboard (needs Sir Seth, or whoever now has access) → Site configuration → Build & deploy → Build hooks → Add one named `cms-save`, branch `main`. Set `NETLIFY_BUILD_HOOK_URL` as an env var to that URL. Trigger one manual redeploy afterward so the function picks it up.
-2. **Actually click through the admin Directory tab in a real browser.** Nothing in this handoff's authoring session had browser automation available — everything was verified via `npm run build` output, direct `curl`/SQL queries, and careful code review against the schema, but never an interactive session. Log into `/admin/`, add/edit/delete a listing and a subcategory, confirm the rebuild fires.
-3. Decide on pushing to `origin/main` (17 commits currently sitting local-only) — not done in this session because the user said Antigravity would work from this same local folder, so it wasn't required for continuity. If Antigravity (or whoever's next) needs the code anywhere else, push first.
+2. **Click through the Directory CMS tab specifically.** As of 14 August 2026: admin login, the Service Requests tab, and the new Users tab are all confirmed working in a real logged-in browser session (the admin login bug above is fixed and verified). The Directory CMS tab's add/edit/delete-listing flow and the auto-rebuild trigger specifically have *not* been confirmed live — still resting on code review + `npm run build` only, same gap the original handoff flagged.
+3. Decide on pushing to `origin/main` (20 commits currently sitting local-only, up from 17 at the original handoff). Not done this session either, for the same continuity reason as before.
 4. Everything else is in `docs/ROADMAP.md`'s "Blocking" and "SEO foundations" sections, already prioritized.
 
 ## Working conventions this project has established (follow them)
