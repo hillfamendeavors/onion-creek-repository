@@ -35,13 +35,19 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         --color-ring: rgba(6, 78, 59, 0.25);
       }
 
+      html, body {
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
       body {
         font-family: 'Source Sans 3', sans-serif;
-        background-color: var(--color-bg);
+        background: linear-gradient(180deg, #F0FDF4 0%, #FAF9F5 45%, #F1F5F9 100%);
         color: var(--color-text-main);
         margin: 0;
         padding: 0;
         min-height: 100vh;
+        overflow-wrap: break-word;
+        word-break: break-word;
       }
 
       .top-bar-nav {
@@ -52,88 +58,219 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         justify-content: space-between;
         align-items: center;
         font-size: 0.875rem;
+        gap: 12px;
+        flex-wrap: wrap;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       }
       .top-bar-nav a {
         color: #FDE68A;
         text-decoration: none;
-        font-weight: 500;
+        font-weight: 600;
         transition: opacity 0.2s;
+        white-space: nowrap;
       }
       .top-bar-nav a:hover {
-        opacity: 0.8;
+        opacity: 0.85;
       }
 
       .auth-container {
+        width: 100%;
         max-width: 480px;
         margin: 40px auto;
         padding: 0 20px;
+        box-sizing: border-box;
       }
       .auth-container.wide {
         max-width: 960px;
       }
 
       .auth-card {
-        background: var(--color-card);
-        border: 1px solid var(--color-border);
-        border-radius: 16px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-        padding: 32px;
+        background: #FFFFFF;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 20px;
+        box-shadow: 0 20px 45px -10px rgba(6, 78, 59, 0.09), 0 4px 12px rgba(0, 0, 0, 0.03);
+        padding: 36px 32px;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .contextual-banner {
+        background: #ECFDF5;
+        border: 1px solid #A7F3D0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+        color: #065F46;
+        font-weight: 500;
+      }
+      .contextual-banner-icon {
+        font-size: 1.15rem;
+        flex-shrink: 0;
+      }
+      .contextual-banner strong {
+        font-weight: 700;
+      }
+
+      .auth-brand-badge {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: #ECFDF5;
+        border: 1.5px solid #A7F3D0;
+        color: #065F46;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px auto;
+        box-shadow: 0 2px 8px rgba(6, 95, 70, 0.1);
+      }
+      .auth-brand-badge svg {
+        width: 24px;
+        height: 24px;
+        stroke: currentColor;
       }
 
       .auth-header {
         text-align: center;
-        margin-bottom: 24px;
+        margin-bottom: 28px;
       }
       .auth-header h1 {
         font-family: 'EB Garamond', serif;
-        font-size: 2rem;
+        font-size: 2.2rem;
         font-weight: 600;
-        color: var(--color-primary);
+        color: #064E3B;
         margin: 0 0 8px 0;
+        letter-spacing: -0.01em;
       }
       .auth-header p {
-        color: var(--color-text-sub);
-        font-size: 0.95rem;
+        color: #64748B;
+        font-size: 0.925rem;
         margin: 0;
+        line-height: 1.4;
       }
 
-      /* Tabs for Log In / Register / Reset */
+      /* Segmented Control Tabs for Log In / Register / Reset */
       .auth-tabs {
         display: flex;
-        border-bottom: 1px solid var(--color-border);
-        margin-bottom: 24px;
-        gap: 8px;
+        flex-wrap: wrap;
+        background: #F1F5F9;
+        padding: 5px;
+        border-radius: 12px;
+        margin-bottom: 28px;
+        gap: 4px;
       }
       .auth-tab {
         flex: 1;
+        min-width: 100px;
         text-align: center;
-        padding: 10px 0;
-        font-size: 0.9rem;
+        padding: 10px 8px;
+        font-size: 0.875rem;
         font-weight: 600;
-        color: var(--color-text-muted);
-        background: none;
+        color: #64748B;
+        background: transparent;
         border: none;
-        border-bottom: 2px solid transparent;
+        border-radius: 8px;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.15s ease;
+        white-space: nowrap;
       }
       .auth-tab:hover {
-        color: var(--color-text-main);
+        color: #0F172A;
       }
       .auth-tab.active {
-        color: var(--color-primary);
-        border-bottom-color: var(--color-primary);
+        color: #064E3B;
+        background: #FFFFFF;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+        font-weight: 700;
+      }
+
+      .password-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .password-input-wrap input {
+        padding-right: 42px !important;
+      }
+      .password-toggle-btn {
+        position: absolute;
+        right: 12px;
+        background: none;
+        border: none;
+        color: #94A3B8;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.15s ease;
+      }
+      .password-toggle-btn:hover {
+        color: #064E3B;
+      }
+      .password-toggle-btn svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+      }
+
+      .register-perks {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .perk-item {
+        font-size: 0.82rem;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .perk-item span {
+        color: #059669;
+        font-weight: 700;
+      }
+
+      .auth-trust-footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #F1F5F9;
+        font-size: 0.75rem;
+        color: #94A3B8;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        flex-wrap: wrap;
+      }
+      .auth-trust-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
       }
 
       .form-group {
-        margin-bottom: 18px;
+        margin-bottom: 20px;
       }
       .form-group label {
         display: block;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--color-text-main);
-        margin-bottom: 6px;
+        font-size: 0.775rem;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
       }
       .form-group input, .form-group select {
         width: 100%;
@@ -141,42 +278,48 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         padding: 12px 16px;
         border: 1px solid #CBD5E1;
         border-radius: 10px;
-        font-size: 0.95rem;
+        font-size: 1rem; /* 16px to prevent mobile iOS zoom */
         font-family: inherit;
-        background: #FFFFFF;
+        background: #F8FAFC;
         color: #0F172A;
-        transition: border-color 0.2s, box-shadow 0.2s;
+        transition: all 0.2s ease;
       }
       .form-group input:focus, .form-group select:focus {
         outline: none;
+        background: #FFFFFF;
         border-color: #064E3B;
         box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.12);
       }
       .field-hint {
         font-size: 0.8rem;
-        color: var(--color-text-muted);
+        color: #64748B;
         margin: 6px 0 0 0;
       }
 
       .btn-submit {
         width: 100%;
-        padding: 12px 20px;
-        background: var(--color-primary);
+        padding: 13px 20px;
+        background: linear-gradient(135deg, #064E3B 0%, #047857 100%);
         color: #FFFFFF;
         border: none;
         border-radius: 10px;
-        font-size: 0.95rem;
-        font-weight: 600;
+        font-size: 0.975rem;
+        font-weight: 700;
         cursor: pointer;
-        transition: background-color 0.2s, transform 0.1s;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
         margin-top: 8px;
+        box-shadow: 0 4px 12px rgba(6, 78, 59, 0.2);
       }
       .btn-submit:hover {
-        background: var(--color-primary-hover);
+        background: linear-gradient(135deg, #047857 0%, #065F46 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(6, 78, 59, 0.28);
       }
       .btn-submit:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
       }
 
       .auth-error {
@@ -199,6 +342,8 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
 
       /* Profile Dashboard & Hero Header */
       .profile-card-container {
+        width: 100%;
+        box-sizing: border-box;
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
         border-radius: 20px;
@@ -211,6 +356,7 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         padding: 32px 36px;
         color: #FFFFFF;
         position: relative;
+        overflow: hidden;
       }
       .profile-header-content {
         display: flex;
@@ -218,6 +364,15 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 20px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+      .profile-header-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
       }
       .profile-user-info {
         display: flex;
@@ -271,6 +426,9 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         height: 13px;
         fill: currentColor;
       }
+      .profile-user-details {
+        min-width: 0;
+      }
       .profile-user-details h2 {
         margin: 0;
         font-size: 1.45rem;
@@ -281,12 +439,14 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         align-items: center;
         gap: 12px;
         flex-wrap: wrap;
+        word-break: break-word;
       }
       .profile-user-details p {
         margin: 4px 0 0 0;
         font-size: 0.925rem;
         color: #D1FAE5;
         opacity: 0.95;
+        word-break: break-all;
       }
       .resident-badge {
         display: inline-flex;
@@ -362,6 +522,8 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         overflow-x: auto;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        width: 100%;
+        box-sizing: border-box;
       }
       .account-tabs::-webkit-scrollbar {
         display: none;
@@ -422,14 +584,26 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         gap: 20px;
       }
       @media (max-width: 640px) {
+        .top-bar-nav {
+          justify-content: center;
+          text-align: center;
+          padding: 12px 16px;
+        }
+        .auth-container {
+          margin: 20px auto;
+          padding: 0 16px;
+        }
+        .auth-card {
+          padding: 24px 20px;
+        }
         .profile-grid {
           grid-template-columns: 1fr;
         }
         .profile-hero-banner {
-          padding: 24px 20px;
+          padding: 24px 16px;
         }
         .profile-body {
-          padding: 24px 20px;
+          padding: 24px 16px;
         }
         .account-tabs {
           gap: 16px;
@@ -612,14 +786,33 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
       @media (max-width: 640px) {
         .profile-header-content {
           flex-direction: column;
-          align-items: flex-start;
+          align-items: center;
+          text-align: center;
+        }
+        .profile-user-info {
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+        }
+        .profile-user-details {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .profile-user-details h2 {
+          justify-content: center;
         }
         .profile-header-content > div:last-child {
           width: 100%;
-          justify-content: flex-start;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+        .profile-header-actions {
+          width: 100%;
+          justify-content: center;
         }
         .btn-header-action, .btn-logout {
-          flex: 1;
+          flex: 1 1 100%;
           justify-content: center;
         }
 
@@ -634,27 +827,58 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
 
         .requests-table, .requests-table thead, .requests-table tbody, .requests-table th, .requests-table td, .requests-table tr {
           display: block;
+          width: 100%;
+          box-sizing: border-box;
         }
         .requests-table thead {
           display: none; /* Hide header on mobile */
         }
         .requests-table tr {
-          border-bottom: 1px solid #E2E8F0;
-          padding: 16px 18px;
+          border: 1px solid #E2E8F0;
+          border-radius: 12px;
+          padding: 18px 16px;
+          margin-bottom: 16px;
+          background: #FFFFFF;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
         .requests-table tr:last-child {
-          border-bottom: none;
+          margin-bottom: 0;
         }
         .requests-table td {
-          padding: 6px 0;
-          border-bottom: none;
+          padding: 10px 0;
+          border-bottom: 1px solid #F1F5F9;
           display: flex;
+          flex-direction: row;
           justify-content: space-between;
           align-items: center;
+          flex-wrap: wrap;
+          gap: 12px;
+          text-align: right;
+        }
+        .requests-table td::before {
+          content: attr(data-label);
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748B;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          text-align: left;
+          flex-shrink: 0;
         }
         .requests-table td:last-child {
-          margin-top: 8px;
-          justify-content: flex-end;
+          margin-top: 12px;
+          padding-bottom: 0;
+          border-bottom: none;
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .requests-table td:last-child::before {
+          display: none;
+        }
+        .toggle-request-btn {
+          width: 100%;
+          justify-content: center;
+          padding: 10px 16px;
         }
       }
     </style>
@@ -668,9 +892,17 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
     <div class="auth-container" id="mainContainer">
       <!-- Auth Form Card (Logged Out View) -->
       <div class="auth-card" id="authFormCard">
+        <div class="auth-brand-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
         <div class="auth-header">
           <h1 id="formTitle">Welcome Back</h1>
           <p id="formSub">Manage your neighbor account & service requests</p>
+        </div>
+
+        <div id="contextualReturnBanner" class="contextual-banner" style="display:none;">
+          <span class="contextual-banner-icon">📍</span>
+          <span id="contextualReturnText">Returning to directory upon sign-in</span>
         </div>
 
         <div class="auth-tabs">
@@ -687,13 +919,23 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
           </div>
           <div class="form-group">
             <label for="login-password">Password *</label>
-            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+            <div class="password-input-wrap">
+              <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+              <button type="button" class="password-toggle-btn" data-target="login-password" aria-label="Toggle password visibility">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
           <button class="btn-submit" id="loginSubmitBtn">Log In</button>
         </div>
 
         <!-- Register View -->
         <div id="viewRegister" style="display:none;">
+          <div class="register-perks">
+            <div class="perk-item"><span>✓</span> Post verified service requests to local pros</div>
+            <div class="perk-item"><span>✓</span> Bookmark &amp; organize favorite contractors</div>
+            <div class="perk-item"><span>✓</span> Stay connected with community events</div>
+          </div>
           <div class="form-group">
             <label for="reg-name">Full Name *</label>
             <input type="text" id="reg-name" placeholder="e.g. Jane Doe" autocomplete="name" />
@@ -708,12 +950,22 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
           </div>
           <div class="form-group">
             <label for="reg-password">Password *</label>
-            <input type="password" id="reg-password" placeholder="At least 6 characters" autocomplete="new-password" />
+            <div class="password-input-wrap">
+              <input type="password" id="reg-password" placeholder="At least 6 characters" autocomplete="new-password" />
+              <button type="button" class="password-toggle-btn" data-target="reg-password" aria-label="Toggle password visibility">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
             <p class="field-hint">Must be at least 6 characters.</p>
           </div>
           <div class="form-group">
             <label for="reg-password-confirm">Confirm Password *</label>
-            <input type="password" id="reg-password-confirm" placeholder="Re-enter your password" autocomplete="new-password" />
+            <div class="password-input-wrap">
+              <input type="password" id="reg-password-confirm" placeholder="Re-enter your password" autocomplete="new-password" />
+              <button type="button" class="password-toggle-btn" data-target="reg-password-confirm" aria-label="Toggle password visibility">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
           <button class="btn-submit" id="registerSubmitBtn">Create Account</button>
         </div>
@@ -729,6 +981,12 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
 
         <p class="auth-error" id="authError"></p>
         <p class="auth-notice" id="authNotice" style="display:none;"></p>
+
+        <div class="auth-trust-footer">
+          <span class="auth-trust-item"><span>🛡️</span> 100% Free</span>
+          <span class="auth-trust-item"><span>🏡</span> Verified Residents</span>
+          <span class="auth-trust-item"><span>🔒</span> Private &amp; Secure</span>
+        </div>
       </div>
 
       <!-- Logged-In Profile & Dashboard View -->
@@ -757,7 +1015,7 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
               </div>
             </div>
 
-            <div style="display:flex; gap:10px; align-items:center;">
+            <div class="profile-header-actions">
               <button class="btn-header-action" id="openNewRequestModalBtn">+ New Service Request</button>
               <button class="btn-logout" id="logoutBtn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -848,8 +1106,9 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
     </div>
 
     <!-- Modal: Post New Service Request -->
-    <div id="userNewRequestModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
-      <div style="max-width:500px; width:90%; padding:24px; background:white; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.15);">
+    <div id="userNewRequestModal" class="modal-overlay">
+      <div class="modal">
+        <button class="modal-close" id="closeUserNewRequestModalTop">✕</button>
         <h3 style="margin-top:0; color:var(--color-primary); font-family:'EB Garamond', serif; font-size:1.5rem;">+ Post New Service Request</h3>
         <form id="userNewRequestForm">
           <div class="form-group">
@@ -881,6 +1140,6 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
       </div>
     </div>
 
-    <script src="../scripts/login-page.js"></script>
+    <script src="../scripts/account-page.js"></script>
   </body>
 </html>

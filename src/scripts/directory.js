@@ -201,37 +201,49 @@ function closeOtherModals() {
 }
 
 if (overlay && openBtn && closeBtn) {
-  const referralAuthView = document.getElementById('referralAuthView');
-  const referralLoginLink = document.getElementById('referralLoginLink');
-
-  openBtn.addEventListener('click', async () => {
+  const openReferralHandler = async () => {
     closeOtherModals();
     overlay.classList.add('open');
+    if (formView) formView.style.display = 'block';
+    
+    // Autofill name if logged in
     const session = await getSession();
     if (session && session.user) {
-      if (referralAuthView) referralAuthView.style.display = 'none';
-      if (formView) formView.style.display = 'block';
       const refEl = document.getElementById('f-referrer');
       if (refEl && !refEl.value) {
         refEl.value = session.user.user_metadata?.full_name || '';
       }
-    } else {
-      if (referralLoginLink) {
-        referralLoginLink.href = `/login/?next=${encodeURIComponent(location.pathname)}`;
-      }
-      if (referralAuthView) referralAuthView.style.display = 'block';
-      if (formView) formView.style.display = 'none';
     }
-  });
+  };
+
+  openBtn.addEventListener('click', openReferralHandler);
+  document.getElementById('toolkitOpenReferralBtn')?.addEventListener('click', openReferralHandler);
+
   closeBtn.addEventListener('click', closeModal);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+  const categorySelect = document.getElementById('f-category');
+  const categoryOther = document.getElementById('f-category-other');
+  if (categorySelect && categoryOther) {
+    categorySelect.addEventListener('change', () => {
+      categoryOther.style.display = categorySelect.value === 'Other' ? 'block' : 'none';
+      if (categorySelect.value !== 'Other') categoryOther.value = '';
+    });
+  }
 
   submitBtn.addEventListener('click', async () => {
     const name = document.getElementById('f-name').value.trim();
     let phone = document.getElementById('f-phone').value.trim();
-    const category = document.getElementById('f-category').value;
+    let category = document.getElementById('f-category').value;
+    const email = document.getElementById('f-email')?.value.trim();
+    const website = document.getElementById('f-website')?.value.trim();
     const note = document.getElementById('f-note').value.trim();
     const referrer = document.getElementById('f-referrer').value.trim();
+
+    if (category === 'Other') {
+      const otherVal = document.getElementById('f-category-other')?.value.trim();
+      if (otherVal) category = otherVal;
+    }
 
     const phoneDigits = phone.replace(/\D/g, '');
     if (!name || !phoneDigits || !note || !referrer) {
@@ -250,13 +262,17 @@ if (overlay && openBtn && closeBtn) {
     const session = await getSession();
     const referrerEmail = session?.user?.email || null;
 
+    let finalNote = note;
+    if (email) finalNote += `\nEmail: ${email}`;
+    if (website) finalNote += `\nWebsite: ${website}`;
+
     try {
       await supabase.from('referral_suggestions').insert({
         neighborhood: overlay.dataset.neighborhood,
         name,
         phone,
         category: category || null,
-        note,
+        note: finalNote,
         referrer,
         referrer_email: referrerEmail,
         status: 'new'
@@ -273,7 +289,7 @@ if (overlay && openBtn && closeBtn) {
           name,
           phone,
           category,
-          note,
+          note: finalNote,
           referrer,
           referrer_email: referrerEmail,
           neighborhood: overlay.dataset.neighborhood,
@@ -325,15 +341,9 @@ const reqThankYou = document.getElementById('requestThankYouView');
 const requestLoginLink = document.getElementById('requestLoginLink');
 
 function showRequestForm() {
-  reqAuthView.style.display = 'none';
-  reqFormView.style.display = 'block';
-  reqThankYou.style.display = 'none';
-}
-
-function showAuthView() {
-  reqAuthView.style.display = 'block';
-  reqFormView.style.display = 'none';
-  reqThankYou.style.display = 'none';
+  if(reqAuthView) reqAuthView.style.display = 'none';
+  if(reqFormView) reqFormView.style.display = 'block';
+  if(reqThankYou) reqThankYou.style.display = 'none';
 }
 
 function closeRequestModal() {
@@ -351,28 +361,75 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
   const dateEl = document.getElementById('r-date');
   if (dateEl) dateEl.min = new Date().toISOString().split('T')[0];
 
-  reqOpenBtn.addEventListener('click', async () => {
+  const openRequestHandler = async () => {
     closeOtherModals();
     reqOverlay.classList.add('open');
+
     const session = await getSession();
-    if (session) {
-      showRequestForm();
-    } else {
+    if (!session || !session.user) {
+      if (reqFormView) reqFormView.style.display = 'none';
+      if (reqThankYou) reqThankYou.style.display = 'none';
+      if (reqAuthView) reqAuthView.style.display = 'block';
       if (requestLoginLink) {
-        requestLoginLink.href = `/login/?next=${encodeURIComponent(location.pathname)}`;
+        requestLoginLink.href = `/account/?next=${encodeURIComponent(location.pathname)}`;
       }
-      showAuthView();
+    } else {
+      if (reqAuthView) reqAuthView.style.display = 'none';
+      if (reqThankYou) reqThankYou.style.display = 'none';
+      if (reqFormView) reqFormView.style.display = 'block';
+
+      // Autofill verified user data
+      const rName = document.getElementById('r-name');
+      const rEmail = document.getElementById('r-email');
+      const rPhone = document.getElementById('r-phone');
+
+      if (rName && !rName.value) {
+        rName.value = session.user.user_metadata?.full_name || '';
+      }
+      if (rEmail && !rEmail.value) {
+        rEmail.value = session.user.email || '';
+      }
+      if (rPhone && !rPhone.value) {
+        rPhone.value = session.user.user_metadata?.phone || '';
+      }
     }
-  });
+  };
+
+  reqOpenBtn.addEventListener('click', openRequestHandler);
+  document.getElementById('toolkitOpenRequestBtn')?.addEventListener('click', openRequestHandler);
+  document.getElementById('noResultsReqBtn')?.addEventListener('click', openRequestHandler);
+
   reqCloseBtn.addEventListener('click', closeRequestModal);
   reqOverlay.addEventListener('click', (e) => { if (e.target === reqOverlay) closeRequestModal(); });
 
+  const rCategorySelect = document.getElementById('r-category');
+  const rCategoryOther = document.getElementById('r-category-other');
+  if (rCategorySelect && rCategoryOther) {
+    rCategorySelect.addEventListener('change', () => {
+      rCategoryOther.style.display = rCategorySelect.value === 'Other' ? 'block' : 'none';
+      if (rCategorySelect.value !== 'Other') rCategoryOther.value = '';
+    });
+  }
+
   reqSubmitBtn.addEventListener('click', async () => {
-    const category = document.getElementById('r-category').value;
+    const session = await getSession();
+    if (!session || !session.user) {
+      showToast('You must be logged in with a verified account to submit a service request.', 'warning');
+      if (reqFormView) reqFormView.style.display = 'none';
+      if (reqAuthView) reqAuthView.style.display = 'block';
+      return;
+    }
+
+    let category = document.getElementById('r-category').value;
     const date_needed = document.getElementById('r-date').value;
-    const name = document.getElementById('r-name').value.trim();
-    let phone = document.getElementById('r-phone').value.trim();
-    const email = document.getElementById('r-email').value.trim();
+
+    if (category === 'Other') {
+      const otherVal = document.getElementById('r-category-other')?.value.trim();
+      if (otherVal) category = otherVal;
+    }
+    const name = document.getElementById('r-name').value.trim() || session.user.user_metadata?.full_name || 'Verified Neighbor';
+    let phone = document.getElementById('r-phone').value.trim() || session.user.user_metadata?.phone || '';
+    const email = document.getElementById('r-email').value.trim() || session.user.email;
     const notes = document.getElementById('r-notes').value.trim();
 
     const phoneDigits = phone.replace(/\D/g, '');
@@ -425,45 +482,81 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
 
     reqFormView.style.display = 'none';
     reqThankYou.style.display = 'block';
+    window.dispatchEvent(new CustomEvent('service-request-created'));
   });
 }
 
 // Initial state: "All" tab active (caps each table height via CSS).
 syncAllTabClass();
 
-// ── Site-wide login status ──
+// ── Top Bar Single Auth Status ──
 function escStatus(str) {
   const div = document.createElement('div');
   div.textContent = str ?? '';
   return div.innerHTML;
 }
 
-const authStatusEl = document.getElementById('authStatus');
-const navLoginLink = document.getElementById('navLoginLink');
+const topBarAuthEl = document.getElementById('topBarAuth');
 
 getSession().then((session) => {
+  if (!topBarAuthEl) return;
   if (session?.user?.email) {
-    const displayName = session.user.user_metadata?.full_name || session.user.email;
-    if (navLoginLink) {
-      navLoginLink.textContent = 'My Account';
-      navLoginLink.href = '/login/';
-    }
-    if (authStatusEl) {
-      authStatusEl.innerHTML = `Logged in as <strong>${escStatus(displayName)}</strong> &middot; <a href="/login/" style="color:var(--masters-green);font-weight:600;text-decoration:underline;">My Account</a> &middot; <button id="authStatusLogout" style="background:none;border:none;color:inherit;font-family:inherit;cursor:pointer;text-decoration:underline;padding:0;">Log out</button>`;
-      document.getElementById('authStatusLogout')?.addEventListener('click', async () => {
-        await supabase.auth.signOut();
-        location.reload();
-      });
-      authStatusEl.classList.add('visible');
-    }
+    const fullName = session.user.user_metadata?.full_name;
+    const firstName = fullName ? fullName.split(' ')[0] : 'Neighbor';
+    topBarAuthEl.innerHTML = `
+      <span class="top-bar-user">Hi, <strong>${escStatus(firstName)}</strong></span>
+      <span class="top-bar-sep">&middot;</span>
+      <a href="/account/" class="top-bar-link">My Account</a>
+      <span class="top-bar-sep">&middot;</span>
+      <button id="topBarLogoutBtn" class="top-bar-logout-btn" type="button">Log Out</button>
+    `;
+    document.getElementById('topBarLogoutBtn')?.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      location.reload();
+    });
   } else {
-    if (navLoginLink) {
-      navLoginLink.textContent = 'Log In';
-      navLoginLink.href = '/login/';
-    }
-    if (authStatusEl) {
-      authStatusEl.innerHTML = `<a href="/login/?next=${encodeURIComponent(location.pathname)}">Log in</a>`;
-      authStatusEl.classList.add('visible');
-    }
+    topBarAuthEl.innerHTML = `
+      <a href="/account/?next=${encodeURIComponent(location.pathname)}" class="top-bar-login">Log In / Register</a>
+    `;
   }
 });
+
+// ── Dynamic Request Badge & Live Banner ──
+const badgeBtn = document.getElementById('calendarBadgeBtn');
+const badgeCount = document.getElementById('calendarBadgeCount');
+const liveBanner = document.getElementById('liveRequestsBanner');
+const liveReqCountText = document.getElementById('liveReqCountText');
+const liveReqSummary = document.getElementById('liveReqSummary');
+
+// Extract neighborhood slug from the URL path (e.g., /onion-creek/ -> onion-creek)
+const pathParts = window.location.pathname.split('/').filter(Boolean);
+const neighborhoodSlug = pathParts[0];
+
+if (neighborhoodSlug) {
+  supabase
+    .from('service_requests')
+    .select('category, notes', { count: 'exact' })
+    .eq('neighborhood', neighborhoodSlug)
+    .eq('status', 'new')
+    .order('created_at', { ascending: false })
+    .limit(3)
+    .then(({ data, count, error }) => {
+      if (!error && count > 0) {
+        if (badgeCount && badgeBtn) {
+          badgeCount.textContent = count > 99 ? '99+' : count;
+          badgeCount.style.display = 'flex';
+          badgeBtn.classList.add('show');
+        }
+        if (liveBanner) {
+          if (liveReqCountText) liveReqCountText.textContent = `${count} ${count === 1 ? 'Request' : 'Requests'}`;
+          if (liveReqSummary && data && data.length > 0) {
+            const categories = data.map(d => d.category).filter(Boolean);
+            const preview = categories.slice(0, 2).join(', ');
+            liveReqSummary.textContent = `${count} ${count === 1 ? 'neighbor needs' : 'neighbors need'} assistance (${preview}${count > 2 ? ' + more' : ''})`;
+          }
+          liveBanner.style.display = 'flex';
+        }
+      }
+    })
+    .catch(err => console.warn('Failed to fetch request count for banner:', err));
+}

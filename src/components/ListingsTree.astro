@@ -46,4 +46,9 @@ const sortFeatured = (listings) =>
     </div>
   ))}
 </div>
-<div id="no-results">No listings found — try a different search.</div>
+<div id="no-results" class="no-results-card" style="display:none;">
+  <div class="no-results-icon">🔍</div>
+  <h4>Can't find what you're looking for?</h4>
+  <p>Post a quick public service request and let your neighbors recommend their favorite pro.</p>
+  <button class="btn-prompt-request" id="noResultsReqBtn" type="button">🛠️ Post a Service Request</button>
+</div>

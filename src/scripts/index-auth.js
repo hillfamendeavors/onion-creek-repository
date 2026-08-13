@@ -6,7 +6,7 @@ if (navLoginLink) {
   getSession().then((session) => {
     if (session?.user) {
       navLoginLink.textContent = 'My Account';
-      navLoginLink.href = '/login/';
+      navLoginLink.href = '/account/';
     }
   });
 }

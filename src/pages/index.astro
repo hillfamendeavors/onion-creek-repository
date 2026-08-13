@@ -699,6 +699,184 @@
       line-height: 1.5;
     }
 
+    /* COMMUNITY TOOLKIT / FEATURES SECTION */
+    .tools-section {
+      background: var(--color-neutral-light);
+      position: relative;
+      border-bottom: 1.5px solid var(--color-primary);
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+    }
+
+    .tool-card {
+      background: var(--color-neutral-white);
+      border: 1.5px solid var(--color-primary);
+      border-radius: 6px;
+      padding: 36px 32px;
+      box-shadow: 4px 4px 0px rgba(15, 46, 34, 0.15);
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 7px 7px 0px var(--color-primary);
+    }
+
+    .tool-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .tool-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 4px;
+      border: 1.5px solid var(--color-primary);
+    }
+
+    .tool-badge.calendar {
+      background: var(--color-austin-yellow-tint);
+      color: var(--color-primary);
+    }
+
+    .tool-badge.requests {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #991b1b;
+    }
+
+    .tool-badge.referrals {
+      background: #ecfdf5;
+      color: #065f46;
+      border-color: #065f46;
+    }
+
+    .tool-badge.account {
+      background: var(--color-accent-pale);
+      color: #854d0e;
+      border-color: #854d0e;
+    }
+
+    .tool-icon {
+      font-size: 1.8rem;
+    }
+
+    .tool-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .tool-desc {
+      font-size: 0.95rem;
+      color: #555c5a;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      flex: 1;
+    }
+
+    .tool-preview-box {
+      background: var(--color-neutral-light);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tool-preview-pill {
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    .tool-preview-pill.active {
+      background: #ef4444;
+      color: #ffffff;
+    }
+
+    .tool-preview-pill.verified {
+      background: #059669;
+      color: #ffffff;
+    }
+
+    .tool-preview-pill.event {
+      background: var(--color-primary);
+      color: var(--color-accent);
+    }
+
+    .tool-preview-pill.account {
+      background: #3b82f6;
+      color: #ffffff;
+    }
+
+    .tool-preview-text {
+      color: var(--color-neutral-dark);
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tool-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--color-border);
+      padding-top: 18px;
+      margin-top: auto;
+    }
+
+    .tool-action-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: var(--transition-smooth);
+    }
+
+    .tool-action-link:hover {
+      color: var(--color-austin-brown);
+      transform: translateX(4px);
+    }
+
+    .tool-action-link span {
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+    }
+
     /* NEIGHBORHOOD DIRECTORIES SECTION */
     .neighborhoods-section {
       background: var(--color-neutral-light);
@@ -1432,7 +1610,8 @@
         /* Hide decorative mockup on tablet/mobile for cleaner layout */
       }
 
-      .steps-grid {
+      .steps-grid,
+      .tools-grid {
         grid-template-columns: 1fr;
         gap: 20px;
       }
@@ -1818,9 +1997,10 @@
 
     <div class="nav-links" id="navLinks">
       <a href="#neighborhoods" onclick="closeMobileMenu()">Neighborhoods</a>
+      <a href="#community-tools" onclick="closeMobileMenu()">Features</a>
       <a href="#how-it-works" onclick="closeMobileMenu()">How it works</a>
       <a href="#about" onclick="closeMobileMenu()">About</a>
-      <a href="/login/" id="navLoginLink">Log In</a>
+      <a href="/account/" id="navLoginLink">Log In</a>
       <a href="#suggest-neighborhood" class="nav-cta" onclick="closeMobileMenu()">Add Neighborhood</a>
     </div>
   </nav>
@@ -1914,6 +2094,103 @@
           <h4 class="step-title">Direct Connection</h4>
           <p class="step-text">Browse neat, category-organized directories. We provide clean recommendation quotes and
             tap-to-call numbers so you can contact trusted pros instantly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Tools & Features Section -->
+  <section id="community-tools" class="tools-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-eyebrow">Community Toolkit</span>
+        <h3 class="section-title">More Than A Directory. Your Neighborhood Hub.</h3>
+        <p class="section-desc">Interactive tools designed for neighbors to schedule, request help, and share trusted recommendations together.</p>
+      </div>
+
+      <div class="tools-grid">
+        <!-- Feature 1: Community Calendar -->
+        <div class="tool-card">
+          <div>
+            <div class="tool-card-header">
+              <span class="tool-badge calendar">Community Schedule</span>
+              <span class="tool-icon">📅</span>
+            </div>
+            <h4 class="tool-title">Neighborhood Calendar</h4>
+            <p class="tool-desc">
+              Never miss HOA board meetings, pool openings, social gatherings, food truck nights, or bulk trash pickup dates across your community.
+            </p>
+            <div class="tool-preview-box">
+              <span class="tool-preview-pill event">UPCOMING</span>
+              <span class="tool-preview-text">Onion Creek HOA Meeting & Food Truck Social</span>
+            </div>
+          </div>
+          <div class="tool-card-footer">
+            <a href="/onion-creek/" class="tool-action-link">View Community Calendar <span>→</span></a>
+          </div>
+        </div>
+
+        <!-- Feature 2: Need a Service -->
+        <div class="tool-card">
+          <div>
+            <div class="tool-card-header">
+              <span class="tool-badge requests">Zero-Friction Help</span>
+              <span class="tool-icon">🛠️</span>
+            </div>
+            <h4 class="tool-title">Post Service Requests</h4>
+            <p class="tool-desc">
+              Can't find the exact specialist you need? Post a fast, public service request for your neighbors and vetted local contractors to review.
+            </p>
+            <div class="tool-preview-box">
+              <span class="tool-preview-pill active">LIVE REQUEST</span>
+              <span class="tool-preview-text">"Need an irrigation & sprinkler specialist this week"</span>
+            </div>
+          </div>
+          <div class="tool-card-footer">
+            <a href="/onion-creek/" class="tool-action-link">Request a Service <span>→</span></a>
+          </div>
+        </div>
+
+        <!-- Feature 3: Share Referrals -->
+        <div class="tool-card">
+          <div>
+            <div class="tool-card-header">
+              <span class="tool-badge referrals">Word of Mouth</span>
+              <span class="tool-icon">🤝</span>
+            </div>
+            <h4 class="tool-title">Suggest a Trusted Pro</h4>
+            <p class="tool-desc">
+              Had an awesome experience with a plumber, electrician, or roofer? Submit your recommendation directly so your neighborhood can benefit.
+            </p>
+            <div class="tool-preview-box">
+              <span class="tool-preview-pill verified">RECOMMENDED</span>
+              <span class="tool-preview-text">"Punctual, fair pricing, and top-tier craftsmanship."</span>
+            </div>
+          </div>
+          <div class="tool-card-footer">
+            <a href="/onion-creek/" class="tool-action-link">Suggest a Pro <span>→</span></a>
+          </div>
+        </div>
+
+        <!-- Feature 4: Neighbor Accounts -->
+        <div class="tool-card">
+          <div>
+            <div class="tool-card-header">
+              <span class="tool-badge account">Personal Hub</span>
+              <span class="tool-icon">👤</span>
+            </div>
+            <h4 class="tool-title">Neighbor Profiles &amp; Bookmarks</h4>
+            <p class="tool-desc">
+              Create your free verified neighbor profile to bookmark your favorite local contractors, track your service requests, and customize your feed.
+            </p>
+            <div class="tool-preview-box">
+              <span class="tool-preview-pill account">PROFILE</span>
+              <span class="tool-preview-text">Verified Neighbor · 3 Saved Pros Bookmarked</span>
+            </div>
+          </div>
+          <div class="tool-card-footer">
+            <a href="/account/" class="tool-action-link">Open My Account <span>→</span></a>
+          </div>
         </div>
       </div>
     </div>
@@ -2241,7 +2518,7 @@
         '.step-card, .selector-card, .coming-soon-card, .family-card, ' +
         '.section-header, .about-graphic, .about-text, ' +
         '.highlight-item, .suggest-info, .form-container, ' +
-        '.trust-eyebrow, .trust-stat, .trust-tagline'
+        '.trust-eyebrow, .trust-stat, .trust-tagline, .tool-card'
       );
 
       targets.forEach(el => el.classList.add('scroll-anim'));

@@ -59,11 +59,13 @@ const themeCss = `:root{${Object.entries(theme)
       gtag('config', 'G-QE75YFJ2ZL');
     </script>
   </head>
+  <body>
     <div class="top-bar">
       <span>Austin, Texas &nbsp;·&nbsp; Neighbor-Sourced Referrals</span>
-      <a href="/login/" id="navLoginLink" class="top-bar-login">Log In</a>
+      <div id="topBarAuth" class="top-bar-auth">
+        <a href="/account/" class="top-bar-login">Log In / Register</a>
+      </div>
     </div>
-    <div id="authStatus" class="auth-status"></div>
 
     <slot />
 

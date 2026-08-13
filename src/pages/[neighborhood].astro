@@ -90,9 +90,42 @@ const total = groups.reduce(
   <header>
     <div class="logo-wrap">
       <h1>{neighborhood.name} <span>Directory</span></h1>
-      <p class="header-sub">Trusted Neighbors &middot; Austin, Texas</p>
-      <a class="order-btn" href="/">Back Home</a>
-      <a class="order-btn" href={`/${neighborhood.slug}/requests/`}>📅 Service Calendar</a>
+      <a class="header-link" href="/">← Back to Directories</a>
+    </div>
+
+    <!-- Community Action Bar Toolkit -->
+    <div class="directory-toolkit-bar">
+      <a class="toolkit-btn calendar" href={`/${neighborhood.slug}/requests/`} title="View Community Calendar & Events">
+        <span class="toolkit-icon">📅</span>
+        <div class="toolkit-text">
+          <span class="toolkit-label">Community Calendar</span>
+          <span class="toolkit-sub">View events &amp; dates</span>
+        </div>
+      </a>
+      <button class="toolkit-btn request" id="toolkitOpenRequestBtn" type="button" title="Post a free service request">
+        <span class="toolkit-icon">🛠️</span>
+        <div class="toolkit-text">
+          <span class="toolkit-label">Need a Service?</span>
+          <span class="toolkit-sub">Post a request for free</span>
+        </div>
+      </button>
+      <button class="toolkit-btn referral" id="toolkitOpenReferralBtn" type="button" title="Suggest a trusted pro">
+        <span class="toolkit-icon">🤝</span>
+        <div class="toolkit-text">
+          <span class="toolkit-label">Suggest a Pro</span>
+          <span class="toolkit-sub">Share a recommendation</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- Active Requests Live Alert Banner -->
+    <div class="live-requests-banner" id="liveRequestsBanner" style="display:none;">
+      <div class="live-req-badge">
+        <span class="live-req-dot"></span>
+        <span id="liveReqCountText">0 Requests</span>
+      </div>
+      <span class="live-req-msg" id="liveReqSummary">Neighbors in need of services</span>
+      <a class="live-req-cta" href={`/${neighborhood.slug}/requests/`}>View &amp; Help Out →</a>
     </div>
 
     <nav class="nav-tabs" id="groupPills">
@@ -109,6 +142,10 @@ const total = groups.reduce(
     <ListingsTree groups={groups} />
   </main>
 
+  <a class="fab-calendar" id="calendarBadgeBtn" href={`/${neighborhood.slug}/requests/`} title="View Neighbors in Need">
+    ❗
+    <span class="fab-badge-count" id="calendarBadgeCount" style="display:none;"></span>
+  </a>
   <ReferralModal neighborhoodName={neighborhood.name} subjectPrefix={neighborhood.subjectPrefix} groups={groups} />
   <RequestModal groups={groups} neighborhood={neighborhood} />
   {neighborhood.order && <OrderModal order={neighborhood.order} />}

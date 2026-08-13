@@ -1,5 +1,6 @@
 ---
 import Directory from '../../layouts/Directory.astro';
+import RequestModal from '../../components/RequestModal.astro';
 import { neighborhoods } from '../../data/neighborhoods.js';
 
 export function getStaticPaths() {
@@ -17,7 +18,12 @@ const { neighborhood } = Astro.props;
     <div class="logo-wrap">
       <h1>{neighborhood.name} <span>Service Requests</span></h1>
       <p class="header-sub">See when your neighbors need service appointments & join in</p>
-      <a class="order-btn" href={`/${neighborhood.slug}/`}>← Back to Directory</a>
+      <div class="calendar-header-actions">
+        <a class="order-btn" href={`/${neighborhood.slug}/`}>← Back to Directory</a>
+        <button class="btn-post-calendar-req" id="openCalendarPostReqBtn" type="button">
+          + Post Service Request
+        </button>
+      </div>
     </div>
   </header>
 
@@ -31,7 +37,27 @@ const { neighborhood } = Astro.props;
           <p>Dates with active requests are highlighted below. Log in to unlock neighbor names, notes, and contact info.</p>
         </div>
       </div>
-      <a class="auth-banner-btn" id="rpLoginLink" href="/login/">Log In / Register to Unlock</a>
+      <a class="auth-banner-btn" id="rpLoginLink" href="/account/">Log In / Register to Unlock</a>
+    </div>
+
+    <!-- Category & My Requests Filter Bar -->
+    <div class="calendar-filter-bar" id="calendarFilterBar">
+      <div class="filter-pills-scroll">
+        <button class="filter-pill active" data-category="all" type="button">All Categories</button>
+        <button class="filter-pill my-requests" id="filterMyRequestsBtn" style="display:none;" data-my="true" type="button">
+          🌟 My Requests <span class="my-req-count" id="myReqCountBadge">0</span>
+        </button>
+        <button class="filter-pill" data-category="Plumbing" type="button">🪠 Plumbing</button>
+        <button class="filter-pill" data-category="Electrical" type="button">⚡ Electrical</button>
+        <button class="filter-pill" data-category="Handyman" type="button">🔨 Handyman</button>
+        <button class="filter-pill" data-category="Landscaping & Tree Care" type="button">🌳 Landscaping & Trees</button>
+        <button class="filter-pill" data-category="Roofing & Gutters" type="button">🏠 Roofing & Gutters</button>
+        <button class="filter-pill" data-category="HVAC & AC" type="button">❄️ HVAC & AC</button>
+        <button class="filter-pill" data-category="House Cleaning" type="button">🧹 Cleaning</button>
+        <button class="filter-pill" data-category="Pest Control" type="button">🐜 Pest Control</button>
+        <button class="filter-pill" data-category="Painting" type="button">🎨 Painting</button>
+        <button class="filter-pill" data-category="Other" type="button">📦 Other</button>
+      </div>
     </div>
 
     <!-- View Switcher & Month Navigation Controls -->
@@ -79,6 +105,8 @@ const { neighborhood } = Astro.props;
         </div>
       </div>
     </div>
+
+    <RequestModal neighborhood={neighborhood} groups={[]} />
   </main>
 </Directory>
 

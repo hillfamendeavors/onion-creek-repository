@@ -37,8 +37,8 @@ export async function signUp(email, password, metadata = {}) {
   const invalid = checkCredentials(email, password);
   if (invalid) return invalid;
   const redirectTo = typeof window !== 'undefined'
-    ? `${window.location.origin}/login/`
-    : 'https://trustedneighbors.net/login/';
+    ? `${window.location.origin}/account/`
+    : 'https://trustedneighbors.net/account/';
 
   return supabase.auth.signUp({
     email,
