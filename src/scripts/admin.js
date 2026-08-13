@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase.js';
 import { signIn } from '../lib/auth.js';
+import { showToast, confirmDialog } from './ui-feedback.js';
 
 const loginView = document.getElementById('loginView');
 const appView = document.getElementById('appView');
@@ -118,7 +119,7 @@ function renderTable() {
       sel.dataset.value = sel.value;
       const { error } = await supabase.from('service_requests').update({ status: sel.value }).eq('id', sel.dataset.id);
       if (error) {
-        alert('Failed to update status. Please try again.');
+        showToast('Failed to update status. Please try again.', true);
         sel.value = previousValue;
         sel.dataset.value = previousValue;
         return;
@@ -130,10 +131,10 @@ function renderTable() {
 
   requestsBody.querySelectorAll('.btn-danger').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Delete this request permanently? This cannot be undone.')) return;
+      if (!(await confirmDialog('Delete this request permanently? This cannot be undone.'))) return;
       const { error } = await supabase.from('service_requests').delete().eq('id', btn.dataset.id);
       if (error) {
-        alert('Failed to delete request.');
+        showToast('Failed to delete request.', true);
         return;
       }
       requests = requests.filter((r) => r.id !== btn.dataset.id);
@@ -268,11 +269,11 @@ function renderAdminsTable() {
     btn.addEventListener('click', async () => {
       const email = btn.dataset.email;
       if (!email) return;
-      if (!confirm(`Revoke admin access for ${email}?`)) return;
+      if (!(await confirmDialog(`Revoke admin access for ${email}?`))) return;
 
       const { error } = await supabase.from('admins').delete().eq('email', email);
       if (error) {
-        alert('Failed to revoke admin role: ' + error.message);
+        showToast('Failed to revoke admin role: ' + error.message, true);
         return;
       }
 
@@ -375,7 +376,7 @@ function renderReferralsTable() {
       sel.dataset.value = sel.value;
       const { error } = await supabase.from('referral_suggestions').update({ status: sel.value }).eq('id', sel.dataset.id);
       if (error) {
-        alert('Failed to update status.');
+        showToast('Failed to update status.', true);
         return;
       }
       const ref = referrals.find((r) => String(r.id) === String(sel.dataset.id));
@@ -385,10 +386,10 @@ function renderReferralsTable() {
 
   referralsBody.querySelectorAll('.btn-delete-ref').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Delete this referral suggestion?')) return;
+      if (!(await confirmDialog('Delete this referral suggestion?'))) return;
       const { error } = await supabase.from('referral_suggestions').delete().eq('id', btn.dataset.id);
       if (error) {
-        alert('Failed to delete referral.');
+        showToast('Failed to delete referral.', true);
         return;
       }
       referrals = referrals.filter((r) => String(r.id) !== String(btn.dataset.id));
