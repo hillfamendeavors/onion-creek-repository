@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase.js';
+import { signIn } from '../lib/auth.js';
 
 const loginView = document.getElementById('loginView');
 const appView = document.getElementById('appView');
@@ -160,10 +161,7 @@ if (filterNeighborhood && filterCategory && filterStatus) {
 if (loginBtn) {
   loginBtn.addEventListener('click', async () => {
     loginError.textContent = '';
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: loginEmail.value.trim(),
-      password: loginPassword.value,
-    });
+    const { data, error } = await signIn(loginEmail.value.trim(), loginPassword.value);
     if (error) {
       loginError.textContent = 'Invalid email or password.';
       return;
