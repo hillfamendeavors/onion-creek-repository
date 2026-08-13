@@ -76,12 +76,12 @@ if (accessToken) {
         min-height: 100vh;
       }
 
-      h1, h2, h3, h4, h5, h6, th, .btn-primary, .btn-secondary, .tab-btn {
+      h1, h2, h3, h4, h5, h6, th, .btn-primary, .btn-secondary, .sidebar-link {
         font-family: 'Inter', sans-serif;
       }
 
       h1 { font-size: 1.5rem; margin: 0; font-weight: 600; letter-spacing: -0.02em; }
-      
+
       .container { max-width: 1200px; margin: 0 auto; padding: var(--space-xl) var(--space-lg); }
 
       #loginView {
@@ -110,14 +110,6 @@ if (accessToken) {
 
       #loginError { color: var(--color-destructive); font-size: 0.9rem; min-height: 1.2em; margin-top: var(--space-sm); text-align: center; }
       
-      .topbar {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: var(--space-md) var(--space-lg);
-        background: var(--color-muted); border-bottom: 1px solid var(--color-border);
-      }
-      
-      .topbar-right { display: flex; align-items: center; gap: var(--space-md); }
-      
       .btn-secondary {
         background: #F3F4F6; color: var(--color-foreground);
         border: 1px solid var(--color-border); padding: 8px 16px;
@@ -126,18 +118,51 @@ if (accessToken) {
       }
       .btn-secondary:hover { background: #E5E7EB; }
 
-      .tabs-container { margin-bottom: var(--space-xl); border-bottom: 1px solid var(--color-border); padding-bottom: 0; overflow-x: auto; }
-      .tabs, .dir-subtabs { display: flex; gap: var(--space-md); flex-wrap: nowrap; }
-      .tab-btn { white-space: nowrap; }
-      
-      .tab-btn {
-        padding: 12px 20px; border: none; background: transparent; color: #6B7280;
-        border-radius: 0; cursor: pointer; font-size: 0.95rem; font-weight: 600;
-        transition: all 200ms ease; border-bottom: 3px solid transparent;
-        margin-bottom: -1px;
+      .dir-subtabs { display: flex; gap: var(--space-md); flex-wrap: nowrap; }
+
+      .app-shell { display: flex; min-height: 100vh; }
+
+      .sidebar {
+        width: 240px; flex-shrink: 0;
+        background: var(--color-muted); border-right: 1px solid var(--color-border);
+        display: flex; flex-direction: column;
+        padding: var(--space-lg) var(--space-md);
       }
-      .tab-btn:hover { color: var(--color-foreground); }
-      .tab-btn.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+      .sidebar-brand {
+        font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em;
+        padding: 0 var(--space-sm) var(--space-lg);
+        border-bottom: 1px solid var(--color-border);
+        margin-bottom: var(--space-md);
+      }
+      .sidebar-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+
+      .sidebar-link {
+        text-align: left; min-height: 44px;
+        padding: 11px 14px; border-radius: 8px; border: none;
+        background: transparent; color: #4B5563;
+        font-size: 0.9rem; font-weight: 600;
+        cursor: pointer; transition: all 150ms ease;
+      }
+      .sidebar-link:hover { background: #F3F4F6; color: var(--color-foreground); }
+      .sidebar-link.active { background: var(--color-primary); color: #FFFFFF; }
+      .sidebar-link:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+      .sidebar-logout { margin-top: var(--space-md); }
+
+      .main-area { flex: 1; min-width: 0; }
+
+      @media (max-width: 768px) {
+        .app-shell { flex-direction: column; }
+        .sidebar {
+          width: 100%; flex-direction: row; align-items: center; gap: var(--space-md);
+          overflow-x: auto; border-right: none; border-bottom: 1px solid var(--color-border);
+          padding: var(--space-sm) var(--space-md);
+        }
+        .sidebar-brand { border-bottom: none; margin-bottom: 0; padding: 0; white-space: nowrap; }
+        .sidebar-nav { flex-direction: row; flex: none; }
+        .sidebar-link { white-space: nowrap; }
+        .sidebar-logout { margin-top: 0; margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+      }
 
       .filters { display: flex; gap: var(--space-md); margin-bottom: var(--space-lg); flex-wrap: wrap; }
       
@@ -243,24 +268,21 @@ if (accessToken) {
         <p id="loginError"></p>
       </div>
     ) : (
-      <div id="appView">
-        <div class="topbar">
-          <h1>Trusted Neighbors <span style="color:var(--color-accent)">Operations</span></h1>
-          <div class="topbar-right">
-            <button id="logoutBtn" class="btn-secondary">Log Out</button>
-          </div>
-        </div>
-        
-        <div class="container">
-          <div class="tabs-container">
-            <div class="tabs">
-              <button class="tab-btn active" id="tabRequestsBtn">Service Requests</button>
-              <button class="tab-btn" id="tabReferralsBtn">Referral Suggestions</button>
-              <button class="tab-btn" id="tabRolesBtn">Admin Roles</button>
-              <button class="tab-btn" id="tabDirectoryBtn">Directory CMS</button>
-            </div>
-          </div>
+      <div id="appView" class="app-shell">
+        <aside class="sidebar">
+          <div class="sidebar-brand">Trusted Neighbors <span style="color:var(--color-accent)">Operations</span></div>
+          <nav class="sidebar-nav">
+            <button class="sidebar-link active" id="tabRequestsBtn">Service Requests</button>
+            <button class="sidebar-link" id="tabReferralsBtn">Referral Suggestions</button>
+            <button class="sidebar-link" id="tabUsersBtn">Users</button>
+            <button class="sidebar-link" id="tabRolesBtn">Admin Roles</button>
+            <button class="sidebar-link" id="tabDirectoryBtn">Directory CMS</button>
+          </nav>
+          <button id="logoutBtn" class="btn-secondary sidebar-logout">Log Out</button>
+        </aside>
 
+        <div class="main-area">
+        <div class="container">
           <div id="tab-requests">
             <div class="filters">
               <select id="filterNeighborhood" class="select-input"><option value="">All Neighborhoods</option></select>
@@ -325,6 +347,25 @@ if (accessToken) {
                     </tr>
                   </thead>
                   <tbody id="referralsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-users" style="display:none;">
+            <div class="card">
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Registered</th>
+                      <th>Service Requests</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersBody"></tbody>
                 </table>
               </div>
             </div>
@@ -401,6 +442,7 @@ if (accessToken) {
             </div>
           </div>
         </div>
+        </div>
       </div>
     )}
 
@@ -458,5 +500,6 @@ if (accessToken) {
 
     <script src="../scripts/admin.js"></script>
     <script src="../scripts/admin-directory.js"></script>
+    <script src="../scripts/admin-users.js"></script>
   </body>
 </html>

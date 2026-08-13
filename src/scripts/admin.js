@@ -190,23 +190,29 @@ if (appView) {
 
 const tabRequestsBtn = document.getElementById('tabRequestsBtn');
 const tabReferralsBtn = document.getElementById('tabReferralsBtn');
+const tabUsersBtn = document.getElementById('tabUsersBtn');
+const tabRolesBtn = document.getElementById('tabRolesBtn');
 const tabDirectoryBtn = document.getElementById('tabDirectoryBtn');
 
+const ALL_TABS = [tabRequestsBtn, tabReferralsBtn, tabUsersBtn, tabRolesBtn, tabDirectoryBtn];
+
 function switchTab(activeBtn, targetId) {
-  [tabRequestsBtn, tabReferralsBtn, tabDirectoryBtn].forEach((btn) => btn?.classList.remove('active'));
-  ['tab-requests', 'tab-referrals', 'tab-directory'].forEach((id) => {
+  ALL_TABS.forEach((btn) => btn?.classList.remove('active'));
+  ['tab-requests', 'tab-referrals', 'tab-users', 'tab-roles', 'tab-directory'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.style.display = id === targetId ? 'block' : 'none';
   });
   activeBtn?.classList.add('active');
 }
 
-const tabRolesBtn = document.getElementById('tabRolesBtn');
-
 tabRequestsBtn?.addEventListener('click', () => switchTab(tabRequestsBtn, 'tab-requests'));
 tabReferralsBtn?.addEventListener('click', () => {
   switchTab(tabReferralsBtn, 'tab-referrals');
   loadReferrals();
+});
+tabUsersBtn?.addEventListener('click', () => {
+  switchTab(tabUsersBtn, 'tab-users');
+  window.dispatchEvent(new Event('users-tab-shown'));
 });
 tabRolesBtn?.addEventListener('click', () => {
   switchTab(tabRolesBtn, 'tab-roles');
@@ -294,7 +300,7 @@ grantAdminBtn?.addEventListener('click', async () => {
   grantAdminBtn.disabled = true;
   grantAdminBtn.textContent = 'Granting…';
 
-  const { error } = await supabase.from('admins').insert({ email, role: 'admin' });
+  const { error } = await supabase.from('admins').insert({ email });
 
   grantAdminBtn.disabled = false;
   grantAdminBtn.textContent = 'Grant Admin Role';
