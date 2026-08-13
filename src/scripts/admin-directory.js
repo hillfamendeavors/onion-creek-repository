@@ -316,7 +316,17 @@ function renderListingsTable() {
   });
 
   if (filtered.length === 0) {
-    listingsBody.innerHTML = `<tr><td colspan="7">No listings found matching criteria.</td></tr>`;
+    listingsBody.innerHTML = `
+      <tr>
+        <td colspan="6">
+          <div class="table-empty-state">
+            <div class="table-empty-icon">🏪</div>
+            <div class="table-empty-title">No listings found</div>
+            <div class="table-empty-desc">${allListings.length === 0 ? 'No business listings exist yet.' : 'Try adjusting your search criteria or filters.'}</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
@@ -325,14 +335,18 @@ function renderListingsTable() {
 
   listingsBody.innerHTML = filtered.map((l) => `
     <tr data-id="${l.id}">
-      <td>${esc(neighMap.get(l.neighborhood_slug) || l.neighborhood_slug)}</td>
-      <td>${esc(subcatMap.get(l.subcategory_id) || 'General')}</td>
-      <td><strong>${esc(l.name)}</strong></td>
-      <td>${esc(l.phone)}</td>
-      <td>${esc(l.note || '—')}</td>
-      <td>${l.featured ? '<span style="background:#FEF3C7; color:#92400E; padding:2px 8px; border-radius:12px; font-weight:600; font-size:0.8rem;">Featured ⭐</span>' : '—'}</td>
+      <td><span class="contact-name">${esc(l.name)}</span></td>
       <td>
-        <button class="btn-danger btn-delete-listing" data-id="${l.id}">Delete</button>
+        <div style="display:flex; gap:4px; flex-wrap:wrap;">
+          <span class="pill-tag neighborhood">${esc(neighMap.get(l.neighborhood_slug) || l.neighborhood_slug)}</span>
+          <span class="pill-tag category">${esc(subcatMap.get(l.subcategory_id) || 'General')}</span>
+        </div>
+      </td>
+      <td><span class="contact-phone">${esc(l.phone)}</span></td>
+      <td><div class="notes-cell" title="${esc(l.note)}">${esc(l.note || '—')}</div></td>
+      <td>${l.featured ? '<span class="pill-tag" style="background:#FEF3C7; color:#92400E; border-color:#FDE68A;">Featured ⭐</span>' : '<span style="color:#94A3B8; font-size:0.85rem;">—</span>'}</td>
+      <td style="text-align:right;">
+        <button class="btn-action-danger btn-delete-listing" data-id="${l.id}">Delete</button>
       </td>
     </tr>
   `).join('');

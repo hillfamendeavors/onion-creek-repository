@@ -19,7 +19,7 @@ window.addEventListener('users-tab-shown', async () => {
 
 async function loadUsers() {
   if (!usersBody) return;
-  usersBody.innerHTML = `<tr><td colspan="6">Loading users…</td></tr>`;
+  usersBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:32px; color:#64748B;">Loading registered users…</td></tr>`;
 
   const [profilesRes, requestsRes, adminsRes] = await Promise.all([
     supabase.from('profiles').select('*').order('created_at', { ascending: false }),
@@ -28,7 +28,7 @@ async function loadUsers() {
   ]);
 
   if (profilesRes.error) {
-    usersBody.innerHTML = `<tr><td colspan="6">Failed to load users: ${esc(profilesRes.error.message)}</td></tr>`;
+    usersBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:32px; color:#DC2626;">Failed to load users: ${esc(profilesRes.error.message)}</td></tr>`;
     return;
   }
 
@@ -36,36 +36,55 @@ async function loadUsers() {
   const requests = requestsRes.data || [];
   const adminEmails = new Set((adminsRes.data || []).map((a) => a.email.toLowerCase()));
 
+  const usersCountEl = document.getElementById('usersCount');
+  if (usersCountEl) usersCountEl.textContent = profiles.length;
+
   if (profiles.length === 0) {
-    usersBody.innerHTML = `<tr><td colspan="6">No registered users yet.</td></tr>`;
+    usersBody.innerHTML = `
+      <tr>
+        <td colspan="5">
+          <div class="table-empty-state">
+            <div class="table-empty-icon">👥</div>
+            <div class="table-empty-title">No registered users yet</div>
+            <div class="table-empty-desc">User accounts created by neighbors will appear here.</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
   usersBody.innerHTML = profiles.map((p) => {
     const theirRequests = requests.filter((r) => r.email === p.email);
     const requestsHtml = theirRequests.length === 0
-      ? '<span style="color:#9CA3AF;">None yet</span>'
-      : theirRequests.map((r) => `
-          <span style="display:inline-block; background:#F3F4F6; border-radius:12px; padding:3px 10px; font-size:0.78rem; font-weight:600; color:#374151; margin:2px 4px 2px 0;">
-            ${esc(r.category)} <span style="color:#9CA3AF;">(${esc(r.date_needed)})</span>
+      ? '<span style="color:#94A3B8; font-size:0.85rem;">None yet</span>'
+      : `<div style="display:flex; gap:4px; flex-wrap:wrap;">${theirRequests.map((r) => `
+          <span class="pill-tag category" style="font-size:0.75rem;">
+            ${esc(r.category)} <span style="opacity:0.65; margin-left:2px;">(${esc(r.date_needed)})</span>
           </span>
-        `).join('');
+        `).join('')}</div>`;
 
     const isAdmin = adminEmails.has(p.email.toLowerCase());
     const adminAction = isAdmin
-      ? '<span style="color:#9CA3AF; font-size:0.85rem;">Already Admin</span>'
-      : `<button class="icon-btn grant-admin-btn" data-email="${esc(p.email)}">Grant Admin</button>`;
+      ? '<span style="color:#94A3B8; font-size:0.8rem; font-weight:600;">Already Admin</span>'
+      : `<button class="btn-action-secondary grant-admin-btn" data-email="${esc(p.email)}">Grant Admin</button>`;
 
     return `
       <tr>
-        <td>${esc(p.full_name) || '<span style="color:#9CA3AF;">—</span>'}</td>
-        <td><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></td>
-        <td>${esc(p.phone) || '<span style="color:#9CA3AF;">—</span>'}</td>
-        <td>${esc(new Date(p.created_at).toLocaleDateString())}</td>
+        <td>
+          <div class="contact-cell">
+            <span class="contact-name">${esc(p.full_name || 'Unnamed Neighbor')}</span>
+            <a href="mailto:${esc(p.email)}" class="contact-email">${esc(p.email)}</a>
+          </div>
+        </td>
+        <td><span class="contact-phone">${esc(p.phone || '—')}</span></td>
+        <td><span style="font-size:0.85rem; color:#64748B;">${esc(new Date(p.created_at).toLocaleDateString())}</span></td>
         <td>${requestsHtml}</td>
-        <td style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button class="icon-btn send-reset-btn" data-email="${esc(p.email)}">Send Reset</button>
-          ${adminAction}
+        <td>
+          <div style="display:flex; gap:6px; justify-content:flex-end; align-items:center;">
+            <button class="btn-action-secondary send-reset-btn" data-email="${esc(p.email)}">Send Reset</button>
+            ${adminAction}
+          </div>
         </td>
       </tr>
     `;

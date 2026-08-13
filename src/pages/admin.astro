@@ -40,19 +40,19 @@ if (accessToken) {
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
 
       :root {
         --color-primary: #064E3B; /* Forest Green */
         --color-on-primary: #FFFFFF;
         --color-secondary: #047857; /* Light Forest Green */
         --color-accent: #D97706; /* Gold */
-        --color-background: #F9FAFB; /* Off-white / Cream */
-        --color-foreground: #111827; /* Dark Gray */
+        --color-background: #F8FAFC; /* Slate 50 */
+        --color-foreground: #0F172A; /* Slate 900 */
         --color-muted: #FFFFFF; /* White Cards */
-        --color-border: #E5E7EB; /* Light Gray Borders */
+        --color-border: #E2E8F0; /* Slate 200 */
         --color-destructive: #DC2626;
-        --color-ring: rgba(6, 78, 59, 0.4);
+        --color-ring: rgba(6, 78, 59, 0.3);
 
         --space-xs: 4px;
         --space-sm: 8px;
@@ -62,8 +62,8 @@ if (accessToken) {
         --space-2xl: 48px;
 
         --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
       }
 
       body {
@@ -76,7 +76,7 @@ if (accessToken) {
         min-height: 100vh;
       }
 
-      h1, h2, h3, h4, h5, h6, .sidebar-brand {
+      h1, h2, h3, h4, h5, h6, .sidebar-brand, .section-title {
         font-family: 'EB Garamond', serif;
       }
       th, .btn-primary, .btn-secondary, .sidebar-link {
@@ -85,7 +85,7 @@ if (accessToken) {
 
       h1 { font-size: 1.6rem; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
 
-      .container { max-width: 1200px; margin: 0 auto; padding: var(--space-xl) var(--space-lg); }
+      .container { max-width: 1240px; margin: 0 auto; padding: var(--space-xl) var(--space-lg); }
 
       #loginView {
         max-width: 380px; margin: 120px auto; padding: var(--space-xl);
@@ -96,67 +96,70 @@ if (accessToken) {
       
       .input {
         display: block; width: 100%; box-sizing: border-box;
-        margin-bottom: var(--space-md); padding: 12px 16px;
+        margin-bottom: var(--space-md); padding: 10px 14px;
         background: #FFFFFF; color: var(--color-foreground);
-        border: 1px solid var(--color-border); border-radius: 8px; font-size: 16px;
-        transition: border-color 200ms ease, box-shadow 200ms ease;
+        border: 1px solid var(--color-border); border-radius: 8px; font-size: 0.95rem;
+        transition: border-color 150ms ease, box-shadow 150ms ease;
         font-family: 'Source Sans 3', sans-serif;
       }
       .input:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 3px var(--color-ring); }
 
       .btn-primary {
-        width: 100%; background: var(--color-accent); color: white;
-        padding: 12px 24px; border-radius: 8px; font-weight: 600;
-        transition: all 200ms ease; cursor: pointer; border: none; font-size: 1rem;
+        background: var(--color-accent); color: white;
+        padding: 10px 20px; border-radius: 8px; font-weight: 600;
+        transition: all 150ms ease; cursor: pointer; border: none; font-size: 0.95rem;
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       }
       .btn-primary:hover { background: #b45f06; transform: translateY(-1px); }
 
       #loginError { color: var(--color-destructive); font-size: 0.9rem; min-height: 1.2em; margin-top: var(--space-sm); text-align: center; }
       
       .btn-secondary {
-        background: #F3F4F6; color: var(--color-foreground);
+        background: #FFFFFF; color: #334155;
         border: 1px solid var(--color-border); padding: 8px 16px;
-        border-radius: 6px; font-weight: 500; transition: all 200ms ease;
+        border-radius: 8px; font-weight: 600; transition: all 150ms ease;
         cursor: pointer; font-size: 0.875rem;
       }
-      .btn-secondary:hover { background: #E5E7EB; }
+      .btn-secondary:hover { background: #F8FAFC; border-color: #CBD5E1; }
+      .btn-secondary.active { background: #F1F5F9; border-color: #94A3B8; color: #0F172A; }
 
-      .dir-subtabs { display: flex; gap: var(--space-md); flex-wrap: nowrap; }
+      .dir-subtabs { display: flex; gap: var(--space-sm); flex-wrap: nowrap; }
 
       .app-shell { display: flex; min-height: 100vh; }
 
       .sidebar {
         width: 240px; flex-shrink: 0;
-        background: var(--color-muted); border-right: 1px solid var(--color-border);
+        background: #FFFFFF; border-right: 1px solid var(--color-border);
         display: flex; flex-direction: column;
         padding: var(--space-lg) var(--space-md);
       }
       .sidebar-brand {
-        font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em;
+        font-size: 1.2rem; font-weight: 600; letter-spacing: -0.02em;
         padding: 0 var(--space-sm) var(--space-lg);
         border-bottom: 1px solid var(--color-border);
         margin-bottom: var(--space-md);
+        color: var(--color-primary);
       }
-      .sidebar-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+      .sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 
       .sidebar-link {
-        text-align: left; min-height: 44px;
-        padding: 11px 14px; border-radius: 8px; border: none;
-        background: transparent; color: #4B5563;
-        font-size: 0.9rem; font-weight: 600;
+        text-align: left; min-height: 42px;
+        padding: 10px 14px; border-radius: 8px; border: none;
+        background: transparent; color: #475569;
+        font-size: 0.925rem; font-weight: 600;
         cursor: pointer; transition: all 150ms ease;
       }
-      .sidebar-link:hover { background: #F3F4F6; color: var(--color-foreground); }
+      .sidebar-link:hover { background: #F1F5F9; color: var(--color-foreground); }
       .sidebar-link.active { background: var(--color-primary); color: #FFFFFF; }
       .sidebar-link:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 
-      .sidebar-logout { margin-top: var(--space-md); }
+      .sidebar-logout { margin-top: var(--space-md); width: 100%; text-align: center; }
 
       .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
       @media (max-width: 640px) { .stat-grid { grid-template-columns: 1fr; } }
       .stat-card { padding: var(--space-xl); text-align: center; }
       .stat-value { font-family: 'EB Garamond', serif; font-size: 2.75rem; font-weight: 600; color: var(--color-primary); line-height: 1; }
-      .stat-label { margin-top: var(--space-sm); font-size: 0.85rem; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+      .stat-label { margin-top: var(--space-sm); font-size: 0.85rem; color: #64748B; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
 
       .main-area { flex: 1; min-width: 0; }
 
@@ -170,64 +173,114 @@ if (accessToken) {
         .sidebar-brand { border-bottom: none; margin-bottom: 0; padding: 0; white-space: nowrap; }
         .sidebar-nav { flex-direction: row; flex: none; }
         .sidebar-link { white-space: nowrap; }
-        .sidebar-logout { margin-top: 0; margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+        .sidebar-logout { margin-top: 0; margin-left: auto; flex-shrink: 0; width: auto; }
       }
 
-      .filters { display: flex; gap: var(--space-md); margin-bottom: var(--space-lg); flex-wrap: wrap; }
+      /* ── Section Header & Filters ── */
+      .section-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: var(--space-md); flex-wrap: wrap; gap: var(--space-sm);
+      }
+      .section-title {
+        font-size: 1.6rem; font-weight: 600; color: var(--color-foreground);
+        margin: 0; display: flex; align-items: center; gap: var(--space-sm);
+      }
+      .badge-count {
+        background: #E2E8F0; color: #475569; font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.8rem; font-weight: 600; padding: 2px 10px; border-radius: 12px;
+      }
+      .filters { display: flex; gap: var(--space-sm); margin-bottom: var(--space-lg); flex-wrap: wrap; align-items: center; }
       
       .select-input {
-        padding: 10px 14px; background: #FFFFFF; color: var(--color-foreground);
-        border: 1px solid var(--color-border); border-radius: 6px; font-size: 0.9rem;
-        cursor: pointer;
+        padding: 9px 30px 9px 12px; background-color: #FFFFFF; color: var(--color-foreground);
+        border: 1px solid var(--color-border); border-radius: 8px; font-size: 0.875rem;
+        font-weight: 500; cursor: pointer; transition: all 150ms ease;
+        appearance: none; -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 10px center; background-size: 14px;
       }
       .select-input:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 3px var(--color-ring); }
 
+      /* ── Card & Table Styling ── */
       .card {
-        background: var(--color-muted); border-radius: 12px;
+        background: #FFFFFF; border-radius: 12px;
         border: 1px solid var(--color-border); box-shadow: var(--shadow-sm);
         overflow: hidden;
       }
 
-      .table-scroll { overflow-x: auto; }
-      table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-      th, td { text-align: left; padding: 16px 20px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
-      th { background: #F9FAFB; font-weight: 600; color: #4B5563; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
-      
-      tr:nth-child(even) { background: #F9FAFB; }
-      tr:hover td { background: #F3F4F6; }
-      
-      select.status, select.ref-status {
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 0.825rem;
-        font-weight: 600;
-        cursor: pointer;
-        border: 1px solid var(--color-border);
-        transition: all 0.2s ease;
-        background: #FFFFFF;
+      .table-scroll { overflow-x: auto; max-height: calc(100vh - 230px); }
+      table { width: 100%; border-collapse: collapse; font-size: 0.875rem; text-align: left; }
+      th {
+        position: sticky; top: 0; background: #F8FAFC; z-index: 5;
+        font-weight: 600; color: #475569; text-transform: uppercase;
+        font-size: 0.725rem; letter-spacing: 0.06em; padding: 14px 18px;
+        border-bottom: 1px solid var(--color-border); white-space: nowrap;
       }
-      select.status[data-value="new"], select.ref-status[data-value="new"] {
-        background: #FEF3C7;
-        color: #92400E;
-        border-color: #FDE68A;
+      td { padding: 14px 18px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; color: #1E293B; }
+      tr:last-child td { border-bottom: none; }
+      tr:nth-child(even) { background: #FAFAFA; }
+      tr:hover td { background: #F1F5F9; }
+
+      /* ── Cell Formatting Helpers ── */
+      .contact-cell { display: flex; flex-direction: column; gap: 2px; }
+      .contact-name { font-weight: 600; color: #0F172A; font-size: 0.9rem; }
+      .contact-email { font-size: 0.8rem; color: #64748B; text-decoration: none; transition: color 150ms ease; word-break: break-all; }
+      .contact-email:hover { color: var(--color-primary); text-decoration: underline; }
+      .contact-phone { font-size: 0.85rem; color: #475569; font-weight: 500; white-space: nowrap; }
+
+      .pill-tag {
+        display: inline-flex; align-items: center; padding: 3px 9px;
+        border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+        background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0;
+        white-space: nowrap;
       }
-      select.status[data-value="contacted"], select.ref-status[data-value="approved"] {
-        background: #D1FAE5;
-        color: #065F46;
-        border-color: #A7F3D0;
-      }
-      select.status[data-value="closed"], select.ref-status[data-value="rejected"] {
-        background: #F3F4F6;
-        color: #374151;
-        border-color: #E5E7EB;
+      .pill-tag.neighborhood { background: #F0FDF4; color: #166534; border-color: #DCFCE7; }
+      .pill-tag.category { background: #EFF6FF; color: #1E40AF; border-color: #DBEAFE; }
+
+      .notes-cell {
+        max-width: 260px; overflow: hidden; text-overflow: ellipsis;
+        white-space: nowrap; color: #475569; font-size: 0.85rem;
       }
 
-      .btn-danger {
-        padding: 6px 12px; border: 1px solid var(--color-destructive); background: transparent;
-        color: var(--color-destructive); border-radius: 6px; cursor: pointer; font-size: 0.8rem;
-        transition: all 200ms ease;
+      /* ── Custom Status Dropdowns ── */
+      select.status, select.ref-status {
+        appearance: none; -webkit-appearance: none;
+        padding: 5px 24px 5px 12px; border-radius: 20px;
+        font-size: 0.78rem; font-weight: 600; cursor: pointer;
+        border: 1px solid transparent; transition: all 150ms ease;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 8px center; background-size: 12px;
       }
-      .btn-danger:hover { background: var(--color-destructive); color: white; }
+      select.status[data-value="new"], select.ref-status[data-value="new"] {
+        background-color: #FEF3C7; color: #92400E; border-color: #FDE68A;
+      }
+      select.status[data-value="contacted"], select.ref-status[data-value="approved"] {
+        background-color: #D1FAE5; color: #065F46; border-color: #A7F3D0;
+      }
+      select.status[data-value="closed"], select.ref-status[data-value="rejected"] {
+        background-color: #F1F5F9; color: #475569; border-color: #E2E8F0;
+      }
+
+      /* ── Modern Action Buttons ── */
+      .btn-action-danger {
+        padding: 5px 10px; border: 1px solid #FCA5A5; background: #FEF2F2;
+        color: #DC2626; border-radius: 6px; cursor: pointer; font-size: 0.78rem;
+        font-weight: 600; transition: all 150ms ease; white-space: nowrap;
+      }
+      .btn-action-danger:hover { background: #DC2626; color: #FFFFFF; border-color: #DC2626; }
+
+      .btn-action-secondary {
+        padding: 5px 10px; border: 1px solid #E2E8F0; background: #FFFFFF;
+        color: #334155; border-radius: 6px; cursor: pointer; font-size: 0.78rem;
+        font-weight: 600; transition: all 150ms ease; white-space: nowrap;
+      }
+      .btn-action-secondary:hover { background: #F8FAFC; border-color: #CBD5E1; color: #0F172A; }
+
+      /* ── Empty States ── */
+      .table-empty-state { padding: 48px 24px; text-align: center; color: #64748B; }
+      .table-empty-icon { font-size: 2.2rem; margin-bottom: 12px; opacity: 0.7; }
+      .table-empty-title { font-weight: 600; font-size: 1rem; color: #334155; margin-bottom: 4px; }
+      .table-empty-desc { font-size: 0.85rem; color: #94A3B8; }
 
       .toast-error { background: var(--color-destructive); }
       .toast-success { background: var(--color-primary); }
@@ -294,6 +347,9 @@ if (accessToken) {
         <div class="main-area">
         <div class="container">
           <div id="tab-overview">
+            <div class="section-header">
+              <h2 class="section-title">Operations Overview</h2>
+            </div>
             <div class="stat-grid">
               <div class="card stat-card">
                 <div class="stat-value" id="statUsers">—</div>
@@ -311,6 +367,9 @@ if (accessToken) {
           </div>
 
           <div id="tab-requests" style="display:none;">
+            <div class="section-header">
+              <h2 class="section-title">Service Requests <span id="requestsCount" class="badge-count">0</span></h2>
+            </div>
             <div class="filters">
               <select id="filterNeighborhood" class="select-input"><option value="">All Neighborhoods</option></select>
               <select id="filterCategory" class="select-input"><option value="">All Categories</option></select>
@@ -328,15 +387,13 @@ if (accessToken) {
                   <thead>
                     <tr>
                       <th class="sortable" data-sort="created_at">Submitted <span class="arrow"></span></th>
-                      <th>Neighborhood</th>
-                      <th>Category</th>
-                      <th class="sortable" data-sort="date_needed">Date Needed <span class="arrow"></span></th>
-                      <th>Name</th>
+                      <th>Neighborhood & Category</th>
+                      <th>Requester</th>
                       <th>Phone</th>
-                      <th>Email</th>
+                      <th class="sortable" data-sort="date_needed">Date Needed <span class="arrow"></span></th>
                       <th>Notes</th>
                       <th>Status</th>
-                      <th>Actions</th>
+                      <th style="text-align:right;">Actions</th>
                     </tr>
                   </thead>
                   <tbody id="requestsBody"></tbody>
@@ -346,6 +403,9 @@ if (accessToken) {
           </div>
 
           <div id="tab-referrals" style="display:none;">
+            <div class="section-header">
+              <h2 class="section-title">Referral Suggestions <span id="referralsCount" class="badge-count">0</span></h2>
+            </div>
             <div class="filters">
               <select id="filterRefNeighborhood" class="select-input"><option value="">All Neighborhoods</option></select>
               <select id="filterRefStatus" class="select-input">
@@ -362,15 +422,13 @@ if (accessToken) {
                   <thead>
                     <tr>
                       <th>Submitted</th>
-                      <th>Neighborhood</th>
                       <th>Business / Person</th>
-                      <th>Category</th>
+                      <th>Neighborhood & Category</th>
                       <th>Phone</th>
                       <th>Referrer</th>
-                      <th>Referrer Email</th>
                       <th>Note</th>
                       <th>Status</th>
-                      <th>Actions</th>
+                      <th style="text-align:right;">Actions</th>
                     </tr>
                   </thead>
                   <tbody id="referralsBody"></tbody>
@@ -380,17 +438,19 @@ if (accessToken) {
           </div>
 
           <div id="tab-users" style="display:none;">
+            <div class="section-header">
+              <h2 class="section-title">Registered Users <span id="usersCount" class="badge-count">0</span></h2>
+            </div>
             <div class="card">
               <div class="table-scroll">
                 <table>
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Email</th>
+                      <th>User</th>
                       <th>Phone</th>
                       <th>Registered</th>
                       <th>Service Requests</th>
-                      <th>Actions</th>
+                      <th style="text-align:right;">Actions</th>
                     </tr>
                   </thead>
                   <tbody id="usersBody"></tbody>
@@ -400,9 +460,12 @@ if (accessToken) {
           </div>
 
           <div id="tab-roles" style="display:none;">
-            <div class="card" style="margin-bottom: var(--space-lg); max-width: 540px;">
-              <h3 style="margin-top: 0; margin-bottom: var(--space-sm); color: var(--color-primary);">Grant Admin Access</h3>
-              <p style="font-size: 0.88rem; color: #4B5563; margin-bottom: var(--space-md);">Registered users added here can log into this Operations Console to manage directory content, requests, and referrals.</p>
+            <div class="section-header">
+              <h2 class="section-title">Admin Roles & Permissions</h2>
+            </div>
+            <div class="card" style="margin-bottom: var(--space-lg); max-width: 560px; padding: var(--space-lg);">
+              <h3 style="margin-top: 0; margin-bottom: var(--space-xs); color: var(--color-primary); font-size: 1.25rem;">Grant Admin Access</h3>
+              <p style="font-size: 0.88rem; color: #64748B; margin-bottom: var(--space-md);">Registered users added here can log into this Operations Console to manage directory content, requests, and referrals.</p>
               <div style="display: flex; gap: var(--space-sm);">
                 <input type="email" id="grantAdminEmail" class="input" placeholder="user@example.com" style="margin-bottom: 0;" />
                 <button id="grantAdminBtn" class="btn-primary" style="white-space: nowrap; width: auto;">Grant Admin Role</button>
@@ -411,15 +474,14 @@ if (accessToken) {
             </div>
 
             <div class="card">
-              <h3 style="margin-top: 0; margin-bottom: var(--space-md);">Authorized Administrators</h3>
               <div class="table-scroll">
                 <table>
                   <thead>
                     <tr>
-                      <th>Email Address</th>
+                      <th>Administrator</th>
                       <th>Role</th>
                       <th>Added Date</th>
-                      <th>Actions</th>
+                      <th style="text-align:right;">Actions</th>
                     </tr>
                   </thead>
                   <tbody id="adminsBody"></tbody>
@@ -429,8 +491,11 @@ if (accessToken) {
           </div>
 
           <div id="tab-directory" style="display:none;">
+            <div class="section-header">
+              <h2 class="section-title">Directory Content Management</h2>
+            </div>
             <div class="dir-subtabs" style="margin-bottom: var(--space-lg);">
-              <button class="btn-secondary active" id="subTabListingsBtn" style="background:var(--color-border); border-color:var(--color-border)">Business Listings</button>
+              <button class="btn-secondary active" id="subTabListingsBtn">Business Listings</button>
               <button class="btn-secondary" id="subTabCategoriesBtn">Categories & Groups</button>
             </div>
 
@@ -447,13 +512,12 @@ if (accessToken) {
                   <table>
                     <thead>
                       <tr>
-                        <th>Neighborhood</th>
-                        <th>Category</th>
                         <th>Business Name</th>
+                        <th>Neighborhood & Category</th>
                         <th>Phone</th>
                         <th>Note / Description</th>
                         <th>Featured</th>
-                        <th>Actions</th>
+                        <th style="text-align:right;">Actions</th>
                       </tr>
                     </thead>
                     <tbody id="listingsBody"></tbody>

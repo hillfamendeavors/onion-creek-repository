@@ -64,12 +64,12 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
       }
 
       .auth-container {
-        max-width: 460px;
+        max-width: 480px;
         margin: 40px auto;
         padding: 0 20px;
       }
       .auth-container.wide {
-        max-width: 800px;
+        max-width: 960px;
       }
 
       .auth-card {
@@ -135,22 +135,22 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         color: var(--color-text-main);
         margin-bottom: 6px;
       }
-      .form-group input {
+      .form-group input, .form-group select {
         width: 100%;
         box-sizing: border-box;
-        padding: 12px 14px;
-        border: 1px solid #D1D5DB;
-        border-radius: 8px;
+        padding: 12px 16px;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
         font-size: 0.95rem;
         font-family: inherit;
         background: #FFFFFF;
-        color: var(--color-text-main);
+        color: #0F172A;
         transition: border-color 0.2s, box-shadow 0.2s;
       }
-      .form-group input:focus {
+      .form-group input:focus, .form-group select:focus {
         outline: none;
-        border-color: var(--color-primary);
-        box-shadow: 0 0 0 3px var(--color-ring);
+        border-color: #064E3B;
+        box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.12);
       }
       .field-hint {
         font-size: 0.8rem;
@@ -164,8 +164,8 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         background: var(--color-primary);
         color: #FFFFFF;
         border: none;
-        border-radius: 8px;
-        font-size: 1rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
         font-weight: 600;
         cursor: pointer;
         transition: background-color 0.2s, transform 0.1s;
@@ -197,134 +197,333 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         text-align: center;
       }
 
-      /* Profile Dashboard */
-      .profile-header {
+      /* Profile Dashboard & Hero Header */
+      .profile-card-container {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+      }
+
+      .profile-hero-banner {
+        background: linear-gradient(135deg, #064E3B 0%, #047857 60%, #065F46 100%);
+        padding: 32px 36px;
+        color: #FFFFFF;
+        position: relative;
+      }
+      .profile-header-content {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding-bottom: 20px;
-        border-bottom: 1px solid var(--color-border);
-        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 20px;
       }
       .profile-user-info {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 20px;
+      }
+      .avatar-wrapper {
+        position: relative;
+        cursor: pointer;
+        width: 76px;
+        height: 76px;
+        flex-shrink: 0;
       }
       .profile-avatar {
-        width: 48px;
-        height: 48px;
+        width: 76px;
+        height: 76px;
         border-radius: 50%;
-        background: var(--color-primary);
-        color: #FFFFFF;
+        background: #FFFFFF;
+        color: var(--color-primary);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.25rem;
+        font-size: 1.75rem;
         font-weight: 700;
+        object-fit: cover;
+        border: 3px solid #FDE68A;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .avatar-wrapper:hover .profile-avatar {
+        transform: scale(1.04);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+      }
+      .avatar-upload-overlay {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        background: var(--color-accent);
+        color: white;
+        border-radius: 50%;
+        width: 26px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      }
+      .avatar-upload-overlay svg {
+        width: 13px;
+        height: 13px;
+        fill: currentColor;
       }
       .profile-user-details h2 {
         margin: 0;
-        font-size: 1.2rem;
+        font-size: 1.45rem;
         font-weight: 700;
-        color: var(--color-text-main);
+        color: #FFFFFF;
+        font-family: 'Source Sans 3', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
       }
       .profile-user-details p {
-        margin: 2px 0 0 0;
-        font-size: 0.875rem;
-        color: var(--color-text-sub);
+        margin: 4px 0 0 0;
+        font-size: 0.925rem;
+        color: #D1FAE5;
+        opacity: 0.95;
       }
+      .resident-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.2);
+        color: #FFFFFF;
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+      }
+      .resident-badge svg {
+        width: 14px;
+        height: 14px;
+        fill: #FDE68A;
+      }
+
+      .btn-header-action {
+        padding: 10px 20px;
+        background: #FDE68A;
+        color: #78350F;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      }
+      .btn-header-action:hover {
+        background: #F59E0B;
+        color: #FFFFFF;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+      }
+
       .btn-logout {
-        padding: 8px 16px;
-        background: #F3F4F6;
-        color: #374151;
-        border: 1px solid var(--color-border);
-        border-radius: 8px;
+        padding: 10px 18px;
+        background: rgba(255, 255, 255, 0.15);
+        color: #FFFFFF;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
         font-size: 0.875rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
       }
       .btn-logout:hover {
-        background: #FEE2E2;
-        color: #DC2626;
-        border-color: #FCA5A5;
+        background: #DC2626;
+        color: #FFFFFF;
+        border-color: #DC2626;
+      }
+
+      .profile-body {
+        padding: 32px 36px;
+      }
+
+      /* Redesigned Clean Underline Sub-Tabs Navigation */
+      .account-tabs {
+        display: flex;
+        gap: 28px;
+        border-bottom: 2px solid #E2E8F0;
+        margin-bottom: 32px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .account-tabs::-webkit-scrollbar {
+        display: none;
+      }
+      .acc-tab {
+        padding: 12px 4px 16px 4px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #64748B;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .acc-tab svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        transition: stroke 0.2s ease;
+      }
+      .acc-tab:hover {
+        color: #0F172A;
+      }
+      .acc-tab.active {
+        color: #064E3B;
+        border-bottom-color: #064E3B;
+        font-weight: 700;
+      }
+      .acc-tab.active svg {
+        stroke: #064E3B;
       }
 
       .section-title {
-        font-size: 1.1rem;
+        font-size: 1.25rem;
         font-weight: 700;
-        color: var(--color-primary);
-        margin: 24px 0 16px 0;
+        color: #064E3B;
+        font-family: 'Source Sans 3', sans-serif;
+        margin: 0 0 20px 0;
+      }
+
+      /* Redesigned Card Containers & Forms */
+      .settings-card {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 28px;
       }
 
       .profile-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
+        gap: 20px;
       }
-      @media (max-width: 600px) {
+      @media (max-width: 640px) {
         .profile-grid {
           grid-template-columns: 1fr;
         }
+        .profile-hero-banner {
+          padding: 24px 20px;
+        }
+        .profile-body {
+          padding: 24px 20px;
+        }
+        .account-tabs {
+          gap: 16px;
+        }
       }
 
-      /* Requests Table */
-      .requests-card {
-        margin-top: 24px;
-        border: 1px solid var(--color-border);
-        border-radius: 12px;
+    </style>
+
+    <!-- Global styles for dynamically injected JS tables, badges, and mobile responsiveness -->
+    <style is:global>
+      /* Table Card Wrapper */
+      .table-card {
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
         overflow: hidden;
+        background: #FFFFFF;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
       }
+      .table-scroll-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Desktop & Tablet Table Styles */
       .requests-table {
         width: 100%;
         border-collapse: collapse;
         text-align: left;
-        font-size: 0.875rem;
+        font-size: 0.9rem;
       }
       .requests-table th {
-        background: #F9FAFB;
-        padding: 12px 16px;
-        font-weight: 600;
-        color: var(--color-text-sub);
-        border-bottom: 1px solid var(--color-border);
+        background: #F8FAFC;
+        padding: 16px 20px;
+        font-weight: 700;
+        color: #475569;
+        border-bottom: 2px solid #E2E8F0;
         text-transform: uppercase;
         font-size: 0.75rem;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
       }
       .requests-table td {
-        padding: 14px 16px;
-        border-bottom: 1px solid var(--color-border);
-        color: var(--color-text-main);
+        padding: 16px 20px;
+        border-bottom: 1px solid #F1F5F9;
+        color: #1E293B;
+        vertical-align: middle;
       }
       .requests-table tr:last-child td {
         border-bottom: none;
       }
+      .requests-table tr:hover td {
+        background: #F8FAFC;
+      }
+
+      /* Badges & Pills */
       .status-badge {
-        display: inline-block;
-        padding: 4px 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
         border-radius: 9999px;
-        font-size: 0.75rem;
+        font-size: 0.78rem;
         font-weight: 600;
         text-transform: capitalize;
+        white-space: nowrap;
       }
       .status-badge.new {
         background: #FEF3C7;
         color: #92400E;
+        border: 1px solid #FDE68A;
       }
-      .status-badge.contacted {
+      .status-badge.contacted, .status-badge.approved {
         background: #D1FAE5;
         color: #065F46;
+        border: 1px solid #A7F3D0;
       }
-      .status-badge.closed {
-        background: #F3F4F6;
-        color: #4B5563;
+      .status-badge.closed, .status-badge.rejected {
+        background: #F1F5F9;
+        color: #475569;
+        border: 1px solid #CBD5E1;
       }
 
+      /* Empty State Container */
       .empty-requests {
-        padding: 32px;
+        padding: 56px 24px;
         text-align: center;
-        color: var(--color-text-sub);
+        color: #64748B;
+        background: #FFFFFF;
+        border-radius: 14px;
+      }
+      .empty-requests p {
+        margin: 0;
+        font-size: 0.95rem;
       }
       .empty-requests a {
         color: var(--color-primary);
@@ -332,15 +531,20 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         text-decoration: underline;
       }
 
+      /* Action Buttons */
       .toggle-request-btn {
-        padding: 5px 10px;
-        font-size: 0.75rem;
+        padding: 8px 16px;
+        font-size: 0.825rem;
         font-weight: 600;
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
         border: 1px solid var(--color-border);
-        transition: all 0.2s;
+        transition: all 0.2s ease;
         white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
       }
       .toggle-request-btn.complete {
         background: #ECFDF5;
@@ -348,14 +552,110 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         border-color: #A7F3D0;
       }
       .toggle-request-btn.complete:hover {
-        background: #D1FAE5;
+        background: #065F46;
+        color: #FFFFFF;
+        border-color: #065F46;
       }
       .toggle-request-btn.reopen {
-        background: #F3F4F6;
-        color: #374151;
+        background: #F1F5F9;
+        color: #334155;
+        border-color: #CBD5E1;
       }
       .toggle-request-btn.reopen:hover {
-        background: #E5E7EB;
+        background: #334155;
+        color: #FFFFFF;
+      }
+
+      /* Saved Grid & Cards */
+      .saved-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+      .saved-card {
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 22px;
+        background: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+      .saved-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -5px rgba(0,0,0,0.08);
+        border-color: #CBD5E1;
+      }
+      .saved-card-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #0F172A;
+        margin: 0 0 6px 0;
+      }
+      .saved-card-sub {
+        font-size: 0.85rem;
+        color: #64748B;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .saved-card-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      /* Mobile Responsive Table Transformation (< 640px) */
+      @media (max-width: 640px) {
+        .profile-header-content {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .profile-header-content > div:last-child {
+          width: 100%;
+          justify-content: flex-start;
+        }
+        .btn-header-action, .btn-logout {
+          flex: 1;
+          justify-content: center;
+        }
+
+        .account-tabs {
+          gap: 12px;
+          padding-bottom: 8px;
+        }
+        .acc-tab {
+          font-size: 0.875rem;
+          padding: 10px 2px 12px 2px;
+        }
+
+        .requests-table, .requests-table thead, .requests-table tbody, .requests-table th, .requests-table td, .requests-table tr {
+          display: block;
+        }
+        .requests-table thead {
+          display: none; /* Hide header on mobile */
+        }
+        .requests-table tr {
+          border-bottom: 1px solid #E2E8F0;
+          padding: 16px 18px;
+        }
+        .requests-table tr:last-child {
+          border-bottom: none;
+        }
+        .requests-table td {
+          padding: 6px 0;
+          border-bottom: none;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .requests-table td:last-child {
+          margin-top: 8px;
+          justify-content: flex-end;
+        }
       }
     </style>
   </head>
@@ -431,41 +731,153 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         <p class="auth-notice" id="authNotice" style="display:none;"></p>
       </div>
 
-      <!-- Logged-In Profile & Service Requests View -->
-      <div class="auth-card" id="profileCard" style="display:none;">
-        <div class="profile-header">
-          <div class="profile-user-info">
-            <div class="profile-avatar" id="userAvatar">U</div>
-            <div class="profile-user-details">
-              <h2 id="profileDisplayName">Neighbor</h2>
-              <p id="profileDisplayEmail">user@example.com</p>
+      <!-- Logged-In Profile & Dashboard View -->
+      <div class="profile-card-container" id="profileCard" style="display:none;">
+        <!-- Gradient Executive Hero Banner -->
+        <div class="profile-hero-banner">
+          <div class="profile-header-content">
+            <div class="profile-user-info">
+              <div class="avatar-wrapper" id="avatarWrapper" title="Click to upload custom avatar picture">
+                <img id="userAvatarImg" class="profile-avatar" src="/images/default-avatar.jpg" alt="User Avatar" />
+                <div class="avatar-upload-overlay">
+                  <svg viewBox="0 0 24 24"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/><path d="M9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                </div>
+              </div>
+              <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" />
+
+              <div class="profile-user-details">
+                <h2>
+                  <span id="profileDisplayName">Neighbor</span>
+                  <span id="neighborhoodBadge" class="resident-badge">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    Verified Neighbor
+                  </span>
+                </h2>
+                <p id="profileDisplayEmail">user@example.com</p>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:10px; align-items:center;">
+              <button class="btn-header-action" id="openNewRequestModalBtn">+ New Service Request</button>
+              <button class="btn-logout" id="logoutBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Log Out
+              </button>
             </div>
           </div>
-          <button class="btn-logout" id="logoutBtn">Log Out</button>
         </div>
 
-        <div class="section-title">Account Details</div>
-        <form id="profileForm">
-          <div class="profile-grid">
-            <div class="form-group">
-              <label for="prof-name">Full Name</label>
-              <input type="text" id="prof-name" placeholder="Full Name" />
-            </div>
-            <div class="form-group">
-              <label for="prof-phone">Phone Number</label>
-              <input type="tel" id="prof-phone" placeholder="Phone Number" />
+        <div class="profile-body">
+          <!-- Dashboard Sub-Tabs (Segmented Controls) -->
+          <div class="account-tabs">
+            <button class="acc-tab active" id="tabMyRequests">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              My Service Requests
+            </button>
+            <button class="acc-tab" id="tabMySaved">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              Saved Recommendations
+            </button>
+            <button class="acc-tab" id="tabMyReferrals">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              My Referrals
+            </button>
+            <button class="acc-tab" id="tabMySettings">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Account Settings
+            </button>
+          </div>
+
+          <!-- Sub-View 1: My Requests -->
+          <div id="accViewRequests">
+            <div class="table-card">
+              <div id="requestsTableContainer">
+                <div class="empty-requests">Loading your service requests…</div>
+              </div>
             </div>
           </div>
-          <button type="submit" class="btn-submit" id="updateProfileBtn" style="width: auto; padding: 10px 24px;">Save Profile</button>
-          <p class="auth-notice" id="profileNotice" style="display:none; margin-top: 12px;"></p>
+
+          <!-- Sub-View 2: Saved Favorites -->
+          <div id="accViewSaved" style="display:none;">
+            <div id="savedContainer">
+              <div class="empty-requests">Loading your saved recommendations…</div>
+            </div>
+          </div>
+
+          <!-- Sub-View 3: My Referrals -->
+          <div id="accViewReferrals" style="display:none;">
+            <div class="table-card">
+              <div id="referralsTableContainer">
+                <div class="empty-requests">Loading your referral suggestions…</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-View 4: Settings & Profile Details -->
+          <div id="accViewSettings" style="display:none;">
+            <div class="settings-card">
+              <div class="section-title">Profile & Neighborhood Preferences</div>
+              <form id="profileForm">
+                <div class="profile-grid">
+                  <div class="form-group">
+                    <label for="prof-name">Full Name</label>
+                    <input type="text" id="prof-name" placeholder="Full Name" />
+                  </div>
+                  <div class="form-group">
+                    <label for="prof-phone">Phone Number</label>
+                    <input type="tel" id="prof-phone" placeholder="Phone Number" />
+                  </div>
+                  <div class="form-group" style="grid-column: span 2;">
+                    <label for="prof-neighborhood">Primary Neighborhood</label>
+                    <select id="prof-neighborhood">
+                      <option value="onion-creek">Onion Creek</option>
+                      <option value="avery-ranch">Avery Ranch</option>
+                      <option value="circle-c">Circle C</option>
+                      <option value="sunfield">Sunfield, Buda</option>
+                    </select>
+                    <p class="field-hint">Setting your primary neighborhood highlights your local directory and community requests.</p>
+                  </div>
+                </div>
+                <button type="submit" class="btn-submit" id="updateProfileBtn" style="width: auto; padding: 12px 28px; margin-top:16px;">Save Profile Settings</button>
+                <p class="auth-notice" id="profileNotice" style="display:none; margin-top: 12px;"></p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Post New Service Request -->
+    <div id="userNewRequestModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+      <div style="max-width:500px; width:90%; padding:24px; background:white; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.15);">
+        <h3 style="margin-top:0; color:var(--color-primary); font-family:'EB Garamond', serif; font-size:1.5rem;">+ Post New Service Request</h3>
+        <form id="userNewRequestForm">
+          <div class="form-group">
+            <label for="usrReqNeighborhood">Neighborhood *</label>
+            <select id="usrReqNeighborhood" class="input" required style="margin-bottom:0;">
+              <option value="onion-creek">Onion Creek</option>
+              <option value="avery-ranch">Avery Ranch</option>
+              <option value="circle-c">Circle C</option>
+              <option value="sunfield">Sunfield, Buda</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="usrReqCategory">Service Category *</label>
+            <input type="text" id="usrReqCategory" class="input" required placeholder="e.g. Plumber, Electrician, Landscaping" />
+          </div>
+          <div class="form-group">
+            <label for="usrReqDate">Date Needed *</label>
+            <input type="date" id="usrReqDate" class="input" required />
+          </div>
+          <div class="form-group">
+            <label for="usrReqNotes">Details / Notes *</label>
+            <input type="text" id="usrReqNotes" class="input" required placeholder="Describe what help you need..." />
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
+            <button type="button" class="btn-logout" id="closeUserReqModalBtn" style="border-radius:8px;">Cancel</button>
+            <button type="submit" class="btn-submit" style="width:auto; margin-top:0; padding:8px 20px;">Submit Request</button>
+          </div>
         </form>
-
-        <div class="section-title">My Service Appointment Requests</div>
-        <div class="requests-card">
-          <div id="requestsTableContainer">
-            <div class="empty-requests">Loading your service requests…</div>
-          </div>
-        </div>
       </div>
     </div>
 

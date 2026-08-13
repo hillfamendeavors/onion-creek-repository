@@ -44,15 +44,18 @@ function showLogin() {
 }
 
 async function loadRequests() {
-  requestsBody.innerHTML = `<tr><td colspan="10">Loading…</td></tr>`;
+  requestsBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:#64748B;">Loading service requests…</td></tr>`;
   const { data, error } = await supabase.from('service_requests').select('*');
 
   if (error) {
-    requestsBody.innerHTML = `<tr><td colspan="10">Failed to load requests.</td></tr>`;
+    requestsBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:#DC2626;">Failed to load service requests.</td></tr>`;
     return;
   }
 
-  requests = data;
+  requests = data || [];
+  const reqCountEl = document.getElementById('requestsCount');
+  if (reqCountEl) reqCountEl.textContent = requests.length;
+
   populateFilterOptions();
   renderTable();
 }
@@ -61,9 +64,9 @@ function populateFilterOptions() {
   const neighborhoods = [...new Set(requests.map((r) => r.neighborhood))].sort();
   const categories = [...new Set(requests.map((r) => r.category))].sort();
 
-  filterNeighborhood.innerHTML = '<option value="">All neighborhoods</option>' +
+  filterNeighborhood.innerHTML = '<option value="">All Neighborhoods</option>' +
     neighborhoods.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
-  filterCategory.innerHTML = '<option value="">All categories</option>' +
+  filterCategory.innerHTML = '<option value="">All Categories</option>' +
     categories.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
 }
 
@@ -87,28 +90,49 @@ function renderTable() {
     th.querySelector('.arrow').textContent = active ? (sortDir === 'asc' ? '▲' : '▼') : '';
   });
 
+  const reqCountEl = document.getElementById('requestsCount');
+  if (reqCountEl) reqCountEl.textContent = filtered.length;
+
   if (filtered.length === 0) {
-    requestsBody.innerHTML = `<tr><td colspan="10">${requests.length === 0 ? 'No requests yet.' : 'No requests match the current filters.'}</td></tr>`;
+    requestsBody.innerHTML = `
+      <tr>
+        <td colspan="8">
+          <div class="table-empty-state">
+            <div class="table-empty-icon">📋</div>
+            <div class="table-empty-title">No service requests found</div>
+            <div class="table-empty-desc">${requests.length === 0 ? 'No service requests have been submitted yet.' : 'Try adjusting your neighborhood, category, or status filters.'}</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
   requestsBody.innerHTML = filtered.map((r) => `
     <tr data-id="${r.id}">
-      <td>${esc(new Date(r.created_at).toLocaleDateString())}</td>
-      <td>${esc(r.neighborhood)}</td>
-      <td>${esc(r.category)}</td>
-      <td>${esc(r.date_needed)}</td>
-      <td>${esc(r.name)}</td>
-      <td>${esc(r.phone)}</td>
-      <td>${esc(r.email)}</td>
-      <td>${esc(r.notes)}</td>
+      <td><span style="font-weight:500; font-size:0.85rem; color:#475569;">${esc(new Date(r.created_at).toLocaleDateString())}</span></td>
+      <td>
+        <div style="display:flex; gap:4px; flex-wrap:wrap;">
+          <span class="pill-tag neighborhood">${esc(r.neighborhood)}</span>
+          <span class="pill-tag category">${esc(r.category)}</span>
+        </div>
+      </td>
+      <td>
+        <div class="contact-cell">
+          <span class="contact-name">${esc(r.name)}</span>
+          <a href="mailto:${esc(r.email)}" class="contact-email">${esc(r.email)}</a>
+        </div>
+      </td>
+      <td><span class="contact-phone">${esc(r.phone)}</span></td>
+      <td><span style="font-weight:600; color:#334155; font-size:0.85rem;">${esc(r.date_needed)}</span></td>
+      <td><div class="notes-cell" title="${esc(r.notes)}">${esc(r.notes || '—')}</div></td>
       <td>
         <select class="status" data-id="${r.id}" data-value="${esc(r.status || 'new')}">
           ${STATUSES.map((s) => `<option value="${s}" ${s === r.status ? 'selected' : ''}>${s}</option>`).join('')}
         </select>
       </td>
-      <td>
-        <button class="btn-danger" data-id="${r.id}">Delete</button>
+      <td style="text-align:right;">
+        <button class="btn-action-danger btn-delete-request" data-id="${r.id}">Delete</button>
       </td>
     </tr>
   `).join('');
@@ -129,7 +153,7 @@ function renderTable() {
     });
   });
 
-  requestsBody.querySelectorAll('.btn-danger').forEach((btn) => {
+  requestsBody.querySelectorAll('.btn-delete-request').forEach((btn) => {
     btn.addEventListener('click', async () => {
       if (!(await confirmDialog('Delete this request permanently? This cannot be undone.'))) return;
       const { error } = await supabase.from('service_requests').delete().eq('id', btn.dataset.id);
@@ -255,22 +279,37 @@ function renderAdminsTable() {
   if (!adminsBody) return;
 
   if (adminUsers.length === 0) {
-    adminsBody.innerHTML = `<tr><td colspan="4">No admin accounts configured.</td></tr>`;
+    adminsBody.innerHTML = `
+      <tr>
+        <td colspan="4">
+          <div class="table-empty-state">
+            <div class="table-empty-icon">🛡️</div>
+            <div class="table-empty-title">No admin accounts configured</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
   adminsBody.innerHTML = adminUsers.map((a) => {
     const isSuper = SUPER_ADMINS.includes(a.email.toLowerCase());
-    const roleBadge = isSuper ? '<span style="background:#FEF3C7; color:#92400E; padding:2px 8px; border-radius:12px; font-weight:600; font-size:0.8rem;">Super Admin</span>' : '<span style="background:#D1FAE5; color:#065F46; padding:2px 8px; border-radius:12px; font-weight:600; font-size:0.8rem;">Admin</span>';
+    const roleBadge = isSuper
+      ? '<span class="pill-tag" style="background:#FEF3C7; color:#92400E; border-color:#FDE68A;">Super Admin</span>'
+      : '<span class="pill-tag" style="background:#D1FAE5; color:#065F46; border-color:#A7F3D0;">Admin</span>';
     const dateStr = a.created_at ? new Date(a.created_at).toLocaleDateString() : 'System';
 
     return `
       <tr data-email="${esc(a.email)}">
-        <td><strong>${esc(a.email)}</strong></td>
-        <td>${roleBadge}</td>
-        <td>${esc(dateStr)}</td>
         <td>
-          ${isSuper ? '<span style="color:#9CA3AF; font-size:0.85rem;">Protected</span>' : `<button class="btn-danger btn-revoke-admin" data-email="${esc(a.email)}">Revoke Role</button>`}
+          <div class="contact-cell">
+            <span class="contact-name">${esc(a.email)}</span>
+          </div>
+        </td>
+        <td>${roleBadge}</td>
+        <td><span style="font-size:0.85rem; color:#64748B;">${esc(dateStr)}</span></td>
+        <td style="text-align:right;">
+          ${isSuper ? '<span style="color:#94A3B8; font-size:0.8rem; font-weight:600;">Protected</span>' : `<button class="btn-action-danger btn-revoke-admin" data-email="${esc(a.email)}">Revoke Access</button>`}
         </td>
       </tr>
     `;
@@ -329,15 +368,18 @@ const REFERRAL_STATUSES = ['new', 'approved', 'rejected'];
 
 async function loadReferrals() {
   if (!referralsBody) return;
-  referralsBody.innerHTML = `<tr><td colspan="10">Loading referrals…</td></tr>`;
+  referralsBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:#64748B;">Loading referrals…</td></tr>`;
   const { data, error } = await supabase.from('referral_suggestions').select('*').order('created_at', { ascending: false });
 
   if (error) {
-    referralsBody.innerHTML = `<tr><td colspan="10">No referrals found or failed to load.</td></tr>`;
+    referralsBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:#DC2626;">Failed to load referrals: ${esc(error.message)}</td></tr>`;
     return;
   }
 
   referrals = data || [];
+  const refCountEl = document.getElementById('referralsCount');
+  if (refCountEl) refCountEl.textContent = referrals.length;
+
   populateReferralFilters();
   renderReferralsTable();
 }
@@ -345,7 +387,7 @@ async function loadReferrals() {
 function populateReferralFilters() {
   if (!filterRefNeighborhood) return;
   const neighborhoods = [...new Set(referrals.map((r) => r.neighborhood).filter(Boolean))].sort();
-  filterRefNeighborhood.innerHTML = '<option value="">All neighborhoods</option>' +
+  filterRefNeighborhood.innerHTML = '<option value="">All Neighborhoods</option>' +
     neighborhoods.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
 }
 
@@ -356,28 +398,49 @@ function renderReferralsTable() {
     (!filterRefStatus?.value || r.status === filterRefStatus.value)
   );
 
+  const refCountEl = document.getElementById('referralsCount');
+  if (refCountEl) refCountEl.textContent = filtered.length;
+
   if (filtered.length === 0) {
-    referralsBody.innerHTML = `<tr><td colspan="10">${referrals.length === 0 ? 'No referral suggestions yet.' : 'No referrals match current filters.'}</td></tr>`;
+    referralsBody.innerHTML = `
+      <tr>
+        <td colspan="8">
+          <div class="table-empty-state">
+            <div class="table-empty-icon">💡</div>
+            <div class="table-empty-title">No referral suggestions found</div>
+            <div class="table-empty-desc">${referrals.length === 0 ? 'No referral suggestions have been submitted yet.' : 'Try adjusting your filters.'}</div>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
   referralsBody.innerHTML = filtered.map((r) => `
     <tr data-id="${r.id}">
-      <td>${esc(new Date(r.created_at).toLocaleDateString())}</td>
-      <td>${esc(r.neighborhood || 'N/A')}</td>
-      <td><strong>${esc(r.name)}</strong></td>
-      <td>${esc(r.category || 'General')}</td>
-      <td>${esc(r.phone)}</td>
-      <td>${esc(r.referrer)}</td>
-      <td>${esc(r.referrer_email || '—')}</td>
-      <td>${esc(r.note)}</td>
+      <td><span style="font-weight:500; font-size:0.85rem; color:#475569;">${esc(new Date(r.created_at).toLocaleDateString())}</span></td>
+      <td><span class="contact-name">${esc(r.name)}</span></td>
+      <td>
+        <div style="display:flex; gap:4px; flex-wrap:wrap;">
+          <span class="pill-tag neighborhood">${esc(r.neighborhood || 'N/A')}</span>
+          <span class="pill-tag category">${esc(r.category || 'General')}</span>
+        </div>
+      </td>
+      <td><span class="contact-phone">${esc(r.phone)}</span></td>
+      <td>
+        <div class="contact-cell">
+          <span class="contact-name">${esc(r.referrer)}</span>
+          ${r.referrer_email ? `<a href="mailto:${esc(r.referrer_email)}" class="contact-email">${esc(r.referrer_email)}</a>` : '<span class="contact-email">—</span>'}
+        </div>
+      </td>
+      <td><div class="notes-cell" title="${esc(r.note)}">${esc(r.note || '—')}</div></td>
       <td>
         <select class="ref-status" data-id="${r.id}" data-value="${esc(r.status || 'new')}">
           ${REFERRAL_STATUSES.map((s) => `<option value="${s}" ${s === (r.status || 'new') ? 'selected' : ''}>${s}</option>`).join('')}
         </select>
       </td>
-      <td>
-        <button class="btn-danger btn-delete-ref" data-id="${r.id}">Delete</button>
+      <td style="text-align:right;">
+        <button class="btn-action-danger btn-delete-ref" data-id="${r.id}">Delete</button>
       </td>
     </tr>
   `).join('');
