@@ -1100,7 +1100,7 @@ button.calendar-cell:focus-visible {
   background: var(--white);
   color: #111827;
   border: 1px solid #E5E7EB;
-  border-left: 4px solid var(--masters-green);
+  border-left: 2px solid var(--masters-green);
   border-radius: 8px;
   padding: 14px 18px;
   font-size: 0.9rem;
