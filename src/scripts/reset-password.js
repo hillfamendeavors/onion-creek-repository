@@ -12,14 +12,24 @@ const resetErrorEl = document.getElementById('resetError');
 resetBtn.addEventListener('click', async () => {
   resetErrorEl.textContent = '';
 
+  if (newPasswordEl.value.length < 6) {
+    resetErrorEl.textContent = 'Password must be at least 6 characters.';
+    return;
+  }
   if (newPasswordEl.value !== confirmPasswordEl.value) {
     resetErrorEl.textContent = 'Passwords do not match.';
     return;
   }
 
+  resetBtn.disabled = true;
+  resetBtn.textContent = 'Setting password…';
+
   const { error } = await updatePassword(newPasswordEl.value);
+
   if (error) {
     resetErrorEl.textContent = error.message;
+    resetBtn.disabled = false;
+    resetBtn.textContent = 'Set Password';
     return;
   }
 
