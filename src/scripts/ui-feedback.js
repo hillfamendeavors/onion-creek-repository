@@ -1,3 +1,5 @@
+import { trapFocus, releaseFocus } from './modal-a11y.js';
+
 let activeToastTimer = null;
 
 export function showToast(message, isError = false) {
@@ -26,10 +28,14 @@ export function confirmDialog(message) {
 
     function cleanup(result) {
       dialog.style.display = 'none';
+      releaseFocus();
       yesBtn.removeEventListener('click', onYes);
       noBtn.removeEventListener('click', onNo);
       resolve(result);
     }
+
+    trapFocus(dialog, () => cleanup(false));
+
     function onYes() { cleanup(true); }
     function onNo() { cleanup(false); }
 

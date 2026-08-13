@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase.js';
 import { showToast, confirmDialog } from './ui-feedback.js';
+import { trapFocus, releaseFocus } from './modal-a11y.js';
 
 const NEIGHBORHOODS = [
   { slug: 'avery-ranch', name: 'Avery Ranch' },
@@ -364,13 +365,19 @@ const closeAddListingModalBtn = document.getElementById('closeAddListingModalBtn
 const addListingModal = document.getElementById('addListingModal');
 const addListingForm = document.getElementById('addListingForm');
 
+function closeAddListingModal() {
+  if (addListingModal) addListingModal.style.display = 'none';
+  releaseFocus();
+}
+
 openAddListingModalBtn?.addEventListener('click', () => {
-  if (addListingModal) addListingModal.style.display = 'flex';
+  if (addListingModal) {
+    addListingModal.style.display = 'flex';
+    trapFocus(addListingModal, closeAddListingModal);
+  }
 });
 
-closeAddListingModalBtn?.addEventListener('click', () => {
-  if (addListingModal) addListingModal.style.display = 'none';
-});
+closeAddListingModalBtn?.addEventListener('click', closeAddListingModal);
 
 addListingForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -407,7 +414,7 @@ addListingForm?.addEventListener('submit', async (e) => {
   if (data) {
     allListings.unshift(data);
   }
-  if (addListingModal) addListingModal.style.display = 'none';
+  closeAddListingModal();
   addListingForm.reset();
   renderListingsTable();
   triggerRebuild();

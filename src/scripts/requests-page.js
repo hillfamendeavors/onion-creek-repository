@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase.js';
 import { getSession } from '../lib/auth.js';
 import { getMonthMatrix, aggregateRequests } from '../lib/calendar.js';
+import { trapFocus, releaseFocus } from './modal-a11y.js';
 
 const main = document.querySelector('main[data-neighborhood]');
 const neighborhood = main?.dataset?.neighborhood || '';
@@ -98,6 +99,7 @@ todayBtn?.addEventListener('click', () => {
 // Modal Logic
 function closeModal() {
   if (requestDetailModal) requestDetailModal.style.display = 'none';
+  releaseFocus();
 }
 
 closeDetailModalBtn?.addEventListener('click', closeModal);
@@ -167,6 +169,7 @@ function openDetailModal(dateStr, dateData) {
   }
 
   requestDetailModal.style.display = 'flex';
+  trapFocus(requestDetailModal, closeModal);
 }
 
 // Render Calendar Grid
