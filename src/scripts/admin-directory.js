@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase.js';
+import { showToast, confirmDialog } from './ui-feedback.js';
 
 const NEIGHBORHOODS = [
   { slug: 'avery-ranch', name: 'Avery Ranch' },
@@ -11,6 +12,7 @@ let groups = [];
 let subcategories = [];
 let neighborhoodSubcats = [];
 let loaded = false;
+let editingGroupId = null;
 
 function esc(str) {
   const div = document.createElement('div');
@@ -55,13 +57,26 @@ function renderGroups() {
   const el = document.getElementById('groupsList');
   el.innerHTML = groups.map((g) => `
     <div class="dir-group" data-id="${g.id}">
-      <h3>
-        <span>${esc(g.icon)} ${esc(g.label)} <small>(${esc(g.slug)})</small></span>
-        <span>
-          <button class="icon-btn edit-group" data-id="${g.id}">Edit</button>
-          <button class="icon-btn danger delete-group" data-id="${g.id}">Delete</button>
-        </span>
-      </h3>
+      ${editingGroupId === g.id ? `
+        <h3>
+          <span style="display:flex; gap:8px; align-items:center; flex:1;">
+            <input type="text" class="input edit-group-icon" value="${esc(g.icon)}" style="width:60px; margin-bottom:0;" />
+            <input type="text" class="input edit-group-label" value="${esc(g.label)}" style="flex:1; margin-bottom:0;" />
+          </span>
+          <span>
+            <button class="icon-btn save-group" data-id="${g.id}">Save</button>
+            <button class="icon-btn cancel-edit-group" data-id="${g.id}">Cancel</button>
+          </span>
+        </h3>
+      ` : `
+        <h3>
+          <span>${esc(g.icon)} ${esc(g.label)} <small>(${esc(g.slug)})</small></span>
+          <span>
+            <button class="icon-btn edit-group" data-id="${g.id}">Edit</button>
+            <button class="icon-btn danger delete-group" data-id="${g.id}">Delete</button>
+          </span>
+        </h3>
+      `}
       ${subcategories.filter((s) => s.group_id === g.id).map((s) => renderSubcatRow(s)).join('')}
       <div class="dir-row">
         <input type="text" class="input new-subcat-name" placeholder="New subcategory name" data-group-id="${g.id}" />
@@ -100,13 +115,28 @@ function renderSubcatRow(s) {
 
 function wireGroupHandlers() {
   document.getElementById('groupsList').querySelectorAll('.edit-group').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      editingGroupId = Number(btn.dataset.id);
+      renderGroups();
+    });
+  });
+
+  document.getElementById('groupsList').querySelectorAll('.cancel-edit-group').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      editingGroupId = null;
+      renderGroups();
+    });
+  });
+
+  document.getElementById('groupsList').querySelectorAll('.save-group').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const g = groups.find((x) => x.id === Number(btn.dataset.id));
-      const label = prompt('Group label:', g.label);
-      if (label === null) return;
-      const icon = prompt('Group icon:', g.icon) ?? g.icon;
-      const { error } = await supabase.from('groups').update({ label, icon }).eq('id', g.id);
-      if (error) { alert('Failed to update group.'); return; }
+      const row = btn.closest('.dir-group');
+      const label = row.querySelector('.edit-group-label').value.trim();
+      const icon = row.querySelector('.edit-group-icon').value.trim();
+      if (!label) { showToast('Group label cannot be empty.', true); return; }
+      const { error } = await supabase.from('groups').update({ label, icon }).eq('id', Number(btn.dataset.id));
+      if (error) { showToast('Failed to update group.', true); return; }
+      editingGroupId = null;
       await loadDirectoryData();
       renderGroups();
       triggerRebuild();
@@ -115,9 +145,9 @@ function wireGroupHandlers() {
 
   document.getElementById('groupsList').querySelectorAll('.delete-group').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Delete this group and every subcategory/listing under it? This cannot be undone.')) return;
+      if (!(await confirmDialog('Delete this group and every subcategory/listing under it? This cannot be undone.'))) return;
       const { error } = await supabase.from('groups').delete().eq('id', Number(btn.dataset.id));
-      if (error) { alert('Failed to delete group.'); return; }
+      if (error) { showToast('Failed to delete group.', true); return; }
       await loadDirectoryData();
       renderGroups();
       triggerRebuild();
@@ -130,7 +160,7 @@ function wireGroupHandlers() {
       const name = input.value.trim();
       if (!name) return;
       const { error } = await supabase.from('subcategories').insert({ group_id: Number(btn.dataset.groupId), name });
-      if (error) { alert('Failed to add subcategory.'); return; }
+      if (error) { showToast('Failed to add subcategory.', true); return; }
       await loadDirectoryData();
       renderGroups();
       triggerRebuild();
@@ -139,9 +169,9 @@ function wireGroupHandlers() {
 
   document.getElementById('groupsList').querySelectorAll('.delete-subcat').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Delete this subcategory and every listing under it? This cannot be undone.')) return;
+      if (!(await confirmDialog('Delete this subcategory and every listing under it? This cannot be undone.'))) return;
       const { error } = await supabase.from('subcategories').delete().eq('id', Number(btn.dataset.id));
-      if (error) { alert('Failed to delete subcategory.'); return; }
+      if (error) { showToast('Failed to delete subcategory.', true); return; }
       await loadDirectoryData();
       renderGroups();
       triggerRebuild();
@@ -155,7 +185,7 @@ function wireGroupHandlers() {
       const { error } = box.checked
         ? await supabase.from('neighborhood_subcategories').insert({ subcategory_id, neighborhood_slug })
         : await supabase.from('neighborhood_subcategories').delete().eq('subcategory_id', subcategory_id).eq('neighborhood_slug', neighborhood_slug);
-      if (error) { alert('Failed to update.'); box.checked = !box.checked; return; }
+      if (error) { showToast('Failed to update.', true); box.checked = !box.checked; return; }
       await loadDirectoryData();
       triggerRebuild();
     });
@@ -166,9 +196,9 @@ document.getElementById('addGroupBtn')?.addEventListener('click', async () => {
   const slug = document.getElementById('newGroupSlug')?.value?.trim();
   const label = document.getElementById('newGroupLabel')?.value?.trim();
   const icon = document.getElementById('newGroupIcon')?.value?.trim();
-  if (!slug || !label) { alert('Slug and label are required.'); return; }
+  if (!slug || !label) { showToast('Slug and label are required.', true); return; }
   const { error } = await supabase.from('groups').insert({ slug, label, icon, sort_order: groups.length });
-  if (error) { alert('Failed to add group. Slug may already be in use.'); return; }
+  if (error) { showToast('Failed to add group. Slug may already be in use.', true); return; }
   await loadDirectoryData();
   renderGroups();
   triggerRebuild();
@@ -309,10 +339,10 @@ function renderListingsTable() {
   listingsBody.querySelectorAll('.btn-delete-listing').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const id = Number(btn.dataset.id);
-      if (!confirm('Delete this business listing permanently?')) return;
+      if (!(await confirmDialog('Delete this business listing permanently?'))) return;
       const { error } = await supabase.from('listings').delete().eq('id', id);
       if (error) {
-        alert('Failed to delete listing: ' + error.message);
+        showToast('Failed to delete listing: ' + error.message, true);
         return;
       }
       allListings = allListings.filter((l) => l.id !== id);
@@ -354,7 +384,7 @@ addListingForm?.addEventListener('submit', async (e) => {
   const featured = document.getElementById('addListFeatured')?.checked || false;
 
   if (!name || !phone || !subcategory_id || !neighborhood_slug) {
-    alert('Please complete all required fields.');
+    showToast('Please complete all required fields.', true);
     return;
   }
 
@@ -370,7 +400,7 @@ addListingForm?.addEventListener('submit', async (e) => {
   }).select('*').single();
 
   if (error) {
-    alert('Failed to add business listing: ' + error.message);
+    showToast('Failed to add business listing: ' + error.message, true);
     return;
   }
 
