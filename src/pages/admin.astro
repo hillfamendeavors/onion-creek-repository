@@ -126,8 +126,9 @@ if (accessToken) {
       }
       .btn-secondary:hover { background: #E5E7EB; }
 
-      .tabs-container { margin-bottom: var(--space-xl); border-bottom: 1px solid var(--color-border); padding-bottom: 0; }
-      .tabs, .dir-subtabs { display: flex; gap: var(--space-md); }
+      .tabs-container { margin-bottom: var(--space-xl); border-bottom: 1px solid var(--color-border); padding-bottom: 0; overflow-x: auto; }
+      .tabs, .dir-subtabs { display: flex; gap: var(--space-md); flex-wrap: nowrap; }
+      .tab-btn { white-space: nowrap; }
       
       .tab-btn {
         padding: 12px 20px; border: none; background: transparent; color: #6B7280;
