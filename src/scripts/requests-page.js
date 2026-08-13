@@ -179,6 +179,7 @@ function renderCalendar() {
   calendarGrid.innerHTML = days.map((day) => {
     const dayData = groupedMap[day.dateStr];
     const totalCount = dayData ? dayData.totalCount : 0;
+    const isInteractive = totalCount > 0;
 
     let demandHTML = '';
     if (dayData && dayData.categories) {
@@ -190,8 +191,13 @@ function renderCalendar() {
       `).join('');
     }
 
+    const cellTag = isInteractive ? 'button' : 'div';
+    const cellAttrs = isInteractive
+      ? `type="button" class="calendar-cell ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isToday ? 'today' : ''}" data-date="${day.dateStr}"`
+      : `class="calendar-cell not-interactive ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isToday ? 'today' : ''}" data-date="${day.dateStr}"`;
+
     return `
-      <div class="calendar-cell ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isToday ? 'today' : ''}" data-date="${day.dateStr}">
+      <${cellTag} ${cellAttrs}>
         <div class="cell-top">
           <span class="date-num">${day.dayNumber}</span>
           ${totalCount > 0 ? `<span class="cell-count-badge">${totalCount}</span>` : ''}
@@ -199,17 +205,15 @@ function renderCalendar() {
         <div class="cell-demand-list">
           ${demandHTML}
         </div>
-      </div>
+      </${cellTag}>
     `;
   }).join('');
 
   // Add Cell Click Event Listeners
-  calendarGrid.querySelectorAll('.calendar-cell').forEach((cell) => {
+  calendarGrid.querySelectorAll('button.calendar-cell').forEach((cell) => {
     const dateStr = cell.dataset.date;
     const dateData = groupedMap[dateStr];
-    if (dateData && dateData.totalCount > 0) {
-      cell.addEventListener('click', () => openDetailModal(dateStr, dateData));
-    }
+    cell.addEventListener('click', () => openDetailModal(dateStr, dateData));
   });
 }
 
