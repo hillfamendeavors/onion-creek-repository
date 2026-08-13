@@ -188,23 +188,28 @@ if (appView) {
   loadReferrals();
 }
 
+const tabOverviewBtn = document.getElementById('tabOverviewBtn');
 const tabRequestsBtn = document.getElementById('tabRequestsBtn');
 const tabReferralsBtn = document.getElementById('tabReferralsBtn');
 const tabUsersBtn = document.getElementById('tabUsersBtn');
 const tabRolesBtn = document.getElementById('tabRolesBtn');
 const tabDirectoryBtn = document.getElementById('tabDirectoryBtn');
 
-const ALL_TABS = [tabRequestsBtn, tabReferralsBtn, tabUsersBtn, tabRolesBtn, tabDirectoryBtn];
+const ALL_TABS = [tabOverviewBtn, tabRequestsBtn, tabReferralsBtn, tabUsersBtn, tabRolesBtn, tabDirectoryBtn];
 
 function switchTab(activeBtn, targetId) {
   ALL_TABS.forEach((btn) => btn?.classList.remove('active'));
-  ['tab-requests', 'tab-referrals', 'tab-users', 'tab-roles', 'tab-directory'].forEach((id) => {
+  ['tab-overview', 'tab-requests', 'tab-referrals', 'tab-users', 'tab-roles', 'tab-directory'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.style.display = id === targetId ? 'block' : 'none';
   });
   activeBtn?.classList.add('active');
 }
 
+tabOverviewBtn?.addEventListener('click', () => {
+  switchTab(tabOverviewBtn, 'tab-overview');
+  window.dispatchEvent(new Event('overview-tab-shown'));
+});
 tabRequestsBtn?.addEventListener('click', () => switchTab(tabRequestsBtn, 'tab-requests'));
 tabReferralsBtn?.addEventListener('click', () => {
   switchTab(tabReferralsBtn, 'tab-referrals');
