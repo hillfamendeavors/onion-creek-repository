@@ -30,6 +30,7 @@ const regName = document.getElementById('reg-name');
 const regEmail = document.getElementById('reg-email');
 const regPhone = document.getElementById('reg-phone');
 const regPassword = document.getElementById('reg-password');
+const regPasswordConfirm = document.getElementById('reg-password-confirm');
 const registerSubmitBtn = document.getElementById('registerSubmitBtn');
 
 // Inputs & Buttons - Reset
@@ -139,6 +140,10 @@ registerSubmitBtn?.addEventListener('click', () => withButtonLock(registerSubmit
     authError.textContent = 'Password must be at least 6 characters.';
     return;
   }
+  if (password !== regPasswordConfirm.value) {
+    authError.textContent = 'Passwords do not match.';
+    return;
+  }
 
   const { data, error } = await signUp(email, password, { full_name: name, phone });
   if (error) {
@@ -187,11 +192,18 @@ profileForm?.addEventListener('submit', async (e) => {
 
     const { error } = await updateProfile({ full_name: name, phone });
     if (error) {
-      alert('Failed to update profile: ' + error.message);
+      profileNotice.textContent = 'Failed to update profile: ' + error.message;
+      profileNotice.style.color = '#DC2626';
+      profileNotice.style.background = '#FEF2F2';
+      profileNotice.style.borderColor = '#FECACA';
+      profileNotice.style.display = 'block';
       return;
     }
 
     profileNotice.textContent = 'Profile details updated successfully!';
+    profileNotice.style.color = '';
+    profileNotice.style.background = '';
+    profileNotice.style.borderColor = '';
     profileNotice.style.display = 'block';
     if (profileDisplayName) profileDisplayName.textContent = name || 'Neighbor';
     if (userAvatar) userAvatar.textContent = (name || 'N')[0].toUpperCase();
@@ -277,7 +289,11 @@ async function loadUserServiceRequests(userEmail) {
         .eq('email', userEmail);
 
       if (error) {
-        alert('Failed to update status: ' + error.message);
+        profileNotice.textContent = 'Failed to update status: ' + error.message;
+        profileNotice.style.color = '#DC2626';
+        profileNotice.style.background = '#FEF2F2';
+        profileNotice.style.borderColor = '#FECACA';
+        profileNotice.style.display = 'block';
         btn.disabled = false;
         btn.textContent = currentStatus === 'closed' ? '↺ Reopen' : '✓ Mark Completed';
         return;
@@ -323,6 +339,7 @@ async function initPage() {
     if (mainContainer) mainContainer.classList.remove('wide');
     if (authFormCard) authFormCard.style.display = 'block';
     if (profileCard) profileCard.style.display = 'none';
+    clearMessages();
   }
 }
 

@@ -151,6 +151,11 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
         border-color: var(--color-primary);
         box-shadow: 0 0 0 3px var(--color-ring);
       }
+      .field-hint {
+        font-size: 0.8rem;
+        color: var(--color-text-muted);
+        margin: 6px 0 0 0;
+      }
 
       .btn-submit {
         width: 100%;
@@ -403,6 +408,11 @@ const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).jo
           <div class="form-group">
             <label for="reg-password">Password *</label>
             <input type="password" id="reg-password" placeholder="At least 6 characters" autocomplete="new-password" />
+            <p class="field-hint">Must be at least 6 characters.</p>
+          </div>
+          <div class="form-group">
+            <label for="reg-password-confirm">Confirm Password *</label>
+            <input type="password" id="reg-password-confirm" placeholder="Re-enter your password" autocomplete="new-password" />
           </div>
           <button class="btn-submit" id="registerSubmitBtn">Create Account</button>
         </div>
