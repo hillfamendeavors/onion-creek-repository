@@ -152,6 +152,12 @@ if (accessToken) {
 
       .sidebar-logout { margin-top: var(--space-md); }
 
+      .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
+      @media (max-width: 640px) { .stat-grid { grid-template-columns: 1fr; } }
+      .stat-card { padding: var(--space-xl); text-align: center; }
+      .stat-value { font-family: 'EB Garamond', serif; font-size: 2.75rem; font-weight: 600; color: var(--color-primary); line-height: 1; }
+      .stat-label { margin-top: var(--space-sm); font-size: 0.85rem; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
       .main-area { flex: 1; min-width: 0; }
 
       @media (max-width: 768px) {
@@ -275,7 +281,8 @@ if (accessToken) {
         <aside class="sidebar">
           <div class="sidebar-brand">Trusted Neighbors <span style="color:var(--color-accent)">Operations</span></div>
           <nav class="sidebar-nav">
-            <button class="sidebar-link active" id="tabRequestsBtn">Service Requests</button>
+            <button class="sidebar-link active" id="tabOverviewBtn">Overview</button>
+            <button class="sidebar-link" id="tabRequestsBtn">Service Requests</button>
             <button class="sidebar-link" id="tabReferralsBtn">Referral Suggestions</button>
             <button class="sidebar-link" id="tabUsersBtn">Users</button>
             <button class="sidebar-link" id="tabRolesBtn">Admin Roles</button>
@@ -286,7 +293,24 @@ if (accessToken) {
 
         <div class="main-area">
         <div class="container">
-          <div id="tab-requests">
+          <div id="tab-overview">
+            <div class="stat-grid">
+              <div class="card stat-card">
+                <div class="stat-value" id="statUsers">—</div>
+                <div class="stat-label">Registered Users</div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-value" id="statOpenRequests">—</div>
+                <div class="stat-label">Open Service Requests</div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-value" id="statPendingReferrals">—</div>
+                <div class="stat-label">Pending Referral Suggestions</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-requests" style="display:none;">
             <div class="filters">
               <select id="filterNeighborhood" class="select-input"><option value="">All Neighborhoods</option></select>
               <select id="filterCategory" class="select-input"><option value="">All Categories</option></select>
