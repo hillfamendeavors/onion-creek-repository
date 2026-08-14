@@ -12,13 +12,17 @@ async function loadOverview() {
     supabase.from('referral_suggestions').select('*', { count: 'exact', head: true }).eq('status', 'new'),
   ]);
 
-  statUsers.textContent = usersRes.count ?? '—';
-  statOpenRequests.textContent = requestsRes.count ?? '—';
-  statPendingReferrals.textContent = referralsRes.count ?? '—';
+  statUsers.textContent = usersRes.count ?? '0';
+  statOpenRequests.textContent = requestsRes.count ?? '0';
+  statPendingReferrals.textContent = referralsRes.count ?? '0';
 }
 
-window.addEventListener('overview-tab-shown', loadOverview);
-
-if (document.getElementById('appView')) {
-  loadOverview();
+function initOverview() {
+  if (document.getElementById('statUsers')) {
+    loadOverview();
+  }
 }
+
+document.addEventListener('astro:page-load', initOverview);
+window.addEventListener('admin-auth-verified', initOverview);
+initOverview();

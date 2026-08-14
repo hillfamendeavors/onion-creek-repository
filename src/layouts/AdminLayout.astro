@@ -1,0 +1,916 @@
+---
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title: string;
+  activeTab: 'overview' | 'requests' | 'referrals' | 'users' | 'roles' | 'directory';
+}
+
+const { title, activeTab } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} — Trusted Neighbors</title>
+    <ClientRouter />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/favicon.svg" type="image/svg+xml" />
+    <style is:global>
+      :root {
+        --color-primary: #064E3B;
+        --color-primary-hover: #04382A;
+        --color-accent: #D97706;
+        --color-accent-hover: #B45309;
+        --color-background: #F8FAFC;
+        --color-foreground: #0F172A;
+        --color-muted: #F1F5F9;
+        --color-border: #E2E8F0;
+        --color-ring: rgba(6, 78, 59, 0.2);
+        --color-destructive: #DC2626;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        font-family: 'Source Sans 3', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: var(--color-background);
+        color: var(--color-foreground);
+        line-height: 1.5;
+        min-height: 100vh;
+      }
+
+      h1, h2, h3, h4, h5, h6, .admin-brand-title {
+        font-family: 'EB Garamond', serif;
+      }
+
+      th, .btn-primary, .btn-secondary, .admin-nav-link {
+        font-family: 'Source Sans 3', sans-serif;
+      }
+
+      /* ── Input & Form Elements ── */
+      .admin-input {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 14px;
+        background: #FFFFFF;
+        color: var(--color-foreground);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        font-size: 0.925rem;
+        transition: all 150ms ease;
+        font-family: 'Source Sans 3', sans-serif;
+      }
+      .admin-input:focus {
+        border-color: var(--color-primary);
+        outline: none;
+        box-shadow: 0 0 0 3px var(--color-ring);
+      }
+
+      .admin-select {
+        padding: 9px 32px 9px 12px;
+        background-color: #FFFFFF;
+        color: var(--color-foreground);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 150ms ease;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 14px;
+      }
+      .admin-select:focus {
+        border-color: var(--color-primary);
+        outline: none;
+        box-shadow: 0 0 0 3px var(--color-ring);
+      }
+
+      .btn-primary {
+        background: var(--color-primary);
+        color: #FFFFFF;
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 150ms ease;
+        cursor: pointer;
+        border: none;
+        font-size: 0.88rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-decoration: none;
+      }
+      .btn-primary:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
+
+      .btn-secondary {
+        background: #FFFFFF;
+        color: #334155;
+        border: 1px solid var(--color-border);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 150ms ease;
+        cursor: pointer;
+        font-size: 0.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+      }
+      .btn-secondary:hover { background: #F8FAFC; border-color: #CBD5E1; color: #0F172A; }
+      .btn-secondary.active { background: #F1F5F9; border-color: #94A3B8; color: #0F172A; }
+
+      /* ── Shell & Sidebar Layout ── */
+      .admin-shell {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .admin-sidebar {
+        width: 250px;
+        flex-shrink: 0;
+        background: #FFFFFF;
+        border-right: 1px solid var(--color-border);
+        display: flex;
+        flex-direction: column;
+        padding: 24px 16px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        max-height: 100vh;
+        overflow-y: auto;
+        z-index: 100;
+      }
+
+      .admin-sidebar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .admin-sidebar::-webkit-scrollbar-thumb {
+        background: #E2E8F0;
+        border-radius: 4px;
+      }
+
+      .admin-brand {
+        display: flex;
+        flex-direction: column;
+        padding: 0 8px 20px;
+        border-bottom: 1px solid var(--color-border);
+        margin-bottom: 16px;
+        text-decoration: none;
+      }
+      .admin-brand-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--color-primary);
+        line-height: 1.2;
+      }
+      .admin-brand-sub {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-accent);
+        margin-top: 2px;
+      }
+
+      .admin-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+      }
+
+      .admin-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #475569;
+        font-size: 0.92rem;
+        font-weight: 600;
+        transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+      }
+      .admin-nav-link:hover {
+        background: #F1F5F9;
+        color: #0F172A;
+        transform: translateX(2px);
+      }
+      .admin-nav-link.active {
+        background: var(--color-primary);
+        color: #FFFFFF;
+        box-shadow: 0 2px 6px rgba(6, 78, 59, 0.25);
+      }
+      .admin-nav-link.active::before {
+        content: '';
+        position: absolute;
+        left: -16px;
+        top: 6px;
+        bottom: 6px;
+        width: 4px;
+        background: var(--color-primary);
+        border-radius: 0 4px 4px 0;
+      }
+      .admin-nav-link .nav-icon {
+        font-size: 1.15rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .admin-user-card {
+        padding: 14px 16px;
+        background: #F8FAFC;
+        border: 1px solid var(--color-border);
+        border-radius: 10px;
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .admin-user-info {
+        font-size: 0.82rem;
+        color: #475569;
+        word-break: break-all;
+        font-weight: 500;
+      }
+      .admin-user-role {
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-primary);
+      }
+
+      .admin-main {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .admin-topbar {
+        background: #FFFFFF;
+        border-bottom: 1px solid var(--color-border);
+        padding: 18px 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .admin-topbar-title-group h1 {
+        font-size: 1.65rem;
+        font-weight: 700;
+        margin: 0;
+        color: #0F172A;
+        font-family: 'Source Serif 4', Georgia, serif;
+        letter-spacing: -0.01em;
+      }
+      .admin-topbar-title-group p {
+        margin: 3px 0 0 0;
+        font-size: 0.85rem;
+        color: #64748B;
+        font-weight: 500;
+      }
+
+      .admin-content-container {
+        padding: 28px 32px;
+        max-width: 1540px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      /* ── Modern Card & Table Design ── */
+      .admin-card {
+        background: #FFFFFF;
+        border-radius: 12px;
+        border: 1px solid var(--color-border);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.02);
+        overflow: hidden;
+      }
+
+      .admin-table-container {
+        overflow-x: auto;
+      }
+
+      .admin-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.88rem;
+        text-align: left;
+      }
+
+      .admin-table th {
+        color: #475569;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        padding: 14px 18px;
+        border-bottom: 1px solid #E2E8F0;
+        white-space: nowrap;
+      }
+
+      .admin-table td {
+        padding: 14px 18px;
+        border-bottom: 1px solid #F1F5F9;
+        vertical-align: middle;
+        color: #1E293B;
+      }
+
+      .admin-table tr:last-child td { border-bottom: none; }
+      .admin-table tr:nth-child(even) { background: #FCFDFD; }
+      .admin-table tr:hover td { background: #F1F5F9; }
+
+      /* ── Modern UI Components ── */
+      .avatar-chip {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #EEF2FF;
+        color: #4338CA;
+        font-weight: 700;
+        font-size: 0.78rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1px solid #C7D2FE;
+      }
+
+      .pill-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+      }
+      .pill-tag.neighborhood { background: #EDF3EC; color: #346538; border: 1px solid #D5E4D4; }
+      .pill-tag.category { background: #E1F3FE; color: #1F6C9F; border: 1px solid #C6E7FD; }
+      .pill-tag.featured { background: #FBF3DB; color: #956400; border: 1px solid #F6E5B8; }
+      .pill-tag.danger { background: #FDEBEC; color: #9F2F2D; border: 1px solid #F9D0D2; }
+
+      /* ── Minimalist Segmented Control Bar ── */
+      .segmented-bar {
+        display: inline-flex;
+        background: #F4F4F5;
+        padding: 4px;
+        border-radius: 8px;
+        border: 1px solid #E4E4E7;
+        gap: 3px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      .segmented-item {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #52525B;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.15s ease;
+        text-decoration: none;
+      }
+
+      .segmented-item:hover:not(.active) {
+        background: #E4E4E7;
+        color: #18181B;
+      }
+
+      .segmented-item.active {
+        background: var(--color-primary);
+        color: #FFFFFF;
+        box-shadow: 0 2px 4px rgba(6, 78, 59, 0.25);
+      }
+
+      .segmented-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 1px 7px;
+        border-radius: 9999px;
+        background: #E2E8F0;
+        color: #475569;
+      }
+
+      .segmented-item.active .segmented-badge {
+        background: rgba(255, 255, 255, 0.25);
+        color: #FFFFFF;
+      }
+
+      /* ── Grouped Category Directory CMS Styles ── */
+      .group-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.02);
+        transition: all 150ms ease;
+      }
+
+      .group-card:hover {
+        border-color: #CBD5E1;
+      }
+
+      .group-card-header {
+        background: #F8FAFC;
+        padding: 14px 20px;
+        border-bottom: 1px solid #E2E8F0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+        transition: background 150ms ease;
+      }
+
+      .group-card-header:hover {
+        background: #F1F5F9;
+      }
+
+      .group-card-header h3 {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #0F172A;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .subcat-block {
+        padding: 20px 24px;
+        border-bottom: 1px solid #F1F5F9;
+      }
+
+      .subcat-block:last-child {
+        border-bottom: none;
+      }
+
+      .subcat-header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+
+      .subcat-title {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: #1E293B;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .date-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #334155;
+        white-space: nowrap;
+      }
+      .date-chip.past { background: #FEF3C7; border-color: #FDE68A; color: #92400E; }
+
+      select.admin-status-select {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 6px 26px 6px 12px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 150ms ease;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 12px;
+      }
+      select.admin-status-select[data-value="new"] { background-color: #FEF3C7; color: #92400E; border-color: #FDE68A; }
+      select.admin-status-select[data-value="contacted"] { background-color: #D1FAE5; color: #065F46; border-color: #A7F3D0; }
+      select.admin-status-select[data-value="completed"] { background-color: #EEF2FF; color: #4338CA; border-color: #C7D2FE; }
+      select.admin-status-select[data-value="closed"] { background-color: #F1F5F9; color: #64748B; border-color: #CBD5E1; }
+
+      .btn-action-edit {
+        padding: 5px 11px;
+        border: 1px solid #BFDBFE;
+        background: #EFF6FF;
+        color: #1D4ED8;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.78rem;
+        font-weight: 600;
+        transition: all 150ms ease;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .btn-action-edit:hover { background: #1D4ED8; color: #FFFFFF; border-color: #1D4ED8; }
+
+      .btn-action-danger {
+        padding: 5px 11px;
+        border: 1px solid #FECACA;
+        background: #FEF2F2;
+        color: #DC2626;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.78rem;
+        font-weight: 600;
+        transition: all 150ms ease;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .btn-action-danger:hover { background: #DC2626; color: #FFFFFF; border-color: #DC2626; }
+
+      /* ── KPI Stats Bar ── */
+      .admin-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .admin-kpi-card {
+        background: #FFFFFF;
+        border: 1px solid var(--color-border);
+        border-radius: 10px;
+        padding: 16px 20px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .admin-kpi-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+      }
+      .admin-kpi-val {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--color-foreground);
+        line-height: 1;
+      }
+      .admin-kpi-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748B;
+        margin-top: 4px;
+      }
+
+      /* ── Modern Filter Bar ── */
+      .admin-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+      .admin-search-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 260px;
+        max-width: 400px;
+      }
+      .admin-search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94A3B8;
+        font-size: 0.95rem;
+        pointer-events: none;
+      }
+      .admin-search-input {
+        padding-left: 36px !important;
+      }
+
+      /* ── Login Overlay ── */
+      #adminLoginOverlay {
+        position: fixed;
+        inset: 0;
+        background: #F8FAFC;
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .admin-login-box {
+        width: 100%;
+        max-width: 400px;
+        background: #FFFFFF;
+        border: 1px solid var(--color-border);
+        border-radius: 16px;
+        padding: 36px 32px;
+        box-shadow: var(--shadow-lg);
+        text-align: center;
+      }
+
+      /* Responsive */
+      @media (max-width: 860px) {
+        .admin-shell { flex-direction: column; }
+        .admin-sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--color-border);
+          padding: 12px 16px;
+          position: relative;
+          height: auto;
+          max-height: none;
+          overflow-y: visible;
+        }
+        .admin-nav {
+          flex-direction: row;
+          overflow-x: auto;
+          gap: 4px;
+        }
+        .admin-nav-link { white-space: nowrap; font-size: 0.85rem; padding: 8px 12px; }
+        .admin-topbar { padding: 16px; }
+        .admin-content-container { padding: 16px; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Login View (Shown if unauthenticated) -->
+    <div id="adminLoginOverlay" style="display:none;">
+      <div class="admin-login-box">
+        <h2 style="margin: 0 0 6px 0; color: var(--color-primary); font-size: 1.75rem;">Trusted Neighbors</h2>
+        <p style="margin: 0 0 24px 0; color: #64748B; font-size: 0.88rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Operations Portal</p>
+        
+        <form id="adminLoginForm">
+          <div style="text-align: left; margin-bottom: 14px;">
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">Admin Email</label>
+            <input type="email" id="adminLoginEmail" class="admin-input" required placeholder="admin@trustedneighbors.net" autocomplete="username" />
+          </div>
+          <div style="text-align: left; margin-bottom: 20px;">
+            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">Password</label>
+            <input type="password" id="adminLoginPassword" class="admin-input" required placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <button type="submit" id="adminLoginBtn" class="btn-primary" style="width: 100%; padding: 12px; font-size: 0.95rem;">
+            Authenticate as Admin
+          </button>
+          <p id="adminLoginError" style="color: var(--color-destructive); font-size: 0.85rem; min-height: 1.2em; margin: 12px 0 0 0;"></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Admin App Shell -->
+    <div id="adminAppShell" class="admin-shell" style="display:none;">
+      <!-- Persistent Sidebar -->
+      <aside class="admin-sidebar" transition:persist="admin-sidebar" id="adminSidebar">
+        <a href="/admin/" class="admin-brand">
+          <span class="admin-brand-title">Trusted Neighbors</span>
+          <span class="admin-brand-sub">Operations</span>
+        </a>
+
+        <nav class="admin-nav">
+          <a href="/admin/" class={`admin-nav-link ${activeTab === 'overview' ? 'active' : ''}`}>
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+            </span>
+            <span>Overview</span>
+          </a>
+          <a href="/admin/requests/" class={`admin-nav-link ${activeTab === 'requests' ? 'active' : ''}`}>
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+            </span>
+            <span>Service Requests</span>
+          </a>
+          <a href="/admin/referrals/" class={`admin-nav-link ${activeTab === 'referrals' ? 'active' : ''}`}>
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+            </span>
+            <span>Referrals</span>
+          </a>
+          <a href="/admin/users/" class={`admin-nav-link ${activeTab === 'users' ? 'active' : ''}`}>
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </span>
+            <span>Users</span>
+          </a>
+          <a href="/admin/roles/" class={`admin-nav-link ${activeTab === 'roles' ? 'active' : ''}`}>
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span>Admin Roles</span>
+          </a>
+          <a href="/admin/directory/" class={`admin-nav-link ${activeTab === 'directory' ? 'active' : ''}`}>
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </span>
+            <span>Directory CMS</span>
+          </a>
+        </nav>
+
+        <div class="admin-user-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="admin-user-role">Administrator</span>
+            <span style="font-size:0.75rem; color:#059669; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+              <span style="width:6px; height:6px; border-radius:50%; background:#10B981; display:inline-block;"></span> Active
+            </span>
+          </div>
+          <div id="adminUserEmail" class="admin-user-info">Loading…</div>
+          <button id="adminLogoutBtn" class="btn-secondary" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 6px;">
+            Log Out
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Area -->
+      <div class="admin-main">
+        <header class="admin-topbar">
+          <div class="admin-topbar-title-group">
+            <h1>{title}</h1>
+            <p>Trusted Neighbors Operations Dashboard</p>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <a href="/" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="font-size:0.82rem; padding:6px 12px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              View Community Site ↗
+            </a>
+          </div>
+        </header>
+
+        <main class="admin-content-container">
+          <slot />
+        </main>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast" style="display:none; position:fixed; bottom:24px; right:24px; z-index:2200; padding:12px 20px; border-radius:8px; font-size:0.88rem; font-weight:600; box-shadow:var(--shadow-lg); color:#fff; max-width:360px;"></div>
+
+    <!-- Confirm Dialog -->
+    <div id="confirmDialog" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2200; justify-content:center; align-items:center;">
+      <div class="admin-card" style="max-width:420px; width:90%; padding:24px; background:white;">
+        <p id="confirmDialogMessage" style="margin:0 0 20px; font-size:0.95rem; color:var(--color-foreground); line-height:1.4;"></p>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn-secondary" id="confirmDialogNo">Cancel</button>
+          <button type="button" class="btn-primary" id="confirmDialogYes" style="background:var(--color-destructive);">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shared Admin Auth & Core Script -->
+    <script>
+      import { supabase } from '../lib/supabase.js';
+      import { signIn } from '../lib/auth.js';
+
+      function updateActiveNavLink() {
+        const path = window.location.pathname.replace(/\/$/, '');
+        document.querySelectorAll('.admin-nav-link').forEach((link) => {
+          const href = (link.getAttribute('href') || '').replace(/\/$/, '');
+          if (href === '/admin' && (path === '/admin' || path === '')) {
+            link.classList.add('active');
+          } else if (href !== '/admin' && (path === href || path.startsWith(href + '/'))) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+
+      async function checkAdminAuth() {
+        const cachedEmail = sessionStorage.getItem('tn_admin_verified_email');
+        if (cachedEmail) {
+          showApp(cachedEmail);
+        }
+
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user?.email) {
+          sessionStorage.removeItem('tn_admin_verified_email');
+          showLogin();
+          return;
+        }
+
+        const { data: adminRow } = await supabase
+          .from('admins')
+          .select('email')
+          .eq('email', session.user.email)
+          .maybeSingle();
+
+        if (!adminRow) {
+          sessionStorage.removeItem('tn_admin_verified_email');
+          showLogin('Your account does not have administrator privileges.');
+          return;
+        }
+
+        sessionStorage.setItem('tn_admin_verified_email', session.user.email);
+        showApp(session.user.email);
+      }
+
+      function showLogin(msg = '') {
+        const loginOverlay = document.getElementById('adminLoginOverlay');
+        const appShell = document.getElementById('adminAppShell');
+        const loginError = document.getElementById('adminLoginError');
+
+        if (loginOverlay) loginOverlay.style.display = 'flex';
+        if (appShell) appShell.style.display = 'none';
+        if (loginError && msg) loginError.textContent = msg;
+      }
+
+      function showApp(email) {
+        const loginOverlay = document.getElementById('adminLoginOverlay');
+        const appShell = document.getElementById('adminAppShell');
+        const userEmailEl = document.getElementById('adminUserEmail');
+
+        if (loginOverlay) loginOverlay.style.display = 'none';
+        if (appShell) appShell.style.display = 'flex';
+        if (userEmailEl) userEmailEl.textContent = email;
+        window.dispatchEvent(new CustomEvent('admin-auth-verified', { detail: { email } }));
+      }
+
+      function wireAuthListeners() {
+        updateActiveNavLink();
+
+        const loginForm = document.getElementById('adminLoginForm');
+        const loginEmail = document.getElementById('adminLoginEmail');
+        const loginPassword = document.getElementById('adminLoginPassword');
+        const loginError = document.getElementById('adminLoginError');
+        const logoutBtn = document.getElementById('adminLogoutBtn');
+
+        loginForm?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          if (loginError) loginError.textContent = '';
+          const email = loginEmail?.value.trim();
+          const password = loginPassword?.value;
+
+          const { data, error } = await signIn(email, password);
+          if (error) {
+            if (loginError) loginError.textContent = error.message;
+            return;
+          }
+
+          await checkAdminAuth();
+        });
+
+        logoutBtn?.addEventListener('click', async () => {
+          sessionStorage.removeItem('tn_admin_verified_email');
+          await supabase.auth.signOut();
+          window.location.href = '/admin/';
+        });
+      }
+
+      document.addEventListener('astro:page-load', () => {
+        wireAuthListeners();
+        checkAdminAuth();
+      });
+
+      // Immediate run
+      wireAuthListeners();
+      checkAdminAuth();
+    </script>
+  </body>
+</html>

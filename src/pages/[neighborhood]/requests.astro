@@ -1,16 +1,13 @@
 ---
 import Directory from '../../layouts/Directory.astro';
 import RequestModal from '../../components/RequestModal.astro';
-import { neighborhoods } from '../../data/neighborhoods.js';
+import { getNeighborhoodDataPaths } from '../../lib/neighborhoodData.js';
 
-export function getStaticPaths() {
-  return neighborhoods.map((n) => ({
-    params: { neighborhood: n.slug },
-    props: { neighborhood: n },
-  }));
+export async function getStaticPaths() {
+  return await getNeighborhoodDataPaths();
 }
 
-const { neighborhood } = Astro.props;
+const { neighborhood, groups } = Astro.props;
 ---
 
 <Directory title={`${neighborhood.name} Requests`} footerLabel={neighborhood.footerLabel} theme={neighborhood.theme}>
@@ -106,7 +103,71 @@ const { neighborhood } = Astro.props;
       </div>
     </div>
 
-    <RequestModal neighborhood={neighborhood} groups={[]} />
+    <!-- In-Page Admin Edit Request Modal -->
+    <div class="modal-overlay" id="adminRequestEditModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1050; justify-content:center; align-items:center;">
+      <div class="modal-card" style="max-width:540px; width:92%; max-height:90vh; overflow-y:auto; padding:24px; background:#fff; border-radius:12px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2);">
+        <button class="modal-close-btn" id="closeAdminEditModalBtn">×</button>
+        <div style="margin-bottom:16px;">
+          <h3 style="margin:0 0 4px 0; color:#064E3B; font-size:1.2rem; display:flex; align-items:center; gap:8px;">
+            🛡️ Admin Edit Request
+          </h3>
+          <p style="margin:0; font-size:0.85rem; color:#64748B;">Modify service appointment details &amp; status</p>
+        </div>
+        <form id="adminRequestEditForm">
+          <input type="hidden" id="admEditId" />
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Category *</label>
+              <input type="text" id="admEditCategory" required style="width:100%; padding:8px 10px; font-size:0.88rem; border:1px solid #CBD5E1; border-radius:6px; box-sizing:border-box;" />
+            </div>
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Date Needed *</label>
+              <input type="date" id="admEditDate" required style="width:100%; padding:8px 10px; font-size:0.88rem; border:1px solid #CBD5E1; border-radius:6px; box-sizing:border-box;" />
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Status *</label>
+              <select id="admEditStatus" required style="width:100%; padding:8px 10px; font-size:0.88rem; border:1px solid #CBD5E1; border-radius:6px; background:#fff; box-sizing:border-box;">
+                <option value="new">New (Active)</option>
+                <option value="contacted">Contacted (In Progress)</option>
+                <option value="completed">Completed (Fulfilled)</option>
+                <option value="closed">Closed (Cancelled)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Requester Name *</label>
+              <input type="text" id="admEditName" required style="width:100%; padding:8px 10px; font-size:0.88rem; border:1px solid #CBD5E1; border-radius:6px; box-sizing:border-box;" />
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Phone Number *</label>
+              <input type="tel" id="admEditPhone" required style="width:100%; padding:8px 10px; font-size:0.88rem; border:1px solid #CBD5E1; border-radius:6px; box-sizing:border-box;" />
+            </div>
+            <div>
+              <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Email</label>
+              <input type="email" id="admEditEmail" style="width:100%; padding:8px 10px; font-size:0.88rem; border:1px solid #CBD5E1; border-radius:6px; box-sizing:border-box;" />
+            </div>
+          </div>
+
+          <div style="margin-bottom:18px;">
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Details / Notes</label>
+            <textarea id="admEditNotes" rows="3" style="width:100%; padding:8px 10px; font-size:0.88rem; border:1px solid #CBD5E1; border-radius:6px; resize:vertical; font-family:inherit; box-sizing:border-box;"></textarea>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" id="closeAdminEditBtn" style="padding:8px 16px; font-size:0.85rem; font-weight:600; border:1px solid #CBD5E1; background:#F8FAFC; border-radius:6px; cursor:pointer;">Cancel</button>
+            <button type="submit" id="saveAdminEditBtn" style="padding:8px 18px; font-size:0.85rem; font-weight:700; background:#064E3B; color:#fff; border:none; border-radius:6px; cursor:pointer;">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <RequestModal neighborhood={neighborhood} groups={groups} />
   </main>
 </Directory>
 

@@ -378,19 +378,21 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
       if (reqThankYou) reqThankYou.style.display = 'none';
       if (reqFormView) reqFormView.style.display = 'block';
 
-      // Autofill verified user data
-      const rName = document.getElementById('r-name');
-      const rEmail = document.getElementById('r-email');
-      const rPhone = document.getElementById('r-phone');
+      // Populate verified resident pill from profile
+      const rDisplayName = document.getElementById('r-display-name');
+      const rDisplayContact = document.getElementById('r-display-contact');
+      const resName = session.user.user_metadata?.full_name || 'Verified Resident';
+      const resPhone = session.user.user_metadata?.phone || '';
+      
+      if (rDisplayName) rDisplayName.textContent = formatNameTitle(resName);
+      if (rDisplayContact) {
+        rDisplayContact.textContent = resPhone ? `${formatUSPhone(resPhone)} · ${session.user.email}` : (session.user.email || '');
+      }
 
-      if (rName && !rName.value) {
-        rName.value = session.user.user_metadata?.full_name || '';
-      }
-      if (rEmail && !rEmail.value) {
-        rEmail.value = session.user.email || '';
-      }
-      if (rPhone && !rPhone.value) {
-        rPhone.value = session.user.user_metadata?.phone || '';
+      const rDate = document.getElementById('r-date');
+      const todayStr = new Date().toLocaleDateString('en-CA');
+      if (rDate) {
+        rDate.min = todayStr;
       }
     }
   };
@@ -420,30 +422,32 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
       return;
     }
 
-    let category = document.getElementById('r-category').value;
-    const date_needed = document.getElementById('r-date').value;
+    let category = document.getElementById('r-category')?.value;
+    const date_needed = document.getElementById('r-date')?.value;
 
     if (category === 'Other') {
       const otherVal = document.getElementById('r-category-other')?.value.trim();
       if (otherVal) category = otherVal;
     }
-    const name = document.getElementById('r-name').value.trim() || session.user.user_metadata?.full_name || 'Verified Neighbor';
-    let phone = document.getElementById('r-phone').value.trim() || session.user.user_metadata?.phone || '';
-    const email = document.getElementById('r-email').value.trim() || session.user.email;
-    const notes = document.getElementById('r-notes').value.trim();
+    
+    const meta = session.user.user_metadata || {};
+    const name = meta.full_name || 'Verified Resident';
+    const phone = meta.phone ? formatUSPhone(meta.phone) : '—';
+    const email = session.user.email;
+    const notes = document.getElementById('r-notes')?.value.trim() || '';
 
-    const phoneDigits = phone.replace(/\D/g, '');
-    if (!category || !date_needed || !name || !phoneDigits) {
-      showToast('Please fill in the category, date needed, your name, and phone fields.', 'warning');
+    if (!category || !date_needed) {
+      showToast('Please choose a category and date needed.', 'warning');
       return;
     }
-    if (phoneDigits.length !== 10) {
-      showToast('Please enter a 10-digit phone number in the format (512) 555-0000.', 'warning');
+
+    const todayStr = new Date().toLocaleDateString('en-CA');
+    if (date_needed < todayStr) {
+      showToast('Please choose a date from today onward.', 'warning');
       return;
     }
-    phone = formatUSPhone(phoneDigits);
 
-    reqSubmitBtn.textContent = 'Submitting…';
+    reqSubmitBtn.textContent = 'Publishing…';
     reqSubmitBtn.disabled = true;
 
     const { error } = await supabase.from('service_requests').insert({
@@ -454,6 +458,7 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
       phone,
       email: email || null,
       notes: notes || null,
+      status: 'new'
     });
 
     try {

@@ -14,7 +14,7 @@ const filterNeighborhood = document.getElementById('filterNeighborhood');
 const filterCategory = document.getElementById('filterCategory');
 const filterStatus = document.getElementById('filterStatus');
 
-const STATUSES = ['new', 'contacted', 'closed'];
+const STATUSES = ['new', 'contacted', 'completed', 'closed'];
 
 async function isAdmin(email) {
   if (!email) return false;
@@ -25,6 +25,57 @@ async function isAdmin(email) {
 let requests = [];
 let sortKey = 'date_needed';
 let sortDir = 'asc';
+
+// Edit Request Modal Elements
+const editRequestModal = document.getElementById('editRequestModal');
+const editRequestForm = document.getElementById('editRequestForm');
+const closeEditRequestModalBtn = document.getElementById('closeEditRequestModalBtn');
+
+const closeEditModal = () => {
+  if (editRequestModal) editRequestModal.style.display = 'none';
+};
+
+closeEditRequestModalBtn?.addEventListener('click', closeEditModal);
+editRequestModal?.addEventListener('click', (e) => {
+  if (e.target === editRequestModal) closeEditModal();
+});
+
+editRequestForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('editReqId').value;
+  const saveBtn = document.getElementById('saveEditRequestBtn');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+  }
+
+  const updates = {
+    neighborhood: document.getElementById('editReqNeighborhood').value,
+    category: document.getElementById('editReqCategory').value.trim(),
+    date_needed: document.getElementById('editReqDate').value,
+    status: document.getElementById('editReqStatus').value,
+    name: document.getElementById('editReqName').value.trim(),
+    phone: document.getElementById('editReqPhone').value.trim(),
+    email: document.getElementById('editReqEmail').value.trim(),
+    notes: document.getElementById('editReqNotes').value.trim()
+  };
+
+  const { error } = await supabase.from('service_requests').update(updates).eq('id', id);
+
+  if (saveBtn) {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Changes';
+  }
+
+  if (error) {
+    showToast('Failed to save changes: ' + error.message, true);
+    return;
+  }
+
+  showToast('Service request updated successfully.');
+  closeEditModal();
+  await loadRequests();
+});
 
 function esc(str) {
   const div = document.createElement('div');
@@ -60,12 +111,23 @@ async function loadRequests() {
   renderTable();
 }
 
+function formatNeighborhood(slug) {
+  if (!slug) return '—';
+  const map = {
+    'onion-creek': 'Onion Creek',
+    'circle-c': 'Circle C',
+    'avery-ranch': 'Avery Ranch',
+    'sunfield': 'Sunfield'
+  };
+  return map[slug] || slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
 function populateFilterOptions() {
-  const neighborhoods = [...new Set(requests.map((r) => r.neighborhood))].sort();
-  const categories = [...new Set(requests.map((r) => r.category))].sort();
+  const neighborhoods = [...new Set(requests.map((r) => r.neighborhood).filter(Boolean))].sort();
+  const categories = [...new Set(requests.map((r) => r.category).filter(Boolean))].sort();
 
   filterNeighborhood.innerHTML = '<option value="">All Neighborhoods</option>' +
-    neighborhoods.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    neighborhoods.map((n) => `<option value="${esc(n)}">${esc(formatNeighborhood(n))}</option>`).join('');
   filterCategory.innerHTML = '<option value="">All Categories</option>' +
     categories.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
 }
@@ -108,34 +170,71 @@ function renderTable() {
     return;
   }
 
-  requestsBody.innerHTML = filtered.map((r) => `
-    <tr data-id="${r.id}">
-      <td><span style="font-weight:500; font-size:0.85rem; color:#475569;">${esc(new Date(r.created_at).toLocaleDateString())}</span></td>
-      <td>
-        <div style="display:flex; gap:4px; flex-wrap:wrap;">
-          <span class="pill-tag neighborhood">${esc(r.neighborhood)}</span>
-          <span class="pill-tag category">${esc(r.category)}</span>
-        </div>
-      </td>
-      <td>
-        <div class="contact-cell">
-          <span class="contact-name">${esc(r.name)}</span>
-          <a href="mailto:${esc(r.email)}" class="contact-email">${esc(r.email)}</a>
-        </div>
-      </td>
-      <td><span class="contact-phone">${esc(r.phone)}</span></td>
-      <td><span style="font-weight:600; color:#334155; font-size:0.85rem;">${esc(r.date_needed)}</span></td>
-      <td><div class="notes-cell" title="${esc(r.notes)}">${esc(r.notes || '—')}</div></td>
-      <td>
-        <select class="status" data-id="${r.id}" data-value="${esc(r.status || 'new')}">
-          ${STATUSES.map((s) => `<option value="${s}" ${s === r.status ? 'selected' : ''}>${s}</option>`).join('')}
-        </select>
-      </td>
-      <td style="text-align:right;">
-        <button class="btn-action-danger btn-delete-request" data-id="${r.id}">Delete</button>
-      </td>
-    </tr>
-  `).join('');
+  requestsBody.innerHTML = filtered.map((r) => {
+    const formattedDate = r.created_at
+      ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      : '—';
+
+    return `
+      <tr data-id="${r.id}">
+        <td><span style="font-weight:500; font-size:0.82rem; color:#64748B; white-space:nowrap;">${esc(formattedDate)}</span></td>
+        <td>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+            <span class="pill-tag neighborhood">${esc(formatNeighborhood(r.neighborhood))}</span>
+            <span class="pill-tag category">${esc(r.category)}</span>
+          </div>
+        </td>
+        <td>
+          <div class="contact-cell">
+            <span class="contact-name">${esc(r.name || 'Neighbor')}</span>
+            ${r.email ? `<a href="mailto:${esc(r.email)}" class="contact-email">✉️ ${esc(r.email)}</a>` : '<span style="color:#94A3B8; font-size:0.78rem;">No email</span>'}
+          </div>
+        </td>
+        <td>
+          <a href="tel:${esc(r.phone)}" class="contact-phone-link">📞 ${esc(r.phone)}</a>
+        </td>
+        <td>
+          <span class="date-badge">📅 ${esc(r.date_needed)}</span>
+        </td>
+        <td>
+          <div class="notes-cell" title="${esc(r.notes || '')}">
+            ${esc(r.notes || '—')}
+          </div>
+        </td>
+        <td>
+          <select class="status" data-id="${r.id}" data-value="${esc(r.status || 'new')}">
+            ${STATUSES.map((s) => `<option value="${s}" ${s === r.status ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>
+        </td>
+        <td style="text-align:right;">
+          <div class="actions-cell">
+            <button class="btn-action-edit btn-edit-request" data-id="${r.id}" title="Edit request">✏️ Edit</button>
+            <button class="btn-action-danger btn-delete-request" data-id="${r.id}" title="Delete request">🗑️ Delete</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  requestsBody.querySelectorAll('.btn-edit-request').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const req = requests.find((r) => String(r.id) === String(id));
+      if (!req) return;
+
+      document.getElementById('editReqId').value = req.id;
+      document.getElementById('editReqNeighborhood').value = req.neighborhood || 'onion-creek';
+      document.getElementById('editReqCategory').value = req.category || '';
+      document.getElementById('editReqDate').value = req.date_needed || '';
+      document.getElementById('editReqStatus').value = req.status || 'new';
+      document.getElementById('editReqName').value = req.name || '';
+      document.getElementById('editReqPhone').value = req.phone || '';
+      document.getElementById('editReqEmail').value = req.email || '';
+      document.getElementById('editReqNotes').value = req.notes || '';
+
+      if (editRequestModal) editRequestModal.style.display = 'flex';
+    });
+  });
 
   requestsBody.querySelectorAll('select.status').forEach((sel) => {
     sel.addEventListener('change', async () => {
@@ -418,19 +517,19 @@ function renderReferralsTable() {
 
   referralsBody.innerHTML = filtered.map((r) => `
     <tr data-id="${r.id}">
-      <td><span style="font-weight:500; font-size:0.85rem; color:#475569;">${esc(new Date(r.created_at).toLocaleDateString())}</span></td>
+      <td><span style="font-weight:500; font-size:0.82rem; color:#64748B; white-space:nowrap;">${esc(new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }))}</span></td>
       <td><span class="contact-name">${esc(r.name)}</span></td>
       <td>
-        <div style="display:flex; gap:4px; flex-wrap:wrap;">
-          <span class="pill-tag neighborhood">${esc(r.neighborhood || 'N/A')}</span>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <span class="pill-tag neighborhood">${esc(formatNeighborhood(r.neighborhood))}</span>
           <span class="pill-tag category">${esc(r.category || 'General')}</span>
         </div>
       </td>
-      <td><span class="contact-phone">${esc(r.phone)}</span></td>
+      <td><a href="tel:${esc(r.phone)}" class="contact-phone-link">📞 ${esc(r.phone)}</a></td>
       <td>
         <div class="contact-cell">
           <span class="contact-name">${esc(r.referrer)}</span>
-          ${r.referrer_email ? `<a href="mailto:${esc(r.referrer_email)}" class="contact-email">${esc(r.referrer_email)}</a>` : '<span class="contact-email">—</span>'}
+          ${r.referrer_email ? `<a href="mailto:${esc(r.referrer_email)}" class="contact-email">✉️ ${esc(r.referrer_email)}</a>` : '<span class="contact-email">—</span>'}
         </div>
       </td>
       <td><div class="notes-cell" title="${esc(r.note)}">${esc(r.note || '—')}</div></td>

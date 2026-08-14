@@ -1,22 +1,24 @@
 import { getSession, signIn, signUp, requestPasswordReset, updateProfile } from '../lib/auth.js';
 import { supabase } from '../lib/supabase.js';
+import { trapFocus, releaseFocus } from './modal-a11y.js';
+import { showToast, confirmDialog } from './ui-feedback.js';
 
 // DOM Elements
-const mainContainer = document.getElementById('mainContainer');
 const authFormCard = document.getElementById('authFormCard');
 const profileCard = document.getElementById('profileCard');
+const headerLoggedInActions = document.getElementById('headerLoggedInActions');
 
-// Tabs
+// Tabs - Auth
 const tabLogin = document.getElementById('tabLogin');
 const tabRegister = document.getElementById('tabRegister');
 const tabReset = document.getElementById('tabReset');
 
-// Views
+// Views - Auth
 const viewLogin = document.getElementById('viewLogin');
 const viewRegister = document.getElementById('viewRegister');
 const viewReset = document.getElementById('viewReset');
 
-// Headers
+// Headers - Auth
 const formTitle = document.getElementById('formTitle');
 const formSub = document.getElementById('formSub');
 
@@ -42,16 +44,82 @@ const authError = document.getElementById('authError');
 const authNotice = document.getElementById('authNotice');
 
 // Profile Elements
-const userAvatar = document.getElementById('userAvatar');
 const profileDisplayName = document.getElementById('profileDisplayName');
 const profileDisplayEmail = document.getElementById('profileDisplayEmail');
 const profName = document.getElementById('prof-name');
 const profPhone = document.getElementById('prof-phone');
 const profileForm = document.getElementById('profileForm');
 const updateProfileBtn = document.getElementById('updateProfileBtn');
-const profileNotice = document.getElementById('profileNotice');
 const logoutBtn = document.getElementById('logoutBtn');
 const requestsTableContainer = document.getElementById('requestsTableContainer');
+const userAvatarImg = document.getElementById('userAvatarImg');
+const avatarWrapper = document.getElementById('avatarWrapper');
+const avatarFileInput = document.getElementById('avatarFileInput');
+const neighborhoodBadge = document.getElementById('neighborhoodBadge');
+const profNeighborhood = document.getElementById('prof-neighborhood');
+
+// Context Deck Elements
+const contextNeighborhoodName = document.getElementById('contextNeighborhoodName');
+const contextCalendarLink = document.getElementById('contextCalendarLink');
+const contextDirectoryLink = document.getElementById('contextDirectoryLink');
+
+// Vitality Stats
+const statActiveRequests = document.getElementById('statActiveRequests');
+const statFulfilledRequests = document.getElementById('statFulfilledRequests');
+const statSavedProviders = document.getElementById('statSavedProviders');
+const statReferrals = document.getElementById('statReferrals');
+
+// Filter & Search Elements
+const reqFilterRibbon = document.getElementById('reqFilterRibbon');
+const reqSearchInput = document.getElementById('reqSearchInput');
+const filterAllCount = document.getElementById('filterAllCount');
+const filterActiveCount = document.getElementById('filterActiveCount');
+const filterFulfilledCount = document.getElementById('filterFulfilledCount');
+
+// Tab Navigation Badges
+const requestsCountBadge = document.getElementById('requestsCountBadge');
+const savedCountBadge = document.getElementById('savedCountBadge');
+const referralsCountBadge = document.getElementById('referralsCountBadge');
+
+// Account Sub-Tabs
+const tabMyRequests = document.getElementById('tabMyRequests');
+const tabMySaved = document.getElementById('tabMySaved');
+const tabMyReferrals = document.getElementById('tabMyReferrals');
+const tabMySettings = document.getElementById('tabMySettings');
+
+// Account Sub-Views
+const accViewRequests = document.getElementById('accViewRequests');
+const accViewSaved = document.getElementById('accViewSaved');
+const accViewReferrals = document.getElementById('accViewReferrals');
+const accViewSettings = document.getElementById('accViewSettings');
+
+// Modals - Aligned Request Modal
+const openNewRequestModalBtn = document.getElementById('openNewRequestModalBtn');
+const closeUserReqModalBtn = document.getElementById('closeUserReqModalBtn');
+const closeUserReqModalBtnTop = document.getElementById('closeUserReqModalBtnTop');
+const userNewRequestModal = document.getElementById('userNewRequestModal');
+const userNewRequestForm = document.getElementById('userNewRequestForm');
+const postModalTitle = document.getElementById('postModalTitle');
+const usrReqCategorySelect = document.getElementById('usrReqCategory');
+const usrReqCategoryOther = document.getElementById('usrReqCategoryOther');
+const usrReqNeighborhood = document.getElementById('usrReqNeighborhood');
+const usrReqDate = document.getElementById('usrReqDate');
+const usrReqName = document.getElementById('usrReqName');
+const usrReqPhone = document.getElementById('usrReqPhone');
+const usrReqEmail = document.getElementById('usrReqEmail');
+const usrReqNotes = document.getElementById('usrReqNotes');
+
+const rescheduleModal = document.getElementById('rescheduleModal');
+const rescheduleDatePicker = document.getElementById('rescheduleDatePicker');
+const rescheduleReqId = document.getElementById('rescheduleReqId');
+const closeRescheduleModalBtn = document.getElementById('closeRescheduleModalBtn');
+const closeRescheduleModalBtnTop = document.getElementById('closeRescheduleModalBtnTop');
+const saveRescheduleBtn = document.getElementById('saveRescheduleBtn');
+
+let currentUser = null;
+let userRequestsCache = [];
+let currentFilter = 'all';
+let currentSearchQuery = '';
 
 function esc(str) {
   const div = document.createElement('div');
@@ -59,66 +127,95 @@ function esc(str) {
   return div.innerHTML;
 }
 
+function formatNeighborhood(slug) {
+  if (!slug) return '—';
+  const map = {
+    'onion-creek': 'Onion Creek',
+    'circle-c': 'Circle C',
+    'avery-ranch': 'Avery Ranch',
+    'sunfield': 'Sunfield'
+  };
+  return map[slug] || slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    const d = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+}
+
+function formatNameTitle(str) {
+  if (!str) return 'Resident';
+  return str.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+function formatUSPhone(value) {
+  const digits = value.replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) return digits.length ? `(${digits}` : '';
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+function wirePhoneFormatting(phoneEl) {
+  if (!phoneEl) return;
+  phoneEl.addEventListener('input', () => {
+    const digits = phoneEl.value.replace(/\D/g, '').slice(0, 10);
+    phoneEl.value = formatUSPhone(digits);
+  });
+}
+
+wirePhoneFormatting(regPhone);
+wirePhoneFormatting(profPhone);
+wirePhoneFormatting(usrReqPhone);
+
 function nextUrl() {
   const next = new URLSearchParams(location.search).get('next');
   return next && next.startsWith('/') && !next.startsWith('//') ? next : null;
 }
 
 function clearMessages() {
-  authError.textContent = '';
-  authNotice.style.display = 'none';
-  authNotice.textContent = '';
+  if (authError) authError.textContent = '';
+  if (authNotice) {
+    authNotice.style.display = 'none';
+    authNotice.textContent = '';
+  }
 }
 
 function switchTab(activeTab, viewToShow, title, sub) {
   clearMessages();
-  [tabLogin, tabRegister, tabReset].forEach((t) => t?.classList.remove('active'));
+  [tabLogin, tabRegister, tabReset].forEach((t) => {
+    t?.classList.remove('active');
+    t?.setAttribute('aria-selected', 'false');
+  });
   [viewLogin, viewRegister, viewReset].forEach((v) => v ? (v.style.display = 'none') : null);
 
   activeTab?.classList.add('active');
+  activeTab?.setAttribute('aria-selected', 'true');
   if (viewToShow) viewToShow.style.display = 'block';
   if (formTitle) formTitle.textContent = title;
   if (formSub) formSub.textContent = sub;
 }
 
-// Contextual Return Banner
-const contextualReturnBanner = document.getElementById('contextualReturnBanner');
-const contextualReturnText = document.getElementById('contextualReturnText');
-const nextParam = nextUrl();
-
-if (nextParam && contextualReturnBanner && contextualReturnText) {
-  const slug = nextParam.split('/').filter(Boolean)[0] || '';
-  const labelMap = {
-    'onion-creek': 'Onion Creek',
-    'avery-ranch': 'Avery Ranch',
-    'circle-c': 'Circle C',
-    'sunfield': 'Sunfield'
-  };
-  const neighName = labelMap[slug] || (slug ? slug.replace(/-/g, ' ') : 'Directory');
-  contextualReturnText.innerHTML = `Returning to <strong>${esc(neighName)} Directory</strong> upon sign-in`;
-  contextualReturnBanner.style.display = 'flex';
-}
+// Wire Tab Switches
+tabLogin?.addEventListener('click', () => switchTab(tabLogin, viewLogin, 'Resident Sign In', 'Sign in to coordinate neighborhood service appointments and access saved recommendations'));
+tabRegister?.addEventListener('click', () => switchTab(tabRegister, viewRegister, 'Create Resident Account', 'Join your neighborhood service directory'));
+tabReset?.addEventListener('click', () => switchTab(tabReset, viewReset, 'Reset Password', 'Enter your email to receive a password reset link'));
 
 // Password Visibility Toggles
-document.querySelectorAll('.password-toggle-btn').forEach((btn) => {
+document.querySelectorAll('.pwd-toggle-btn').forEach((btn) => {
   btn.addEventListener('click', () => {
     const targetId = btn.dataset.target;
     const input = document.getElementById(targetId);
     if (!input) return;
     const isPassword = input.type === 'password';
     input.type = isPassword ? 'text' : 'password';
-    btn.innerHTML = isPassword
-      ? `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-      : `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
   });
 });
 
-// Wire Tab Switches
-tabLogin?.addEventListener('click', () => switchTab(tabLogin, viewLogin, 'Welcome Back', 'Manage your neighbor account & service requests'));
-tabRegister?.addEventListener('click', () => switchTab(tabRegister, viewRegister, 'Create an Account', 'Join your local community directory'));
-tabReset?.addEventListener('click', () => switchTab(tabReset, viewReset, 'Reset Password', 'Enter your email to receive a password reset link'));
-
-// Helper for button loading state
 async function withButtonLock(btn, text, fn) {
   if (!btn) return;
   const origText = btn.textContent;
@@ -133,7 +230,7 @@ async function withButtonLock(btn, text, fn) {
 }
 
 // Log In Action
-loginSubmitBtn?.addEventListener('click', () => withButtonLock(loginSubmitBtn, 'Logging in…', async () => {
+loginSubmitBtn?.addEventListener('click', () => withButtonLock(loginSubmitBtn, 'Signing in…', async () => {
   clearMessages();
   const email = loginEmail.value.trim();
   const password = loginPassword.value;
@@ -153,46 +250,36 @@ loginSubmitBtn?.addEventListener('click', () => withButtonLock(loginSubmitBtn, '
 }));
 
 // Register Action
-registerSubmitBtn?.addEventListener('click', () => withButtonLock(registerSubmitBtn, 'Creating account…', async () => {
+registerSubmitBtn?.addEventListener('click', () => withButtonLock(registerSubmitBtn, 'Creating Account…', async () => {
   clearMessages();
   const name = regName.value.trim();
   const email = regEmail.value.trim();
   const phone = regPhone.value.trim();
   const password = regPassword.value;
+  const confirmPassword = regPasswordConfirm.value;
 
-  if (!name) {
-    authError.textContent = 'Please enter your full name.';
+  if (!name || !email || !password) {
+    authError.textContent = 'Please fill out all required fields.';
     return;
   }
-  if (!email || !password) {
-    authError.textContent = 'Please enter an email address and password.';
-    return;
-  }
-  if (password.length < 6) {
-    authError.textContent = 'Password must be at least 6 characters.';
-    return;
-  }
-  if (password !== regPasswordConfirm.value) {
+
+  if (password !== confirmPassword) {
     authError.textContent = 'Passwords do not match.';
     return;
   }
 
-  const { data, error } = await signUp(email, password, { full_name: name, phone });
+  const { error } = await signUp(email, password, { full_name: name, phone });
   if (error) {
     authError.textContent = error.message;
     return;
   }
 
-  if (data?.user && !data.session) {
-    authNotice.textContent = 'Registration successful! Please check your email to confirm your account, then log in.';
-    authNotice.style.display = 'block';
-  } else {
-    initPage();
-  }
+  authNotice.textContent = 'Account created! Check your email inbox to confirm your address.';
+  authNotice.style.display = 'block';
 }));
 
 // Reset Password Action
-resetSubmitBtn?.addEventListener('click', () => withButtonLock(resetSubmitBtn, 'Sending link…', async () => {
+resetSubmitBtn?.addEventListener('click', () => withButtonLock(resetSubmitBtn, 'Sending Link…', async () => {
   clearMessages();
   const email = resetEmail.value.trim();
   if (!email) {
@@ -206,65 +293,20 @@ resetSubmitBtn?.addEventListener('click', () => withButtonLock(resetSubmitBtn, '
     return;
   }
 
-  authNotice.textContent = 'Check your email for a password reset link.';
+  authNotice.textContent = 'Password reset instructions have been sent to your email.';
   authNotice.style.display = 'block';
 }));
 
-// Profile & Dashboard Elements
-const userAvatarImg = document.getElementById('userAvatarImg');
-const avatarWrapper = document.getElementById('avatarWrapper');
-const avatarFileInput = document.getElementById('avatarFileInput');
-const neighborhoodBadge = document.getElementById('neighborhoodBadge');
-const profNeighborhood = document.getElementById('prof-neighborhood');
-
-// Account Sub-Tabs
-const tabMyRequests = document.getElementById('tabMyRequests');
-const tabMySaved = document.getElementById('tabMySaved');
-const tabMyReferrals = document.getElementById('tabMyReferrals');
-const tabMySettings = document.getElementById('tabMySettings');
-
-// Account Sub-Views
-const accViewRequests = document.getElementById('accViewRequests');
-const accViewSaved = document.getElementById('accViewSaved');
-const accViewReferrals = document.getElementById('accViewReferrals');
-const accViewSettings = document.getElementById('accViewSettings');
-
-// Modal Elements
-const openNewRequestModalBtn = document.getElementById('openNewRequestModalBtn');
-const closeUserReqModalBtn = document.getElementById('closeUserReqModalBtn');
-const userNewRequestModal = document.getElementById('userNewRequestModal');
-const userNewRequestForm = document.getElementById('userNewRequestForm');
-
-// Wire Avatar File Upload Click & Input
-avatarWrapper?.addEventListener('click', () => {
-  avatarFileInput?.click();
-});
-
-avatarFileInput?.addEventListener('change', async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = async (evt) => {
-    const dataUrl = evt.target.result;
-    if (userAvatarImg) userAvatarImg.src = dataUrl;
-
-    const { error } = await updateProfile({ avatar_url: dataUrl });
-    if (error) {
-      showToast('Failed to update avatar.', true);
-    } else {
-      showToast('Profile photo updated successfully!');
-    }
-  };
-  reader.readAsDataURL(file);
-});
-
-// Wire Sub-Tab Navigation
+// Sub-Tab Navigation
 function switchAccTab(activeTab, viewToShow) {
-  [tabMyRequests, tabMySaved, tabMyReferrals, tabMySettings].forEach((t) => t?.classList.remove('active'));
+  [tabMyRequests, tabMySaved, tabMyReferrals, tabMySettings].forEach((t) => {
+    t?.classList.remove('active');
+    t?.setAttribute('aria-selected', 'false');
+  });
   [accViewRequests, accViewSaved, accViewReferrals, accViewSettings].forEach((v) => v ? (v.style.display = 'none') : null);
 
   activeTab?.classList.add('active');
+  activeTab?.setAttribute('aria-selected', 'true');
   if (viewToShow) viewToShow.style.display = 'block';
 }
 
@@ -279,60 +321,166 @@ tabMyReferrals?.addEventListener('click', () => {
 });
 tabMySettings?.addEventListener('click', () => switchAccTab(tabMySettings, accViewSettings));
 
-// Profile Form Submit Action
+// Avatar Upload
+avatarWrapper?.addEventListener('click', () => avatarFileInput?.click());
+avatarWrapper?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    avatarFileInput?.click();
+  }
+});
+avatarFileInput?.addEventListener('change', async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (evt) => {
+    const dataUrl = evt.target.result;
+    if (userAvatarImg) userAvatarImg.src = dataUrl;
+
+    const { error } = await updateProfile({ avatar_url: dataUrl });
+    if (error) {
+      showToast('Failed to update avatar: ' + error.message, true);
+    } else {
+      showToast('Profile photo updated successfully!');
+    }
+  };
+  reader.readAsDataURL(file);
+});
+
+// Profile Form Submit
 profileForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!updateProfileBtn) return;
-  
-  withButtonLock(updateProfileBtn, 'Saving…', async () => {
-    profileNotice.style.display = 'none';
-    profileNotice.textContent = '';
 
+  withButtonLock(updateProfileBtn, 'Saving…', async () => {
     const name = profName.value.trim();
     const phone = profPhone.value.trim();
     const neighborhood = profNeighborhood ? profNeighborhood.value : 'onion-creek';
 
     const { error } = await updateProfile({ full_name: name, phone, neighborhood_slug: neighborhood });
     if (error) {
-      profileNotice.textContent = 'Failed to update profile: ' + error.message;
-      profileNotice.style.color = '#DC2626';
-      profileNotice.style.background = '#FEF2F2';
-      profileNotice.style.borderColor = '#FECACA';
-      profileNotice.style.display = 'block';
+      showToast('Failed to update profile: ' + error.message, true);
       return;
     }
 
-    profileNotice.textContent = 'Profile details updated successfully!';
-    profileNotice.style.color = '';
-    profileNotice.style.background = '';
-    profileNotice.style.borderColor = '';
-    profileNotice.style.display = 'block';
-    if (profileDisplayName) profileDisplayName.textContent = name || 'Neighbor';
-    if (neighborhoodBadge) {
-      const neighLabel = {
-        'onion-creek': 'Onion Creek',
-        'avery-ranch': 'Avery Ranch',
-        'circle-c': 'Circle C',
-        'sunfield': 'Sunfield'
-      }[neighborhood] || neighborhood;
-      neighborhoodBadge.textContent = `Verified ${neighLabel} Neighbor`;
-    }
+    if (profileDisplayName) profileDisplayName.textContent = formatNameTitle(name) || 'Neighbor';
+    updateNeighborhoodContext(neighborhood);
+    showToast('Profile settings saved successfully!');
   });
 });
 
-// Modal Controls for + Post Service Request
-const closeUserNewRequestModalTop = document.getElementById('closeUserNewRequestModalTop');
+function updateNeighborhoodContext(slug) {
+  const name = formatNeighborhood(slug);
+  if (neighborhoodBadge) {
+    neighborhoodBadge.innerHTML = `
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Verified ${esc(name)} Resident
+    `;
+  }
+  if (contextNeighborhoodName) contextNeighborhoodName.textContent = name;
+  if (contextCalendarLink) contextCalendarLink.href = `/${slug}/requests/`;
+  if (contextDirectoryLink) contextDirectoryLink.href = `/${slug}/`;
+}
 
-openNewRequestModalBtn?.addEventListener('click', () => {
-  if (userNewRequestModal) userNewRequestModal.classList.add('open');
-});
+// Category "Other" toggle in modal
+if (usrReqCategorySelect && usrReqCategoryOther) {
+  usrReqCategorySelect.addEventListener('change', () => {
+    if (usrReqCategorySelect.value === 'Other') {
+      usrReqCategoryOther.style.display = 'block';
+      usrReqCategoryOther.required = true;
+      usrReqCategoryOther.focus();
+    } else {
+      usrReqCategoryOther.style.display = 'none';
+      usrReqCategoryOther.required = false;
+      usrReqCategoryOther.value = '';
+    }
+  });
+}
 
-const closeNewReqModal = () => {
-  if (userNewRequestModal) userNewRequestModal.classList.remove('open');
-};
+// Post Service Request Modal (Automatic Profile Integration)
+function openNewRequestModal(prefill = null) {
+  const todayStr = new Date().toLocaleDateString('en-CA');
+  if (usrReqDate) {
+    usrReqDate.min = todayStr;
+  }
+
+  // Pre-fill user contact banner from session
+  if (currentUser) {
+    const meta = currentUser.user_metadata || {};
+    const resName = meta.full_name || profileDisplayName?.textContent || 'Verified Resident';
+    const resPhone = meta.phone || (profPhone ? profPhone.value.trim() : '');
+    const modalResidentName = document.getElementById('modalResidentName');
+    const modalResidentContact = document.getElementById('modalResidentContact');
+
+    if (modalResidentName) modalResidentName.textContent = formatNameTitle(resName);
+    if (modalResidentContact) {
+      modalResidentContact.textContent = resPhone ? `${formatUSPhone(resPhone)} · ${currentUser.email}` : (currentUser.email || '');
+    }
+
+    if (usrReqNeighborhood && !usrReqNeighborhood.value) {
+      usrReqNeighborhood.value = meta.neighborhood_slug || (profNeighborhood ? profNeighborhood.value : 'onion-creek');
+    }
+  }
+
+  if (prefill) {
+    if (postModalTitle) postModalTitle.textContent = 'Post Repeat Service Request';
+    if (usrReqNeighborhood) usrReqNeighborhood.value = prefill.neighborhood || 'onion-creek';
+    if (usrReqNotes) usrReqNotes.value = prefill.notes || '';
+
+    // Handle category matching
+    if (usrReqCategorySelect) {
+      let matched = false;
+      for (const opt of usrReqCategorySelect.options) {
+        if (opt.value && opt.value.toLowerCase() === (prefill.category || '').toLowerCase()) {
+          usrReqCategorySelect.value = opt.value;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched && prefill.category) {
+        usrReqCategorySelect.value = 'Other';
+        if (usrReqCategoryOther) {
+          usrReqCategoryOther.style.display = 'block';
+          usrReqCategoryOther.value = prefill.category;
+        }
+      } else if (usrReqCategoryOther) {
+        usrReqCategoryOther.style.display = 'none';
+        usrReqCategoryOther.value = '';
+      }
+    }
+
+    if (usrReqDate) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      usrReqDate.value = tomorrow.toLocaleDateString('en-CA');
+    }
+  } else {
+    if (postModalTitle) postModalTitle.textContent = 'Post Service Request';
+    if (usrReqCategorySelect) usrReqCategorySelect.value = '';
+    if (usrReqCategoryOther) {
+      usrReqCategoryOther.style.display = 'none';
+      usrReqCategoryOther.value = '';
+    }
+    if (usrReqNotes) usrReqNotes.value = '';
+    if (usrReqDate) usrReqDate.value = '';
+  }
+
+  if (userNewRequestModal) {
+    userNewRequestModal.style.display = 'flex';
+    trapFocus(userNewRequestModal, closeNewReqModal);
+  }
+}
+
+openNewRequestModalBtn?.addEventListener('click', () => openNewRequestModal());
+
+function closeNewReqModal() {
+  if (userNewRequestModal) userNewRequestModal.style.display = 'none';
+  releaseFocus();
+}
 
 closeUserReqModalBtn?.addEventListener('click', closeNewReqModal);
-closeUserNewRequestModalTop?.addEventListener('click', closeNewReqModal);
+closeUserReqModalBtnTop?.addEventListener('click', closeNewReqModal);
 userNewRequestModal?.addEventListener('click', (e) => {
   if (e.target === userNewRequestModal) closeNewReqModal();
 });
@@ -341,44 +489,478 @@ userNewRequestForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!currentUser) return;
 
-  const neighborhood = document.getElementById('usrReqNeighborhood').value;
-  const category = document.getElementById('usrReqCategory').value.trim();
-  const date_needed = document.getElementById('usrReqDate').value;
-  const notes = document.getElementById('usrReqNotes').value.trim();
-  const phone = profPhone ? profPhone.value.trim() : '';
+  const neighborhood = usrReqNeighborhood ? usrReqNeighborhood.value : 'onion-creek';
+  let category = usrReqCategorySelect ? usrReqCategorySelect.value : '';
+  if (category === 'Other') {
+    category = usrReqCategoryOther ? usrReqCategoryOther.value.trim() : '';
+  }
 
-  const { error } = await supabase.from('service_requests').insert({
+  const date_needed = usrReqDate ? usrReqDate.value : '';
+  const meta = currentUser.user_metadata || {};
+  const name = meta.full_name || (profileDisplayName ? profileDisplayName.textContent : 'Verified Resident');
+  const phone = meta.phone || (profPhone ? profPhone.value.trim() : '') || '—';
+  const email = currentUser.email;
+  const notes = usrReqNotes ? usrReqNotes.value.trim() : '';
+
+  if (!category || !date_needed) {
+    showToast('Please select a service category and target date.', true);
+    return;
+  }
+
+  const todayStr = new Date().toLocaleDateString('en-CA');
+  if (date_needed < todayStr) {
+    showToast('Please select a date from today onward.', true);
+    return;
+  }
+
+  const submitBtn = document.getElementById('submitUserReqBtn');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Publishing…';
+  }
+
+  const newRecord = {
     neighborhood,
     category,
     date_needed,
     notes,
-    name: profileDisplayName.textContent || 'Neighbor',
-    email: currentUser.email,
+    name,
+    email,
     phone,
     status: 'new'
-  });
+  };
+
+  const { data, error } = await supabase
+    .from('service_requests')
+    .insert(newRecord)
+    .select()
+    .single();
+
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Publish to Calendar';
+  }
 
   if (error) {
-    alert('Failed to post request: ' + error.message);
+    showToast('Failed to post request: ' + error.message, true);
     return;
   }
 
-  if (userNewRequestModal) userNewRequestModal.classList.remove('open');
+  try {
+    fetch('/.netlify/functions/notify-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        category,
+        date_needed,
+        name,
+        phone,
+        email,
+        notes,
+        neighborhood
+      })
+    }).catch(() => {});
+  } catch (e) {}
+
+  window.dispatchEvent(new CustomEvent('service-request-created'));
+
+  closeNewReqModal();
   userNewRequestForm.reset();
-  loadUserServiceRequests(currentUser.email);
+  showToast('Service request published to community calendar!');
+
+  // Add to local cache and re-render instantly
+  if (data) {
+    userRequestsCache.unshift(data);
+    updateVitalityStats();
+    renderRequestsTable();
+  } else {
+    loadUserServiceRequests(currentUser.email);
+  }
+});
+
+// Reschedule Modal Handlers
+function openRescheduleModal(id, currentDate) {
+  if (!rescheduleModal) return;
+  rescheduleReqId.value = id;
+  const todayStr = new Date().toLocaleDateString('en-CA');
+  rescheduleDatePicker.min = todayStr;
+  rescheduleDatePicker.value = currentDate >= todayStr ? currentDate : todayStr;
+  rescheduleModal.style.display = 'flex';
+  trapFocus(rescheduleModal, closeRescheduleModal);
+}
+
+function closeRescheduleModal() {
+  if (rescheduleModal) rescheduleModal.style.display = 'none';
+  releaseFocus();
+}
+
+closeRescheduleModalBtn?.addEventListener('click', closeRescheduleModal);
+closeRescheduleModalBtnTop?.addEventListener('click', closeRescheduleModal);
+rescheduleModal?.addEventListener('click', (e) => {
+  if (e.target === rescheduleModal) closeRescheduleModal();
+});
+
+saveRescheduleBtn?.addEventListener('click', async () => {
+  const id = Number(rescheduleReqId.value);
+  const newDate = rescheduleDatePicker.value;
+  const todayStr = new Date().toLocaleDateString('en-CA');
+
+  if (!newDate || newDate < todayStr) {
+    showToast('Please select a valid future date.', true);
+    return;
+  }
+
+  saveRescheduleBtn.disabled = true;
+  saveRescheduleBtn.textContent = 'Updating…';
+
+  // Optimistic UI update
+  const item = userRequestsCache.find((r) => r.id === id);
+  const oldDate = item ? item.date_needed : null;
+  const oldStatus = item ? item.status : null;
+  if (item) {
+    item.date_needed = newDate;
+    item.status = 'new';
+    renderRequestsTable();
+  }
+
+  const { error } = await supabase
+    .from('service_requests')
+    .update({ date_needed: newDate, status: 'new' })
+    .eq('id', id)
+    .eq('email', currentUser.email);
+
+  saveRescheduleBtn.disabled = false;
+  saveRescheduleBtn.textContent = 'Update Date';
+
+  if (error) {
+    if (item && oldDate) {
+      item.date_needed = oldDate;
+      item.status = oldStatus;
+      renderRequestsTable();
+    }
+    showToast('Failed to reschedule: ' + error.message, true);
+    return;
+  }
+
+  closeRescheduleModal();
+  showToast('Target date updated on community calendar!');
+  updateVitalityStats();
 });
 
 // Logout Action
 logoutBtn?.addEventListener('click', async () => {
+  sessionStorage.removeItem('tn_admin_verified_email');
   await supabase.auth.signOut();
   location.href = '/account/';
 });
 
+// Global Keyboard Shortcut: Escape closes modals
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (userNewRequestModal && userNewRequestModal.style.display === 'flex') {
+      closeNewReqModal();
+    }
+    if (rescheduleModal && rescheduleModal.style.display === 'flex') {
+      closeRescheduleModal();
+    }
+  }
+});
+
+// Wire Filter & Search
+document.querySelectorAll('.tbl-filter-pill').forEach((pill) => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.tbl-filter-pill').forEach((p) => p.classList.remove('active'));
+    pill.classList.add('active');
+    currentFilter = pill.dataset.filter || 'all';
+    renderRequestsTable();
+  });
+});
+
+reqSearchInput?.addEventListener('input', (e) => {
+  currentSearchQuery = e.target.value.toLowerCase().trim();
+  renderRequestsTable();
+});
+
+function updateVitalityStats() {
+  const todayStr = new Date().toLocaleDateString('en-CA');
+  const activeReqs = userRequestsCache.filter((r) => r.status !== 'completed' && r.status !== 'closed' && r.date_needed >= todayStr);
+  const fulfilledReqs = userRequestsCache.filter((r) => r.status === 'completed' || r.status === 'closed');
+
+  if (requestsCountBadge) requestsCountBadge.textContent = userRequestsCache.length;
+  if (statActiveRequests) statActiveRequests.textContent = activeReqs.length;
+  if (statFulfilledRequests) statFulfilledRequests.textContent = fulfilledReqs.length;
+
+  if (filterAllCount) filterAllCount.textContent = userRequestsCache.length;
+  if (filterActiveCount) filterActiveCount.textContent = activeReqs.length;
+  if (filterFulfilledCount) filterFulfilledCount.textContent = fulfilledReqs.length;
+}
+
+// Render Requests Table
+function renderRequestsTable() {
+  if (!requestsTableContainer) return;
+
+  if (userRequestsCache.length === 0) {
+    if (reqFilterRibbon) reqFilterRibbon.style.display = 'none';
+    requestsTableContainer.innerHTML = `
+      <div class="portal-empty-state">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        <h3>No Service Requests Found</h3>
+        <p>
+          Need a trusted local plumber, electrician, or handyman? Post a request to schedule on your neighborhood service calendar.
+        </p>
+        <button class="auth-btn-primary" onclick="document.getElementById('openNewRequestModalBtn').click()" style="width:auto; padding:8px 20px; margin:0 auto;">
+          + Post First Service Request
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  if (reqFilterRibbon) reqFilterRibbon.style.display = 'flex';
+
+  const todayStr = new Date().toLocaleDateString('en-CA');
+
+  // Filter & Search Logic
+  const filtered = userRequestsCache.filter((r) => {
+    const isCompleted = r.status === 'completed' || r.status === 'closed';
+    const isPast = r.date_needed < todayStr && !isCompleted;
+    const isUpcomingActive = !isCompleted && !isPast;
+
+    if (currentFilter === 'active' && !isUpcomingActive) return false;
+    if (currentFilter === 'fulfilled' && !isCompleted) return false;
+
+    if (currentSearchQuery) {
+      const matchCat = (r.category || '').toLowerCase().includes(currentSearchQuery);
+      const matchNote = (r.notes || '').toLowerCase().includes(currentSearchQuery);
+      const matchNeigh = (r.neighborhood || '').toLowerCase().includes(currentSearchQuery);
+      if (!matchCat && !matchNote && !matchNeigh) return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    requestsTableContainer.innerHTML = `
+      <div class="portal-empty-state">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <h3>No Matching Requests</h3>
+        <p>No service requests matched your active filter or search keywords.</p>
+      </div>
+    `;
+    return;
+  }
+
+  requestsTableContainer.innerHTML = `
+    <div class="portal-table-shell">
+      <table class="portal-clean-table">
+        <thead>
+          <tr>
+            <th style="width:115px;">Submitted</th>
+            <th style="width:140px;">Category</th>
+            <th style="width:130px;">Neighborhood</th>
+            <th style="width:140px;">Target Date</th>
+            <th style="min-width:200px;">Service Notes</th>
+            <th style="width:140px;">Calendar Status</th>
+            <th style="width:230px; text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.map((r) => {
+            const isCompleted = r.status === 'completed' || r.status === 'closed';
+            const isPast = r.date_needed < todayStr && !isCompleted;
+            const isUpcomingActive = !isCompleted && !isPast;
+
+            let statusBadge = '';
+            let actionButtonsHtml = '';
+
+            if (isCompleted) {
+              statusBadge = `
+                <span class="status-pill fulfilled" title="Fulfilled and archived from active calendar">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Fulfilled
+                </span>
+              `;
+              actionButtonsHtml = `
+                <button class="btn-action-pill accent re-request-btn" data-id="${r.id}" title="Repeat this request on a new calendar date">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                  Request Again
+                </button>
+                <button class="btn-action-pill danger-icon delete-request-btn" data-id="${r.id}" title="Delete request">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              `;
+            } else if (isPast) {
+              statusBadge = `
+                <span class="status-pill expired" title="Target date has passed. Pick a new date to republish.">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Needs Date
+                </span>
+              `;
+              actionButtonsHtml = `
+                <button class="btn-action-pill accent reschedule-btn" data-id="${r.id}" data-date="${r.date_needed}" title="Move to a future date">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  Set New Date
+                </button>
+                <button class="btn-action-pill primary toggle-fulfill-btn" data-id="${r.id}" title="Mark as fulfilled">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Mark Done
+                </button>
+                <button class="btn-action-pill danger-icon delete-request-btn" data-id="${r.id}" title="Delete">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              `;
+            } else {
+              statusBadge = `
+                <span class="status-pill active" title="Active on community service calendar">
+                  <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+                  Live on Calendar
+                </span>
+              `;
+              actionButtonsHtml = `
+                <button class="btn-action-pill primary toggle-fulfill-btn" data-id="${r.id}" title="Mark completed">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Mark Done
+                </button>
+                <button class="btn-action-pill reschedule-btn" data-id="${r.id}" data-date="${r.date_needed}" title="Reschedule date">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  Reschedule
+                </button>
+                <a href="/${r.neighborhood}/requests/" class="btn-action-pill" target="_blank" rel="noopener noreferrer" title="View on community service calendar">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  Calendar ↗
+                </a>
+                <button class="btn-action-pill danger-icon delete-request-btn" data-id="${r.id}" title="Delete">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              `;
+            }
+
+            return `
+            <tr style="${isCompleted ? 'background:#FAF9F5;' : ''}">
+              <td><span style="font-weight:600; color:#64748B; font-size:0.84rem;">${esc(formatDate(r.created_at))}</span></td>
+              <td><strong style="color:var(--masters-green); font-size:0.92rem;">${esc(r.category)}</strong></td>
+              <td><span style="font-size:0.86rem; color:#475569;">${esc(formatNeighborhood(r.neighborhood))}</span></td>
+              <td>
+                <span style="font-weight:700; color:#1E293B; font-size:0.86rem; display:inline-flex; align-items:center; gap:6px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  ${esc(formatDate(r.date_needed))}
+                </span>
+              </td>
+              <td>
+                <div style="max-width:240px; font-size:0.84rem; color:#475569; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;" title="${esc(r.notes || '')}">
+                  ${esc(r.notes || '—')}
+                </div>
+              </td>
+              <td>${statusBadge}</td>
+              <td style="text-align:right;">
+                <div style="display:inline-flex; gap:6px; justify-content:flex-end; align-items:center; flex-wrap:wrap;">
+                  ${actionButtonsHtml}
+                </div>
+              </td>
+            </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  // Wire Mark Fulfilled Action with Optimistic UI
+  requestsTableContainer.querySelectorAll('.toggle-fulfill-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = Number(btn.dataset.id);
+      const item = userRequestsCache.find((r) => r.id === id);
+      const oldStatus = item ? item.status : 'new';
+
+      // Optimistic update
+      if (item) {
+        item.status = 'completed';
+        renderRequestsTable();
+        updateVitalityStats();
+      }
+
+      const { error } = await supabase
+        .from('service_requests')
+        .update({ status: 'completed' })
+        .eq('id', id)
+        .eq('email', currentUser.email);
+
+      if (error) {
+        if (item) {
+          item.status = oldStatus;
+          renderRequestsTable();
+          updateVitalityStats();
+        }
+        showToast('Failed to mark as fulfilled: ' + error.message, true);
+        return;
+      }
+
+      showToast('Service marked as Fulfilled!');
+    });
+  });
+
+  // Wire Request Again Action
+  requestsTableContainer.querySelectorAll('.re-request-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.id);
+      const req = userRequestsCache.find((x) => x.id === id);
+      if (req) {
+        openNewRequestModal({
+          neighborhood: req.neighborhood,
+          category: req.category,
+          notes: req.notes
+        });
+      }
+    });
+  });
+
+  // Wire Reschedule Action
+  requestsTableContainer.querySelectorAll('.reschedule-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.id);
+      const curDate = btn.dataset.date || '';
+      openRescheduleModal(id, curDate);
+    });
+  });
+
+  // Wire Delete Request Action with Optimistic UI
+  requestsTableContainer.querySelectorAll('.delete-request-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = Number(btn.dataset.id);
+      if (!(await confirmDialog('Permanently remove this service request?'))) return;
+
+      const idx = userRequestsCache.findIndex((r) => r.id === id);
+      const removedItem = userRequestsCache[idx];
+
+      // Optimistic delete
+      if (idx !== -1) {
+        userRequestsCache.splice(idx, 1);
+        renderRequestsTable();
+        updateVitalityStats();
+      }
+
+      const { error } = await supabase
+        .from('service_requests')
+        .delete()
+        .eq('id', id)
+        .eq('email', currentUser.email);
+
+      if (error) {
+        if (removedItem) {
+          userRequestsCache.splice(idx, 0, removedItem);
+          renderRequestsTable();
+          updateVitalityStats();
+        }
+        showToast('Failed to delete request: ' + error.message, true);
+        return;
+      }
+
+      showToast('Service request deleted.');
+    });
+  });
+}
+
 // Fetch User's Service Requests
 async function loadUserServiceRequests(userEmail) {
-  if (!requestsTableContainer) return;
-  requestsTableContainer.innerHTML = '<div class="empty-requests">Loading your service requests…</div>';
-
   const { data, error } = await supabase
     .from('service_requests')
     .select('*')
@@ -386,84 +968,20 @@ async function loadUserServiceRequests(userEmail) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    requestsTableContainer.innerHTML = '<div class="empty-requests">Failed to load service requests.</div>';
+    if (requestsTableContainer) {
+      requestsTableContainer.innerHTML = '<div class="portal-empty-state">Failed to load service requests.</div>';
+    }
     return;
   }
 
-  if (!data || data.length === 0) {
-    requestsTableContainer.innerHTML = `
-      <div class="empty-requests">
-        <p>You haven't submitted any service requests yet.</p>
-        <p style="margin-top: 12px;"><button class="btn-submit" onclick="document.getElementById('openNewRequestModalBtn').click()" style="width:auto; padding:8px 20px; font-size:0.875rem;">+ Post Your First Service Request</button></p>
-      </div>
-    `;
-    return;
-  }
-
-  requestsTableContainer.innerHTML = `
-    <div class="table-scroll-wrapper">
-      <table class="requests-table">
-        <thead>
-          <tr>
-            <th>Submitted</th>
-            <th>Neighborhood</th>
-            <th>Category</th>
-            <th>Date Needed</th>
-            <th>Status</th>
-            <th style="text-align:right;">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${data.map((r) => `
-            <tr>
-              <td data-label="Submitted"><span style="font-weight:500; color:#475569; font-size:0.85rem;">${esc(new Date(r.created_at).toLocaleDateString())}</span></td>
-              <td data-label="Neighborhood"><span class="status-badge" style="background:#ECFDF5; color:#065F46; border:1px solid #A7F3D0;">${esc(r.neighborhood)}</span></td>
-              <td data-label="Category"><span class="status-badge" style="background:#EFF6FF; color:#1E40AF; border:1px solid #BFDBFE;">${esc(r.category)}</span></td>
-              <td data-label="Date Needed"><span style="font-weight:600; color:#0F172A;">${esc(r.date_needed)}</span></td>
-              <td data-label="Status"><span class="status-badge ${esc(r.status || 'new')}">${esc(r.status || 'new')}</span></td>
-              <td data-label="Action" style="text-align:right;">
-                <button class="toggle-request-btn ${r.status === 'closed' ? 'reopen' : 'complete'}" data-id="${r.id}" data-status="${r.status || 'new'}">
-                  ${r.status === 'closed' ? '↺ Reopen' : '✓ Mark Completed'}
-                </button>
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-
-  requestsTableContainer.querySelectorAll('.toggle-request-btn').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const id = Number(btn.dataset.id);
-      const currentStatus = btn.dataset.status;
-      const newStatus = currentStatus === 'closed' ? 'new' : 'closed';
-
-      btn.disabled = true;
-      btn.textContent = 'Updating…';
-
-      const { error } = await supabase
-        .from('service_requests')
-        .update({ status: newStatus })
-        .eq('id', id)
-        .eq('email', userEmail);
-
-      if (error) {
-        btn.disabled = false;
-        btn.textContent = currentStatus === 'closed' ? '↺ Reopen' : '✓ Mark Completed';
-        return;
-      }
-
-      await loadUserServiceRequests(userEmail);
-    });
-  });
+  userRequestsCache = data || [];
+  updateVitalityStats();
+  renderRequestsTable();
 }
 
 // Fetch User's Referral Suggestions
 async function loadUserReferrals(userEmail) {
   const referralsContainer = document.getElementById('referralsTableContainer');
-  if (!referralsContainer) return;
-  referralsContainer.innerHTML = '<div class="empty-requests">Loading your referral suggestions…</div>';
 
   const { data, error } = await supabase
     .from('referral_suggestions')
@@ -472,112 +990,171 @@ async function loadUserReferrals(userEmail) {
     .order('created_at', { ascending: false });
 
   if (error || !data || data.length === 0) {
-    referralsContainer.innerHTML = `
-      <div class="empty-requests">
-        <p>You haven't submitted any business referral suggestions yet.</p>
-        <p style="margin-top: 12px;"><a href="/">Browse directory to suggest a recommended business</a></p>
-      </div>
-    `;
+    if (referralsCountBadge) referralsCountBadge.textContent = '0';
+    if (statReferrals) statReferrals.textContent = '0';
+    if (referralsContainer) {
+      referralsContainer.innerHTML = `
+        <div class="portal-empty-state">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+          <h3>No Referral Suggestions Yet</h3>
+          <p>
+            Know a trusted local handyman, plumber, or contractor? Recommend them to your neighbors from any neighborhood directory page.
+          </p>
+          <a href="/" class="auth-btn-primary" style="text-decoration:none; display:inline-flex; width:auto; padding:8px 20px; margin:0 auto;">
+            Browse Directory to Recommend ↗
+          </a>
+        </div>
+      `;
+    }
     return;
   }
 
-  referralsContainer.innerHTML = `
-    <div class="table-scroll-wrapper">
-      <table class="requests-table">
-        <thead>
-          <tr>
-            <th>Submitted</th>
-            <th>Business / Person</th>
-            <th>Neighborhood</th>
-            <th>Category</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${data.map((r) => `
+  if (referralsCountBadge) referralsCountBadge.textContent = data.length;
+  if (statReferrals) statReferrals.textContent = data.length;
+
+  if (referralsContainer) {
+    referralsContainer.innerHTML = `
+      <div class="portal-table-shell">
+        <table class="portal-clean-table">
+          <thead>
             <tr>
-              <td data-label="Submitted"><span style="font-weight:500; color:#475569; font-size:0.85rem;">${esc(new Date(r.created_at).toLocaleDateString())}</span></td>
-              <td data-label="Business / Person"><strong style="color:#0F172A;">${esc(r.name)}</strong></td>
-              <td data-label="Neighborhood"><span class="status-badge" style="background:#ECFDF5; color:#065F46; border:1px solid #A7F3D0;">${esc(r.neighborhood || 'N/A')}</span></td>
-              <td data-label="Category"><span class="status-badge" style="background:#EFF6FF; color:#1E40AF; border:1px solid #BFDBFE;">${esc(r.category || 'General')}</span></td>
-              <td data-label="Status"><span class="status-badge ${esc(r.status || 'new')}">${esc(r.status || 'new')}</span></td>
+              <th style="width:115px;">Submitted</th>
+              <th style="width:200px;">Business / Pro Name</th>
+              <th style="width:140px;">Neighborhood</th>
+              <th style="width:140px;">Category</th>
+              <th style="min-width:200px;">Recommendation Note</th>
+              <th style="width:130px;">Review Status</th>
             </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
+          </thead>
+          <tbody>
+            ${data.map((r) => {
+              let statusPill = '<span class="status-pill expired">Under Review</span>';
+              if (r.status === 'approved') {
+                statusPill = '<span class="status-pill active"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Published</span>';
+              } else if (r.status === 'rejected') {
+                statusPill = '<span class="status-pill fulfilled">Declined</span>';
+              }
+
+              return `
+              <tr>
+                <td><span style="font-weight:600; color:#64748B; font-size:0.84rem;">${esc(formatDate(r.created_at))}</span></td>
+                <td><strong style="color:var(--masters-green); font-size:0.92rem;">${esc(r.name)}</strong></td>
+                <td><span style="font-size:0.86rem; color:#475569;">${esc(formatNeighborhood(r.neighborhood))}</span></td>
+                <td><span style="font-size:0.86rem; color:#475569;">${esc(r.category || 'General')}</span></td>
+                <td>
+                  <div style="font-size:0.84rem; color:#475569; line-height:1.45; max-width:280px;" title="${esc(r.notes || '')}">
+                    ${esc(r.notes || '—')}
+                  </div>
+                </td>
+                <td>${statusPill}</td>
+              </tr>
+            `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
 }
 
 // Saved Listings Manager
 async function loadSavedListings(userEmail) {
   const container = document.getElementById('savedContainer');
-  if (!container) return;
-  container.innerHTML = '<div class="empty-requests">Loading your saved recommendations…</div>';
 
   const savedIds = JSON.parse(localStorage.getItem(`saved_listings_${userEmail}`) || '[]');
   if (savedIds.length === 0) {
-    container.innerHTML = `
-      <div class="empty-requests">
-        <p>You haven't saved any recommendations yet.</p>
-        <p style="margin-top: 8px;"><a href="/">Browse your neighborhood directory and click ⭐ to save providers!</a></p>
-      </div>
-    `;
+    if (savedCountBadge) savedCountBadge.textContent = '0';
+    if (statSavedProviders) statSavedProviders.textContent = '0';
+    if (container) {
+      container.innerHTML = `
+        <div class="portal-empty-state">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <h3>No Saved Providers</h3>
+          <p>
+            Bookmark top-rated local professionals while exploring your neighborhood directory for quick one-tap access here.
+          </p>
+          <a href="/" class="auth-btn-primary" style="text-decoration:none; display:inline-flex; width:auto; padding:8px 20px; margin:0 auto;">
+            Explore Neighborhood Directories ↗
+          </a>
+        </div>
+      `;
+    }
     return;
   }
 
   const { data } = await supabase.from('listings').select('*').in('id', savedIds);
   if (!data || data.length === 0) {
-    container.innerHTML = '<div class="empty-requests">No saved recommendations found.</div>';
+    if (savedCountBadge) savedCountBadge.textContent = '0';
+    if (statSavedProviders) statSavedProviders.textContent = '0';
+    if (container) {
+      container.innerHTML = `
+        <div class="portal-empty-state">
+          <h3>No matching saved recommendations found.</h3>
+        </div>
+      `;
+    }
     return;
   }
 
-  container.innerHTML = `
-    <div class="saved-grid">
-      ${data.map((l) => `
-        <div class="saved-card">
-          <div>
-            <div class="saved-card-title">${esc(l.name)}</div>
-            <div class="saved-card-sub">${esc(l.neighborhood_slug)} · ${esc(l.phone)}</div>
-            <p style="font-size:0.85rem; color:#475569; margin:0;">${esc(l.note || 'Recommended Local Provider')}</p>
-          </div>
-          <div class="saved-card-actions">
-            <a href="tel:${esc(l.phone)}" class="toggle-request-btn complete" style="text-decoration:none;">📞 Call</a>
-            <button class="toggle-request-btn reopen remove-saved-btn" data-id="${l.id}">Remove</button>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
+  if (savedCountBadge) savedCountBadge.textContent = data.length;
+  if (statSavedProviders) statSavedProviders.textContent = data.length;
 
-  container.querySelectorAll('.remove-saved-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const id = Number(btn.dataset.id);
-      const updated = savedIds.filter((sId) => sId !== id);
-      localStorage.setItem(`saved_listings_${userEmail}`, JSON.stringify(updated));
-      loadSavedListings(userEmail);
+  if (container) {
+    container.innerHTML = `
+      <div class="saved-grid-deck">
+        ${data.map((l) => `
+          <div class="saved-provider-card">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                <h4 style="font-family:'EB Garamond', serif; margin:0; font-size:1.3rem; color:var(--masters-green); font-weight:600;">${esc(l.name)}</h4>
+                <span class="status-pill active">${esc(formatNeighborhood(l.neighborhood_slug))}</span>
+              </div>
+              <p style="font-size:0.86rem; color:#475569; margin:0 0 16px 0; line-height:1.45;">${esc(l.note || 'Verified local service provider.')}</p>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #E2E8F0; padding-top:14px;">
+              <div style="display:flex; gap:6px;">
+                ${l.phone ? `
+                  <a href="tel:${esc(l.phone)}" class="btn-action-pill primary">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    ${esc(l.phone)}
+                  </a>
+                ` : ''}
+                ${l.website ? `
+                  <a href="${esc(l.website)}" target="_blank" rel="noopener noreferrer" class="btn-action-pill" title="Open website">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  </a>
+                ` : ''}
+              </div>
+              <button class="btn-action-pill danger-icon remove-saved-btn" data-id="${l.id}" title="Remove bookmark">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    container.querySelectorAll('.remove-saved-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.dataset.id);
+        const updated = savedIds.filter((sId) => sId !== id);
+        localStorage.setItem(`saved_listings_${userEmail}`, JSON.stringify(updated));
+        showToast('Removed from saved recommendations.');
+        loadSavedListings(userEmail);
+      });
     });
-  });
+  }
 }
 
-let currentUser = null;
-
-// Page Initialization
+// Page Initialization with Concurrent Parallel Data Loading
 async function initPage() {
-  if (window.location.hash.includes('access_token=') || window.location.search.includes('code=')) {
-    if (authNotice) {
-      authNotice.style.display = 'block';
-      authNotice.textContent = 'Verifying your account session…';
-    }
-  }
-
   const session = await getSession();
 
   if (session && session.user) {
     currentUser = session.user;
-    if (mainContainer) mainContainer.classList.add('wide');
     if (authFormCard) authFormCard.style.display = 'none';
     if (profileCard) profileCard.style.display = 'block';
+    if (headerLoggedInActions) headerLoggedInActions.style.display = 'flex';
 
     const user = session.user;
     const meta = user.user_metadata || {};
@@ -586,38 +1163,33 @@ async function initPage() {
     const avatarUrl = meta.avatar_url || '/images/default-avatar.jpg';
     const neighborhood = meta.neighborhood_slug || 'onion-creek';
 
-    if (profileDisplayName) profileDisplayName.textContent = name || 'Neighbor';
+    if (profileDisplayName) profileDisplayName.textContent = formatNameTitle(name) || 'Neighbor';
     if (profileDisplayEmail) profileDisplayEmail.textContent = user.email || '';
     if (userAvatarImg) userAvatarImg.src = avatarUrl;
     if (profName) profName.value = name;
     if (profPhone) profPhone.value = phone;
     if (profNeighborhood) profNeighborhood.value = neighborhood;
 
-    if (neighborhoodBadge) {
-      const neighLabel = {
-        'onion-creek': 'Onion Creek',
-        'avery-ranch': 'Avery Ranch',
-        'circle-c': 'Circle C',
-        'sunfield': 'Sunfield'
-      }[neighborhood] || neighborhood;
-      neighborhoodBadge.textContent = `Verified ${neighLabel} Neighbor`;
-    }
+    updateNeighborhoodContext(neighborhood);
 
-    loadUserServiceRequests(user.email);
+    // Parallel concurrent loading for peak performance
+    await Promise.all([
+      loadUserServiceRequests(user.email),
+      loadSavedListings(user.email),
+      loadUserReferrals(user.email)
+    ]);
   } else {
     currentUser = null;
-    if (mainContainer) mainContainer.classList.remove('wide');
     if (authFormCard) authFormCard.style.display = 'block';
     if (profileCard) profileCard.style.display = 'none';
+    if (headerLoggedInActions) headerLoggedInActions.style.display = 'none';
     clearMessages();
   }
 }
 
-// React to auth state changes dynamically
-supabase.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-    initPage();
-  } else if (event === 'SIGNED_OUT') {
+// Auth State Listener
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED' || event === 'SIGNED_OUT') {
     initPage();
   }
 });

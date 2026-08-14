@@ -42,6 +42,12 @@ const modalDateTitle = document.getElementById('modalDateTitle');
 const modalSubTitle = document.getElementById('modalSubTitle');
 const modalBody = document.getElementById('modalBody');
 
+// Admin In-Page Edit Modal Elements
+const adminRequestEditModal = document.getElementById('adminRequestEditModal');
+const adminRequestEditForm = document.getElementById('adminRequestEditForm');
+const closeAdminEditBtn = document.getElementById('closeAdminEditBtn');
+const closeAdminEditModalBtn = document.getElementById('closeAdminEditModalBtn');
+
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
@@ -53,6 +59,7 @@ let currentMonth = todayDate.getMonth();
 
 let isAuthenticated = false;
 let currentUser = null;
+let userIsAdmin = false;
 let rawRequests = [];
 let groupedMap = {};
 
@@ -70,6 +77,12 @@ function isOwner(item) {
   if (item.user_id && item.user_id === currentUser.id) return true;
   if (item.email && currentUser.email && item.email.toLowerCase() === currentUser.email.toLowerCase()) return true;
   return false;
+}
+
+function isPastDate(dateStr) {
+  if (!dateStr) return false;
+  const todayStr = new Date().toLocaleDateString('en-CA');
+  return dateStr < todayStr;
 }
 
 function getFilteredRequests() {
@@ -169,10 +182,73 @@ function closeModal() {
   releaseFocus();
 }
 
+function closeAdminModal() {
+  if (adminRequestEditModal) adminRequestEditModal.style.display = 'none';
+}
+
 closeDetailModalBtn?.addEventListener('click', closeModal);
 requestDetailModal?.addEventListener('click', (e) => {
   if (e.target === requestDetailModal) closeModal();
 });
+
+closeAdminEditBtn?.addEventListener('click', closeAdminModal);
+closeAdminEditModalBtn?.addEventListener('click', closeAdminModal);
+adminRequestEditModal?.addEventListener('click', (e) => {
+  if (e.target === adminRequestEditModal) closeAdminModal();
+});
+
+// Admin In-Page Edit Form Submit
+adminRequestEditForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('admEditId').value;
+  const saveBtn = document.getElementById('saveAdminEditBtn');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+  }
+
+  const updates = {
+    category: document.getElementById('admEditCategory').value.trim(),
+    date_needed: document.getElementById('admEditDate').value,
+    status: document.getElementById('admEditStatus').value,
+    name: document.getElementById('admEditName').value.trim(),
+    phone: document.getElementById('admEditPhone').value.trim(),
+    email: document.getElementById('admEditEmail').value.trim(),
+    notes: document.getElementById('admEditNotes').value.trim()
+  };
+
+  const { error } = await supabase.from('service_requests').update(updates).eq('id', id);
+
+  if (saveBtn) {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Changes';
+  }
+
+  if (error) {
+    alert('Failed to update request: ' + error.message);
+    return;
+  }
+
+  closeAdminModal();
+  closeModal();
+  await reloadData();
+});
+
+function openAdminEditModal(reqId) {
+  const req = rawRequests.find((r) => String(r.id) === String(reqId));
+  if (!req) return;
+
+  document.getElementById('admEditId').value = req.id;
+  document.getElementById('admEditCategory').value = req.category || '';
+  document.getElementById('admEditDate').value = req.date_needed || '';
+  document.getElementById('admEditStatus').value = req.status || 'new';
+  document.getElementById('admEditName').value = req.name || '';
+  document.getElementById('admEditPhone').value = req.phone || '';
+  document.getElementById('admEditEmail').value = req.email || '';
+  document.getElementById('admEditNotes').value = req.notes || '';
+
+  if (adminRequestEditModal) adminRequestEditModal.style.display = 'flex';
+}
 
 function openDetailModal(dateStr, dateData) {
   if (!requestDetailModal || !dateData) return;
@@ -217,29 +293,57 @@ function openDetailModal(dateStr, dateData) {
       <div style="display: flex; flex-direction: column; gap: 16px;">
         ${dateData.items.map((item) => {
           const mine = isOwner(item);
+          const canManage = mine || userIsAdmin;
+          const isCompleted = (item.status || '').toLowerCase() === 'completed';
+          const isPast = isPastDate(item.date_needed);
+
+          let statusBadgeHTML = '';
+          if (isCompleted) {
+            statusBadgeHTML = '<span class="status-badge completed">✓ Fulfilled</span>';
+          } else if (isPast) {
+            statusBadgeHTML = '<span class="status-badge past">⏰ Past Date</span>';
+          } else {
+            statusBadgeHTML = `<span class="status-badge ${esc(item.status || 'new')}">${esc(item.status || 'new')}</span>`;
+          }
+
           return `
-            <div class="request-card" style="margin-bottom: 0; ${mine ? 'border-left: 4px solid #F59E0B; background: #FFFDF5;' : ''}">
+            <div class="request-card ${isCompleted ? 'is-completed' : ''}" style="margin-bottom: 0; ${mine && !isCompleted ? 'border-left: 4px solid #F59E0B; background: #FFFDF5;' : ''} ${isCompleted ? 'border-left: 4px solid #94A3B8 !important; background: #F8FAFC !important;' : ''}">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <strong style="color: #064E3B; font-size: 1rem;">${esc(item.category)}</strong>
+                  <strong class="${isCompleted ? 'strikethrough' : ''}" style="color: #064E3B; font-size: 1rem;">${esc(item.category)}</strong>
                   ${mine ? `<span class="owner-badge">🌟 Your Request</span>` : ''}
+                  ${userIsAdmin ? `<span class="owner-badge" style="background:#EEF2FF; color:#4338CA; border-color:#C7D2FE;">🛡️ Admin</span>` : ''}
                 </div>
-                <span class="status-badge ${esc(item.status || 'new')}">${esc(item.status || 'new')}</span>
+                ${statusBadgeHTML}
               </div>
-              <p style="margin: 4px 0; color: #111827; font-size: 0.95rem;">
+              <p class="${isCompleted ? 'strikethrough' : ''}" style="margin: 4px 0; color: #111827; font-size: 0.95rem;">
                 <strong>${esc(item.name || 'Neighbor')}</strong>
               </p>
-              <p style="margin: 4px 0; font-size: 0.9rem;">
+              <p class="${isCompleted ? 'strikethrough' : ''}" style="margin: 4px 0; font-size: 0.9rem;">
                 📞 <a href="tel:${esc(item.phone)}" style="color: #047857; font-weight: 600;">${esc(item.phone)}</a>
                 ${item.email ? ` &nbsp;·&nbsp; ✉️ <a href="mailto:${esc(item.email)}" style="color: #047857;">${esc(item.email)}</a>` : ''}
               </p>
-              ${item.notes ? `<p style="margin: 8px 0 0 0; background: #F8FAFC; padding: 10px 12px; border-radius: 6px; font-size: 0.88rem; color: #334155; border: 1px solid #E2E8F0;">"${esc(item.notes)}"</p>` : ''}
+              ${item.notes ? `<p class="${isCompleted ? 'strikethrough' : ''}" style="margin: 8px 0 0 0; background: #F8FAFC; padding: 10px 12px; border-radius: 6px; font-size: 0.88rem; color: #334155; border: 1px solid #E2E8F0;">"${esc(item.notes)}"</p>` : ''}
               
-              ${mine ? `
+              ${canManage ? `
                 <div class="owner-actions-row">
-                  <button class="btn-owner-action complete" data-req-id="${item.id}" type="button">
-                    ✓ Mark as Fulfilled
-                  </button>
+                  ${isCompleted ? `
+                    <button class="btn-owner-action reopen" data-req-id="${item.id}" data-next-status="new" type="button" title="Reopen this service request">
+                      ↺ Reopen Request
+                    </button>
+                  ` : `
+                    <button class="btn-owner-action complete" data-req-id="${item.id}" data-next-status="completed" type="button">
+                      ✓ Mark as Fulfilled
+                    </button>
+                    <button class="btn-owner-action reschedule" data-req-id="${item.id}" data-current-date="${item.date_needed}" type="button">
+                      📅 Reschedule
+                    </button>
+                  `}
+                  ${userIsAdmin ? `
+                    <button class="btn-owner-action admin-edit" data-req-id="${item.id}" type="button">
+                      🛡️ Admin Edit
+                    </button>
+                  ` : ''}
                   <button class="btn-owner-action cancel" data-req-id="${item.id}" type="button">
                     ✕ Cancel Request
                   </button>
@@ -252,14 +356,46 @@ function openDetailModal(dateStr, dateData) {
     `;
 
     // Wire owner action buttons
-    modalBody.querySelectorAll('.btn-owner-action.complete').forEach((btn) => {
+    modalBody.querySelectorAll('.btn-owner-action.complete, .btn-owner-action.reopen').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.reqId;
+        const nextStatus = btn.dataset.nextStatus || 'completed';
         btn.disabled = true;
         btn.textContent = 'Updating…';
-        await supabase.from('service_requests').update({ status: 'completed' }).eq('id', id);
+        await supabase.from('service_requests').update({ status: nextStatus }).eq('id', id);
         await reloadData();
         closeModal();
+      });
+    });
+
+    modalBody.querySelectorAll('.btn-owner-action.reschedule').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.reqId;
+        const currentDate = btn.dataset.currentDate || '';
+        const todayStr = new Date().toLocaleDateString('en-CA');
+        const newDate = prompt(`Select new date for this service request (YYYY-MM-DD):`, currentDate > todayStr ? currentDate : todayStr);
+        if (!newDate) return;
+        if (newDate < todayStr) {
+          alert('Please choose a date from today onward.');
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Rescheduling…';
+        const { error } = await supabase.from('service_requests').update({ date_needed: newDate }).eq('id', id);
+        if (error) {
+          alert('Failed to reschedule: ' + error.message);
+          btn.disabled = false;
+          btn.textContent = '📅 Reschedule';
+          return;
+        }
+        await reloadData();
+        closeModal();
+      });
+    });
+
+    modalBody.querySelectorAll('.btn-owner-action.admin-edit').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        openAdminEditModal(btn.dataset.reqId);
       });
     });
 
@@ -287,6 +423,7 @@ function renderCalendar() {
 
   currentMonthLabel.textContent = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
   const days = getMonthMatrix(currentYear, currentMonth);
+  const todayStr = new Date().toLocaleDateString('en-CA');
 
   calendarGrid.innerHTML = days.map((day) => {
     const dayData = groupedMap[day.dateStr];
@@ -298,10 +435,14 @@ function renderCalendar() {
     if (dayData && dayData.categories) {
       demandHTML = Object.entries(dayData.categories).map(([cat, count]) => {
         const isMyCat = dayData.items?.some((it) => isOwner(it) && it.category === cat);
+        const catItems = dayData.items?.filter((it) => it.category === cat) || [];
+        const isCatCompleted = catItems.length > 0 && catItems.every((it) => (it.status || '').toLowerCase() === 'completed');
+        const isCatPast = day.dateStr < todayStr && !isCatCompleted;
         return `
-          <div class="demand-pill ${!isAuthenticated ? 'locked' : ''} ${isMyCat ? 'is-mine' : ''}">
-            <span>${!isAuthenticated ? '🔒 ' : (isMyCat ? '🌟 ' : '')}${esc(cat)}</span>
-            <span>(${count})</span>
+          <div class="demand-pill ${!isAuthenticated ? 'locked' : ''} ${isMyCat ? 'is-mine' : ''} ${isCatCompleted ? 'is-completed' : ''} ${isCatPast ? 'is-past' : ''}">
+            <span class="${isCatCompleted ? 'pill-strikethrough' : ''}">${!isAuthenticated ? '🔒 ' : (isMyCat ? '🌟 ' : '')}${isCatPast ? '⏰ ' : ''}${esc(cat)}</span>
+            <span class="${isCatCompleted ? 'pill-strikethrough' : ''}">(${count})</span>
+            ${isCatCompleted ? `<span class="pill-check">✓</span>` : ''}
           </div>
         `;
       }).join('');
@@ -338,6 +479,7 @@ function renderList() {
   if (!requestsListContent) return;
 
   const filtered = getFilteredRequests();
+  const todayStr = new Date().toLocaleDateString('en-CA');
 
   if (filtered.length === 0) {
     requestsListContent.innerHTML = `
@@ -370,28 +512,67 @@ function renderList() {
         </div>
       `).join('');
   } else {
-    // Authenticated detailed list
-    requestsListContent.innerHTML = filtered.map((r) => {
+    // Authenticated detailed list organized into Upcoming and Past
+    const upcomingList = filtered
+      .filter((r) => r.date_needed >= todayStr)
+      .sort((a, b) => a.date_needed.localeCompare(b.date_needed));
+
+    const pastList = filtered
+      .filter((r) => r.date_needed < todayStr)
+      .sort((a, b) => b.date_needed.localeCompare(a.date_needed));
+
+    const renderCard = (r) => {
       const mine = isOwner(r);
+      const canManage = mine || userIsAdmin;
+      const isCompleted = (r.status || '').toLowerCase() === 'completed';
+      const isPast = r.date_needed < todayStr;
+
+      let statusBadge = '';
+      if (isCompleted) {
+        statusBadge = '<span class="status-badge completed">✓ Fulfilled</span>';
+      } else if (isPast) {
+        statusBadge = '<span class="status-badge past">⏰ Past Date</span>';
+      } else {
+        statusBadge = `<span class="status-badge ${esc(r.status || 'new')}">${esc(r.status || 'new')}</span>`;
+      }
+
       return `
-        <div class="request-card" style="${mine ? 'border-left: 4px solid #F59E0B; background: #FFFDF5;' : ''}">
+        <div class="request-card ${isCompleted ? 'is-completed' : ''}" style="${mine && !isCompleted ? 'border-left: 4px solid #F59E0B; background: #FFFDF5;' : ''} ${isCompleted ? 'border-left: 4px solid #94A3B8 !important; background: #F8FAFC !important;' : ''}">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <strong style="color: #064E3B; font-size: 1rem;">${esc(r.category)}</strong>
+              <strong class="${isCompleted ? 'strikethrough' : ''}" style="color: #064E3B; font-size: 1rem;">${esc(r.category)}</strong>
               ${mine ? `<span class="owner-badge">🌟 Your Request</span>` : ''}
+              ${userIsAdmin ? `<span class="owner-badge" style="background:#EEF2FF; color:#4338CA; border-color:#C7D2FE;">🛡️ Admin</span>` : ''}
             </div>
-            <span style="font-size: 0.85rem; color: #64748B; font-weight: 600;">📅 ${esc(r.date_needed)}</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              ${statusBadge}
+              <span style="font-size: 0.85rem; color: #64748B; font-weight: 600;">📅 ${esc(r.date_needed)}</span>
+            </div>
           </div>
-          <p style="margin: 4px 0 2px 0; color: #111827; font-size: 0.95rem;">
+          <p class="${isCompleted ? 'strikethrough' : ''}" style="margin: 4px 0 2px 0; color: #111827; font-size: 0.95rem;">
             <strong>${esc(r.name)}</strong> — <a href="tel:${esc(r.phone)}" style="color: #047857; font-weight: 600;">${esc(r.phone)}</a>${r.email ? ` — <a href="mailto:${esc(r.email)}" style="color: #047857;">${esc(r.email)}</a>` : ''}
           </p>
-          ${r.notes ? `<p style="margin-top: 8px; font-size: 0.88rem; color: #334155; background: #F8FAFC; padding: 10px 12px; border-radius: 6px; border: 1px solid #E2E8F0;">"${esc(r.notes)}"</p>` : ''}
+          ${r.notes ? `<p class="${isCompleted ? 'strikethrough' : ''}" style="margin-top: 8px; font-size: 0.88rem; color: #334155; background: #F8FAFC; padding: 10px 12px; border-radius: 6px; border: 1px solid #E2E8F0;">"${esc(r.notes)}"</p>` : ''}
           
-          ${mine ? `
+          ${canManage ? `
             <div class="owner-actions-row">
-              <button class="btn-owner-action complete" data-req-id="${r.id}" type="button">
-                ✓ Mark as Fulfilled
-              </button>
+              ${isCompleted ? `
+                <button class="btn-owner-action reopen" data-req-id="${r.id}" data-next-status="new" type="button" title="Reopen this service request">
+                  ↺ Reopen Request
+                </button>
+              ` : `
+                <button class="btn-owner-action complete" data-req-id="${r.id}" data-next-status="completed" type="button">
+                  ✓ Mark as Fulfilled
+                </button>
+                <button class="btn-owner-action reschedule" data-req-id="${r.id}" data-current-date="${r.date_needed}" type="button">
+                  📅 Reschedule
+                </button>
+              `}
+              ${userIsAdmin ? `
+                <button class="btn-owner-action admin-edit" data-req-id="${r.id}" type="button">
+                  🛡️ Admin Edit
+                </button>
+              ` : ''}
               <button class="btn-owner-action cancel" data-req-id="${r.id}" type="button">
                 ✕ Cancel Request
               </button>
@@ -399,16 +580,68 @@ function renderList() {
           ` : ''}
         </div>
       `;
-    }).join('');
+    };
+
+    let html = '';
+    if (upcomingList.length > 0) {
+      html += `
+        <div class="requests-section-heading">
+          <span>🌟 Upcoming Requests</span>
+          <span class="requests-section-badge">${upcomingList.length}</span>
+        </div>
+        ${upcomingList.map(renderCard).join('')}
+      `;
+    }
+    if (pastList.length > 0) {
+      html += `
+        <div class="requests-section-heading">
+          <span>📜 Past &amp; Previous Requests</span>
+          <span class="requests-section-badge">${pastList.length}</span>
+        </div>
+        ${pastList.map(renderCard).join('')}
+      `;
+    }
+    requestsListContent.innerHTML = html;
 
     // Wire list owner buttons
-    requestsListContent.querySelectorAll('.btn-owner-action.complete').forEach((btn) => {
+    requestsListContent.querySelectorAll('.btn-owner-action.complete, .btn-owner-action.reopen').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.reqId;
+        const nextStatus = btn.dataset.nextStatus || 'completed';
         btn.disabled = true;
         btn.textContent = 'Updating…';
-        await supabase.from('service_requests').update({ status: 'completed' }).eq('id', id);
+        await supabase.from('service_requests').update({ status: nextStatus }).eq('id', id);
         await reloadData();
+      });
+    });
+
+    requestsListContent.querySelectorAll('.btn-owner-action.reschedule').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.reqId;
+        const currentDate = btn.dataset.currentDate || '';
+        const todayStr = new Date().toLocaleDateString('en-CA');
+        const newDate = prompt(`Select new date for this service request (YYYY-MM-DD):`, currentDate > todayStr ? currentDate : todayStr);
+        if (!newDate) return;
+        if (newDate < todayStr) {
+          alert('Please choose a date from today onward.');
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Rescheduling…';
+        const { error } = await supabase.from('service_requests').update({ date_needed: newDate }).eq('id', id);
+        if (error) {
+          alert('Failed to reschedule: ' + error.message);
+          btn.disabled = false;
+          btn.textContent = '📅 Reschedule';
+          return;
+        }
+        await reloadData();
+      });
+    });
+
+    requestsListContent.querySelectorAll('.btn-owner-action.admin-edit').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        openAdminEditModal(btn.dataset.reqId);
       });
     });
 
@@ -470,9 +703,16 @@ async function init() {
   isAuthenticated = !!session;
   currentUser = session?.user || null;
 
-  if (isAuthenticated) {
+  if (isAuthenticated && currentUser?.email) {
     if (authPrompt) authPrompt.style.display = 'none';
+    const { data: adminRow } = await supabase
+      .from('admins')
+      .select('email')
+      .eq('email', currentUser.email)
+      .maybeSingle();
+    userIsAdmin = !!adminRow;
   } else {
+    userIsAdmin = false;
     if (authPrompt) authPrompt.style.display = 'flex';
     if (loginLink) {
       loginLink.href = `/account/?next=${encodeURIComponent(location.pathname)}`;

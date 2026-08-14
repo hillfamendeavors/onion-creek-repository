@@ -1,1145 +1,1066 @@
 ---
-import '../styles/directory.css';
+import Directory from '../layouts/Directory.astro';
 import { neighborhoods } from '../data/neighborhoods.js';
+import onionCreekGroups from '../data/onion-creek.json';
 
-const theme = neighborhoods.find((n) => n.slug === 'onion-creek').theme;
-const themeCss = `:root{${Object.entries(theme).map(([k, v]) => `${k}:${v};`).join('')}}`;
+const defaultNeighborhood = neighborhoods.find((n) => n.slug === 'onion-creek') || neighborhoods[0];
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Account & Service Requests · Trusted Neighbors</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <style is:global set:html={themeCss}></style>
-    <link
-      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --color-primary: #064E3B;
-        --color-primary-hover: #043E2F;
-        --color-accent: #D97706;
-        --color-bg: #F9FAFB;
-        --color-card: #FFFFFF;
-        --color-text-main: #111827;
-        --color-text-sub: #4B5563;
-        --color-text-muted: #6B7280;
-        --color-border: #E5E7EB;
-        --color-ring: rgba(6, 78, 59, 0.25);
-      }
+<Directory
+  title="Resident Account & Hub · Trusted Neighbors"
+  footerLabel="Trusted Neighbors Resident Portal"
+  theme={defaultNeighborhood.theme}
+>
+  <header>
+    <div class="logo-wrap">
+      <h1>Resident <span>Account &amp; Hub</span></h1>
+      <p class="header-sub">Manage your service requests, calendar appointments &amp; saved providers</p>
+      <div class="header-action-links">
+        <a class="header-link" href="/">← Neighborhood Directories</a>
+        <div id="headerLoggedInActions" style="display:none; gap:8px;">
+          <button class="header-link" id="openNewRequestModalBtn" type="button" style="background:var(--masters-yellow); color:#111; font-weight:700; border-color:var(--masters-yellow);">
+            + Post Service Request
+          </button>
+          <button class="header-link" id="logoutBtn" type="button" style="color:#fca5a5; border-color:rgba(252,165,165,0.4);">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
 
-      html, body {
-        max-width: 100vw;
-        overflow-x: hidden;
-      }
-      body {
-        font-family: 'Source Sans 3', sans-serif;
-        background: linear-gradient(180deg, #F0FDF4 0%, #FAF9F5 45%, #F1F5F9 100%);
-        color: var(--color-text-main);
-        margin: 0;
-        padding: 0;
-        min-height: 100vh;
-        overflow-wrap: break-word;
-        word-break: break-word;
-      }
+  <main class="account-portal-main" id="mainContainer">
+    <!-- Logged-Out Authentication Card -->
+    <div class="auth-card-shell" id="authFormCard">
+      <div class="auth-card-header">
+        <div class="auth-club-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Trusted Neighbors Resident Portal
+        </div>
+        <h2 id="formTitle">Resident Sign In</h2>
+        <p id="formSub">Sign in to coordinate neighborhood service appointments and access saved recommendations</p>
+      </div>
 
-      .top-bar-nav {
-        background: var(--color-primary);
-        color: #FFFFFF;
-        padding: 12px 24px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.875rem;
+      <div id="contextualReturnBanner" style="display:none;" class="auth-return-banner">
+        <span id="contextualReturnText">Returning to directory upon sign-in</span>
+      </div>
+
+      <div class="auth-tabs-segmented" role="tablist">
+        <button class="auth-tab active" id="tabLogin" role="tab" aria-selected="true">Sign In</button>
+        <button class="auth-tab" id="tabRegister" role="tab" aria-selected="false">Create Account</button>
+        <button class="auth-tab" id="tabReset" role="tab" aria-selected="false">Reset Password</button>
+      </div>
+
+      <!-- Sign In View -->
+      <div id="viewLogin" role="tabpanel">
+        <div class="auth-field">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" placeholder="you@example.com" autocomplete="username" />
+        </div>
+        <div class="auth-field">
+          <label for="login-password">Password</label>
+          <div class="pwd-field-wrap">
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+            <button type="button" class="pwd-toggle-btn" data-target="login-password" aria-label="Toggle password visibility">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="auth-btn-primary" id="loginSubmitBtn">Sign In to Resident Hub</button>
+      </div>
+
+      <!-- Register View -->
+      <div id="viewRegister" style="display:none;" role="tabpanel">
+        <div class="auth-field">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" placeholder="e.g. Jane Doe" autocomplete="name" />
+        </div>
+        <div class="auth-field">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="username" />
+        </div>
+        <div class="auth-field">
+          <label for="reg-phone">Contact Phone (Optional)</label>
+          <input type="tel" id="reg-phone" placeholder="(512) 555-0123" autocomplete="tel" />
+        </div>
+        <div class="auth-field">
+          <label for="reg-password">Password</label>
+          <div class="pwd-field-wrap">
+            <input type="password" id="reg-password" placeholder="At least 6 characters" autocomplete="new-password" />
+            <button type="button" class="pwd-toggle-btn" data-target="reg-password" aria-label="Toggle password visibility">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="auth-field">
+          <label for="reg-password-confirm">Confirm Password</label>
+          <div class="pwd-field-wrap">
+            <input type="password" id="reg-password-confirm" placeholder="Re-enter your password" autocomplete="new-password" />
+            <button type="button" class="pwd-toggle-btn" data-target="reg-password-confirm" aria-label="Toggle password visibility">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="auth-btn-primary" id="registerSubmitBtn">Create Resident Account</button>
+      </div>
+
+      <!-- Reset Password View -->
+      <div id="viewReset" style="display:none;" role="tabpanel">
+        <div class="auth-field">
+          <label for="reset-email">Email Address</label>
+          <input type="email" id="reset-email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <button class="auth-btn-primary" id="resetSubmitBtn">Send Password Reset Link</button>
+      </div>
+
+      <p class="auth-error-msg" id="authError"></p>
+      <p class="auth-success-msg" id="authNotice" style="display:none;"></p>
+    </div>
+
+    <!-- Logged-In Resident Dashboard Deck -->
+    <div id="profileCard" style="display:none;">
+      <!-- Top Bento Deck -->
+      <div class="resident-bento-grid">
+        <!-- Card 1: Resident Identity -->
+        <div class="resident-card-identity">
+          <div class="avatar-holder" id="avatarWrapper" title="Click to change avatar photo" tabindex="0" role="button" aria-label="Change profile photo">
+            <img id="userAvatarImg" src="/images/default-avatar.jpg" alt="Resident Avatar" loading="eager" />
+            <span class="avatar-camera-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </span>
+          </div>
+          <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" />
+
+          <div class="resident-meta">
+            <h2 id="profileDisplayName">Resident Name</h2>
+            <div class="resident-pills-row">
+              <span id="neighborhoodBadge" class="resident-verified-pill">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Verified Resident
+              </span>
+              <span class="resident-email-pill" id="profileDisplayEmail">user@example.com</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Vitality Metrics -->
+        <div class="resident-card-stats">
+          <div class="stat-box" title="Requests currently active on community service calendar">
+            <div class="stat-num" id="statActiveRequests">0</div>
+            <div class="stat-lbl">Active Requests</div>
+          </div>
+          <div class="stat-box" title="Completed service requests">
+            <div class="stat-num" id="statFulfilledRequests">0</div>
+            <div class="stat-lbl">Fulfilled</div>
+          </div>
+          <div class="stat-box" title="Saved local providers">
+            <div class="stat-num" id="statSavedProviders">0</div>
+            <div class="stat-lbl">Saved Pros</div>
+          </div>
+          <div class="stat-box" title="Community referrals submitted">
+            <div class="stat-num" id="statReferrals">0</div>
+            <div class="stat-lbl">Referrals</div>
+          </div>
+        </div>
+
+        <!-- Card 3: Quick Action & Neighborhood Context -->
+        <div class="resident-card-context">
+          <div class="context-top">
+            <div class="context-eyebrow">Neighborhood Directory</div>
+            <div class="context-name" id="contextNeighborhoodName">Onion Creek</div>
+          </div>
+          <div class="context-quick-links">
+            <a href="/onion-creek/requests/" id="contextCalendarLink" class="context-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Service Calendar ↗
+            </a>
+            <a href="/onion-creek/" id="contextDirectoryLink" class="context-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Browse Directory ↗
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Segmented Tab Navigation -->
+      <div class="portal-segmented-nav" role="tablist" aria-label="Account Sections">
+        <button class="portal-nav-btn active" id="tabMyRequests" role="tab" aria-selected="true" aria-controls="accViewRequests">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+          Service Calendar &amp; Requests
+          <span class="portal-badge" id="requestsCountBadge">0</span>
+        </button>
+        <button class="portal-nav-btn" id="tabMySaved" role="tab" aria-selected="false" aria-controls="accViewSaved">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Saved Providers
+          <span class="portal-badge" id="savedCountBadge">0</span>
+        </button>
+        <button class="portal-nav-btn" id="tabMyReferrals" role="tab" aria-selected="false" aria-controls="accViewReferrals">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+          My Referrals
+          <span class="portal-badge" id="referralsCountBadge">0</span>
+        </button>
+        <button class="portal-nav-btn" id="tabMySettings" role="tab" aria-selected="false" aria-controls="accViewSettings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Account Settings
+        </button>
+      </div>
+
+      <!-- Tab View 1: Service Requests -->
+      <div id="accViewRequests" role="tabpanel" aria-labelledby="tabMyRequests">
+        <!-- Fast Filter Pills Bar -->
+        <div class="table-filter-ribbon" id="reqFilterRibbon" style="display:none;">
+          <div class="filter-pills-group">
+            <button class="tbl-filter-pill active" data-filter="all">All Requests (<span id="filterAllCount">0</span>)</button>
+            <button class="tbl-filter-pill" data-filter="active">Active &amp; Upcoming (<span id="filterActiveCount">0</span>)</button>
+            <button class="tbl-filter-pill" data-filter="fulfilled">Fulfilled (<span id="filterFulfilledCount">0</span>)</button>
+          </div>
+          <div class="filter-search-wrap">
+            <input type="text" id="reqSearchInput" placeholder="Filter by category or note…" />
+          </div>
+        </div>
+
+        <div id="requestsTableContainer">
+          <!-- Skeleton Loading -->
+          <div class="skeleton-table-shell">
+            <div class="skeleton-row header-skel"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab View 2: Saved Directory Providers -->
+      <div id="accViewSaved" style="display:none;" role="tabpanel" aria-labelledby="tabMySaved">
+        <div id="savedContainer">
+          <div class="skeleton-grid-deck">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab View 3: My Referrals -->
+      <div id="accViewReferrals" style="display:none;" role="tabpanel" aria-labelledby="tabMyReferrals">
+        <div id="referralsTableContainer">
+          <div class="skeleton-table-shell">
+            <div class="skeleton-row header-skel"></div>
+            <div class="skeleton-row"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab View 4: Account Settings -->
+      <div id="accViewSettings" style="display:none;" role="tabpanel" aria-labelledby="tabMySettings">
+        <div class="portal-form-card">
+          <div class="form-card-title">
+            <h3>Resident Profile &amp; Contact Preferences</h3>
+            <p>Update your display name, contact phone, and primary neighborhood directory</p>
+          </div>
+          <form id="profileForm">
+            <div class="form-2col">
+              <div class="auth-field">
+                <label for="prof-name">Full Name</label>
+                <input type="text" id="prof-name" placeholder="Your full name" autocomplete="name" />
+              </div>
+              <div class="auth-field">
+                <label for="prof-phone">Contact Phone</label>
+                <input type="tel" id="prof-phone" placeholder="(512) 555-0123" autocomplete="tel" />
+              </div>
+              <div class="auth-field" style="grid-column: span 2;">
+                <label for="prof-neighborhood">Primary Neighborhood</label>
+                <select id="prof-neighborhood">
+                  <option value="onion-creek">Onion Creek</option>
+                  <option value="circle-c">Circle C</option>
+                  <option value="avery-ranch">Avery Ranch</option>
+                  <option value="sunfield">Sunfield</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+              <button type="submit" class="auth-btn-primary" id="updateProfileBtn" style="width:auto; padding:10px 28px;">
+                Save Preferences
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Post Service Request -->
+  <div id="userNewRequestModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="postModalTitle">
+    <div class="modal" style="max-width:520px;">
+      <button class="modal-close" id="closeUserReqModalBtnTop" aria-label="Close dialog">✕</button>
+      <h3 id="postModalTitle">Post Service Request</h3>
+      <p class="modal-sub">Coordinate service with neighbors on the community calendar</p>
+
+      <div class="modal-resident-pill" id="modalResidentPill">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Posting as <strong id="modalResidentName">Resident</strong> (<span id="modalResidentContact">user@example.com</span>)</span>
+      </div>
+
+      <form id="userNewRequestForm">
+        <div class="form-group">
+          <label for="usrReqNeighborhood">Neighborhood *</label>
+          <select id="usrReqNeighborhood" required>
+            <option value="onion-creek">Onion Creek</option>
+            <option value="circle-c">Circle C</option>
+            <option value="avery-ranch">Avery Ranch</option>
+            <option value="sunfield">Sunfield</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="usrReqCategory">Service Category *</label>
+          <select id="usrReqCategory" required>
+            <option value="">— Select a category —</option>
+            {onionCreekGroups.map((g) => (
+              <optgroup label={g.label}>
+                {g.subcategories.map((sub) => <option value={sub.name}>{sub.name}</option>)}
+              </optgroup>
+            ))}
+            <option value="Other">Other</option>
+          </select>
+          <input type="text" id="usrReqCategoryOther" placeholder="Enter custom category name" style="display:none; margin-top:8px;" />
+        </div>
+        <div class="form-group">
+          <label for="usrReqDate">Target Date for Service Calendar *</label>
+          <input type="date" id="usrReqDate" required />
+        </div>
+        <div class="form-group">
+          <label for="usrReqNotes">Details &amp; Notes</label>
+          <textarea id="usrReqNotes" placeholder="Describe what service you need or details for neighbors..."></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px; margin-top:24px;">
+          <button type="button" class="btn-action-pill" id="closeUserReqModalBtn" style="padding:9px 18px; font-size:0.86rem;">Cancel</button>
+          <button type="submit" class="submit-btn" id="submitUserReqBtn" style="margin:0; width:auto; padding:10px 22px; font-size:0.86rem;">Publish to Calendar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Reschedule Date -->
+  <div id="rescheduleModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="rescheduleModalTitle">
+    <div class="modal" style="max-width:440px;">
+      <button class="modal-close" id="closeRescheduleModalBtnTop" aria-label="Close dialog">✕</button>
+      <h3 id="rescheduleModalTitle">Reschedule Target Date</h3>
+      <p class="modal-sub">Update your appointment date on the neighborhood service calendar</p>
+
+      <input type="hidden" id="rescheduleReqId" />
+      <div class="form-group">
+        <label for="rescheduleDatePicker">New Calendar Target Date *</label>
+        <input type="date" id="rescheduleDatePicker" required />
+      </div>
+      <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px; margin-top:20px;">
+        <button type="button" class="btn-action-pill" id="closeRescheduleModalBtn" style="padding:8px 16px;">Cancel</button>
+        <button type="button" class="submit-btn" id="saveRescheduleBtn" style="margin:0; width:auto; padding:9px 20px;">Update Date</button>
+      </div>
+    </div>
+  </div>
+
+  <style is:global>
+    /* ── Global Styles for Dynamic Resident Hub Elements ── */
+    .account-portal-main {
+      max-width: 1140px;
+      width: 100%;
+      margin: 32px auto 80px auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    /* ── Auth Card (Logged Out) ── */
+    .auth-card-shell {
+      max-width: 480px;
+      margin: 40px auto;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-top: 4px solid var(--masters-green);
+      border-radius: 12px;
+      padding: 36px 32px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    }
+    .auth-card-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .auth-club-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--masters-green);
+      background: #ECFDF5;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      margin-bottom: 12px;
+      border: 1px solid #A7F3D0;
+    }
+    .auth-card-header h2 {
+      font-family: 'EB Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 500;
+      color: var(--masters-green);
+      margin-bottom: 6px;
+    }
+    .auth-card-header p {
+      font-size: 0.88rem;
+      color: #64748B;
+      line-height: 1.4;
+    }
+
+    .auth-tabs-segmented {
+      display: flex;
+      background: #F1F5F9;
+      padding: 4px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      gap: 4px;
+    }
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #64748B;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 150ms ease;
+    }
+    .auth-tab:hover { color: #1E293B; }
+    .auth-tab.active {
+      color: var(--masters-green);
+      background: #FFFFFF;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      font-weight: 700;
+    }
+
+    .auth-field {
+      margin-bottom: 16px;
+    }
+    .auth-field label {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+    .auth-field input, .auth-field select, .auth-field textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #CBD5E1;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      background: #FFFFFF;
+      color: #1E293B;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .auth-field input:focus, .auth-field select:focus, .auth-field textarea:focus {
+      outline: none;
+      border-color: var(--masters-green);
+      box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.12);
+    }
+    .pwd-field-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .pwd-field-wrap input { padding-right: 40px; }
+    .pwd-toggle-btn {
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      color: #94A3B8;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+    }
+
+    .auth-btn-primary {
+      width: 100%;
+      padding: 11px 20px;
+      background: var(--masters-green);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 150ms ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .auth-btn-primary:hover {
+      background: #022C22;
+      box-shadow: 0 4px 12px rgba(6, 78, 59, 0.25);
+    }
+    .auth-error-msg {
+      color: #DC2626;
+      font-size: 0.84rem;
+      text-align: center;
+      margin-top: 12px;
+      min-height: 1.2em;
+    }
+    .auth-success-msg {
+      color: #047857;
+      font-size: 0.84rem;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    /* ── Resident Bento Grid ── */
+    .resident-bento-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1.3fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .resident-card-identity {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-left: 4px solid var(--masters-green);
+      border-radius: 10px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    }
+    .avatar-holder {
+      position: relative;
+      cursor: pointer;
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+    }
+    .avatar-holder img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--masters-yellow);
+      background: #F8FAFC;
+    }
+    .avatar-camera-btn {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      background: var(--masters-green);
+      color: var(--masters-yellow);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .resident-meta h2 {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.65rem;
+      font-weight: 600;
+      color: var(--masters-green);
+      margin-bottom: 4px;
+      line-height: 1.1;
+    }
+    .resident-pills-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .resident-verified-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: #ECFDF5;
+      color: #065F46;
+      border: 1px solid #A7F3D0;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .resident-email-pill {
+      font-size: 0.8rem;
+      color: #64748B;
+    }
+
+    .resident-card-stats {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    }
+    .stat-box {
+      text-align: center;
+      padding: 4px 6px;
+      border-right: 1px solid #F1F5F9;
+    }
+    .stat-box:last-child {
+      border-right: none;
+    }
+    .stat-num {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--masters-green);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-lbl {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #64748B;
+      white-space: nowrap;
+    }
+
+    .resident-card-context {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    }
+    .context-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94A3B8;
+      margin-bottom: 2px;
+    }
+    .context-name {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--masters-green);
+    }
+    .context-quick-links {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .context-btn {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 4px;
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      color: #334155;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 120ms ease;
+    }
+    .context-btn:hover {
+      background: #FFFFFF;
+      border-color: var(--masters-green);
+      color: var(--masters-green);
+    }
+
+    /* ── Segmented Navigation Bar ── */
+    .portal-segmented-nav {
+      display: flex;
+      gap: 6px;
+      background: #E2E8F0;
+      padding: 4px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+    .portal-nav-btn {
+      flex: 1;
+      padding: 10px 14px;
+      border: none;
+      background: transparent;
+      color: #475569;
+      font-size: 0.86rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 140ms ease;
+    }
+    .portal-nav-btn:hover {
+      color: #0F172A;
+    }
+    .portal-nav-btn.active {
+      background: #FFFFFF;
+      color: var(--masters-green);
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+    .portal-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.06);
+      color: inherit;
+    }
+    .portal-nav-btn.active .portal-badge {
+      background: #ECFDF5;
+      color: #065F46;
+    }
+
+    /* ── Quick Filter Ribbon ── */
+    .table-filter-ribbon {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .filter-pills-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .tbl-filter-pill {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      color: #475569;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .tbl-filter-pill:hover {
+      border-color: var(--masters-green);
+      color: var(--masters-green);
+    }
+    .tbl-filter-pill.active {
+      background: var(--masters-green);
+      color: #FFFFFF;
+      border-color: var(--masters-green);
+    }
+    .filter-search-wrap input {
+      padding: 6px 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      background: #FFFFFF;
+      color: #1E293B;
+      width: 220px;
+    }
+    .filter-search-wrap input:focus {
+      outline: none;
+      border-color: var(--masters-green);
+    }
+
+    /* ── High-Craft Table Card ── */
+    .portal-table-shell {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      overflow-x: auto;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+    }
+    .portal-clean-table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+    .portal-clean-table thead tr {
+      background: #064E3B;
+    }
+    .portal-clean-table th {
+      background: #064E3B;
+      color: #FFFFFF;
+      padding: 13px 16px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 2px solid var(--masters-yellow);
+      white-space: nowrap;
+    }
+    .portal-clean-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #E2E8F0;
+      color: #1E293B;
+      vertical-align: middle;
+      background: #FFFFFF;
+    }
+    .portal-clean-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .portal-clean-table tbody tr:hover td {
+      background: #F8FAFC !important;
+    }
+
+    /* ── Semantic Badges & Action Buttons ── */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .status-pill.active {
+      background: #ECFDF5;
+      color: #065F46;
+      border: 1px solid #A7F3D0;
+    }
+    .status-pill.fulfilled {
+      background: #F1F5F9;
+      color: #475569;
+      border: 1px solid #CBD5E1;
+    }
+    .status-pill.expired {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FDE68A;
+    }
+
+    .btn-action-pill {
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      color: #1E293B;
+      transition: all 120ms ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .btn-action-pill:hover {
+      background: #F8FAFC;
+      border-color: #94A3B8;
+    }
+    .btn-action-pill.primary {
+      background: #ECFDF5;
+      color: #065F46;
+      border-color: #A7F3D0;
+      font-weight: 700;
+    }
+    .btn-action-pill.primary:hover {
+      background: #065F46;
+      color: #FFFFFF;
+      border-color: #065F46;
+    }
+    .btn-action-pill.accent {
+      background: #FEF3C7;
+      color: #92400E;
+      border-color: #FDE68A;
+      font-weight: 700;
+    }
+    .btn-action-pill.accent:hover {
+      background: #D97706;
+      color: #FFFFFF;
+      border-color: #D97706;
+    }
+    .btn-action-pill.danger-icon {
+      padding: 6px 9px;
+      color: #94A3B8;
+    }
+    .btn-action-pill.danger-icon:hover {
+      background: #FEE2E2;
+      color: #DC2626;
+      border-color: #FECACA;
+    }
+
+    /* ── Saved Providers Grid ── */
+    .saved-grid-deck {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 16px;
+    }
+    .saved-provider-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-top: 3px solid var(--masters-green);
+      border-radius: 8px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+    .saved-provider-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    /* ── Settings Form Card ── */
+    .portal-form-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 28px 32px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+    .form-card-title {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #F1F5F9;
+      padding-bottom: 12px;
+    }
+    .form-card-title h3 {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--masters-green);
+      margin-bottom: 2px;
+    }
+    .form-card-title p {
+      font-size: 0.85rem;
+      color: #64748B;
+    }
+    .form-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* ── Shimmer Skeleton Loading ── */
+    .skeleton-table-shell {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+    .skeleton-row {
+      height: 44px;
+      background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .skeleton-row.header-skel {
+      height: 38px;
+      background: #064E3B;
+      opacity: 0.15;
+    }
+    .skeleton-grid-deck {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 16px;
+    }
+    .skeleton-card {
+      height: 140px;
+      background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Perfectly Centered Empty States ── */
+    .portal-empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 56px 24px;
+      text-align: center;
+      color: #64748B;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+    .portal-empty-state svg {
+      margin: 0 auto 14px auto;
+      display: block;
+    }
+    .portal-empty-state h3 {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.45rem;
+      font-weight: 600;
+      color: var(--masters-green);
+      margin: 0 0 6px 0;
+      text-align: center;
+    }
+    .portal-empty-state p {
+      font-size: 0.9rem;
+      color: #64748B;
+      max-width: 440px;
+      margin: 0 auto 20px auto;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .resident-bento-grid {
+        grid-template-columns: 1fr;
+      }
+      .resident-card-stats {
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
-        flex-wrap: wrap;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       }
-      .top-bar-nav a {
-        color: #FDE68A;
-        text-decoration: none;
-        font-weight: 600;
-        transition: opacity 0.2s;
-        white-space: nowrap;
+      .stat-box {
+        border-right: none;
       }
-      .top-bar-nav a:hover {
-        opacity: 0.85;
+      .form-2col {
+        grid-template-columns: 1fr;
       }
-
-      .auth-container {
-        width: 100%;
-        max-width: 480px;
-        margin: 40px auto;
-        padding: 0 20px;
-        box-sizing: border-box;
-      }
-      .auth-container.wide {
-        max-width: 960px;
-      }
-
-      .auth-card {
-        background: #FFFFFF;
-        border: 1.5px solid #E2E8F0;
-        border-radius: 20px;
-        box-shadow: 0 20px 45px -10px rgba(6, 78, 59, 0.09), 0 4px 12px rgba(0, 0, 0, 0.03);
-        padding: 36px 32px;
-        position: relative;
-        transition: all 0.3s ease;
-      }
-
-      .contextual-banner {
-        background: #ECFDF5;
-        border: 1px solid #A7F3D0;
-        border-radius: 10px;
-        padding: 10px 14px;
-        margin-bottom: 24px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.85rem;
-        color: #065F46;
-        font-weight: 500;
-      }
-      .contextual-banner-icon {
-        font-size: 1.15rem;
-        flex-shrink: 0;
-      }
-      .contextual-banner strong {
-        font-weight: 700;
-      }
-
-      .auth-brand-badge {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        background: #ECFDF5;
-        border: 1.5px solid #A7F3D0;
-        color: #065F46;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 16px auto;
-        box-shadow: 0 2px 8px rgba(6, 95, 70, 0.1);
-      }
-      .auth-brand-badge svg {
-        width: 24px;
-        height: 24px;
-        stroke: currentColor;
-      }
-
-      .auth-header {
-        text-align: center;
-        margin-bottom: 28px;
-      }
-      .auth-header h1 {
-        font-family: 'EB Garamond', serif;
-        font-size: 2.2rem;
-        font-weight: 600;
-        color: #064E3B;
-        margin: 0 0 8px 0;
-        letter-spacing: -0.01em;
-      }
-      .auth-header p {
-        color: #64748B;
-        font-size: 0.925rem;
-        margin: 0;
-        line-height: 1.4;
-      }
-
-      /* Segmented Control Tabs for Log In / Register / Reset */
-      .auth-tabs {
-        display: flex;
-        flex-wrap: wrap;
-        background: #F1F5F9;
-        padding: 5px;
-        border-radius: 12px;
-        margin-bottom: 28px;
-        gap: 4px;
-      }
-      .auth-tab {
-        flex: 1;
-        min-width: 100px;
-        text-align: center;
-        padding: 10px 8px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #64748B;
-        background: transparent;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        white-space: nowrap;
-      }
-      .auth-tab:hover {
-        color: #0F172A;
-      }
-      .auth-tab.active {
-        color: #064E3B;
-        background: #FFFFFF;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
-        font-weight: 700;
-      }
-
-      .password-input-wrap {
-        position: relative;
-        display: flex;
-        align-items: center;
-      }
-      .password-input-wrap input {
-        padding-right: 42px !important;
-      }
-      .password-toggle-btn {
-        position: absolute;
-        right: 12px;
-        background: none;
-        border: none;
-        color: #94A3B8;
-        cursor: pointer;
-        padding: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: color 0.15s ease;
-      }
-      .password-toggle-btn:hover {
-        color: #064E3B;
-      }
-      .password-toggle-btn svg {
-        width: 18px;
-        height: 18px;
-        stroke: currentColor;
-      }
-
-      .register-perks {
-        background: #F8FAFC;
-        border: 1px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 14px 16px;
-        margin-bottom: 20px;
-        display: flex;
+      .table-filter-ribbon {
         flex-direction: column;
-        gap: 8px;
+        align-items: stretch;
       }
-      .perk-item {
-        font-size: 0.82rem;
-        color: #334155;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .perk-item span {
-        color: #059669;
-        font-weight: 700;
-      }
-
-      .auth-trust-footer {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 16px;
-        margin-top: 24px;
-        padding-top: 20px;
-        border-top: 1px solid #F1F5F9;
-        font-size: 0.75rem;
-        color: #94A3B8;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        flex-wrap: wrap;
-      }
-      .auth-trust-item {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-
-      .form-group {
-        margin-bottom: 20px;
-      }
-      .form-group label {
-        display: block;
-        font-size: 0.775rem;
-        font-weight: 700;
-        color: #475569;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 8px;
-      }
-      .form-group input, .form-group select {
+      .filter-search-wrap input {
         width: 100%;
-        box-sizing: border-box;
-        padding: 12px 16px;
-        border: 1px solid #CBD5E1;
-        border-radius: 10px;
-        font-size: 1rem; /* 16px to prevent mobile iOS zoom */
-        font-family: inherit;
-        background: #F8FAFC;
-        color: #0F172A;
-        transition: all 0.2s ease;
       }
-      .form-group input:focus, .form-group select:focus {
-        outline: none;
-        background: #FFFFFF;
-        border-color: #064E3B;
-        box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.12);
-      }
-      .field-hint {
-        font-size: 0.8rem;
-        color: #64748B;
-        margin: 6px 0 0 0;
-      }
+    }
+  </style>
 
-      .btn-submit {
-        width: 100%;
-        padding: 13px 20px;
-        background: linear-gradient(135deg, #064E3B 0%, #047857 100%);
-        color: #FFFFFF;
-        border: none;
-        border-radius: 10px;
-        font-size: 0.975rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-        margin-top: 8px;
-        box-shadow: 0 4px 12px rgba(6, 78, 59, 0.2);
-      }
-      .btn-submit:hover {
-        background: linear-gradient(135deg, #047857 0%, #065F46 100%);
-        transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(6, 78, 59, 0.28);
-      }
-      .btn-submit:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-      }
-
-      .auth-error {
-        color: #DC2626;
-        font-size: 0.875rem;
-        margin-top: 12px;
-        text-align: center;
-        min-height: 1.25em;
-      }
-      .auth-notice {
-        color: #047857;
-        font-size: 0.875rem;
-        background: #ECFDF5;
-        border: 1px solid #A7F3D0;
-        padding: 10px 14px;
-        border-radius: 8px;
-        margin-top: 12px;
-        text-align: center;
-      }
-
-      /* Profile Dashboard & Hero Header */
-      .profile-card-container {
-        width: 100%;
-        box-sizing: border-box;
-        background: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-        overflow: hidden;
-      }
-
-      .profile-hero-banner {
-        background: linear-gradient(135deg, #064E3B 0%, #047857 60%, #065F46 100%);
-        padding: 32px 36px;
-        color: #FFFFFF;
-        position: relative;
-        overflow: hidden;
-      }
-      .profile-header-content {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 20px;
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      .profile-header-actions {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .profile-user-info {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-      .avatar-wrapper {
-        position: relative;
-        cursor: pointer;
-        width: 76px;
-        height: 76px;
-        flex-shrink: 0;
-      }
-      .profile-avatar {
-        width: 76px;
-        height: 76px;
-        border-radius: 50%;
-        background: #FFFFFF;
-        color: var(--color-primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.75rem;
-        font-weight: 700;
-        object-fit: cover;
-        border: 3px solid #FDE68A;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-      .avatar-wrapper:hover .profile-avatar {
-        transform: scale(1.04);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
-      }
-      .avatar-upload-overlay {
-        position: absolute;
-        bottom: 2px;
-        right: 2px;
-        background: var(--color-accent);
-        color: white;
-        border-radius: 50%;
-        width: 26px;
-        height: 26px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid white;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-      }
-      .avatar-upload-overlay svg {
-        width: 13px;
-        height: 13px;
-        fill: currentColor;
-      }
-      .profile-user-details {
-        min-width: 0;
-      }
-      .profile-user-details h2 {
-        margin: 0;
-        font-size: 1.45rem;
-        font-weight: 700;
-        color: #FFFFFF;
-        font-family: 'Source Sans 3', sans-serif;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-        word-break: break-word;
-      }
-      .profile-user-details p {
-        margin: 4px 0 0 0;
-        font-size: 0.925rem;
-        color: #D1FAE5;
-        opacity: 0.95;
-        word-break: break-all;
-      }
-      .resident-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 14px;
-        border-radius: 20px;
-        font-size: 0.78rem;
-        font-weight: 600;
-        background: rgba(255, 255, 255, 0.2);
-        color: #FFFFFF;
-        backdrop-filter: blur(6px);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-      }
-      .resident-badge svg {
-        width: 14px;
-        height: 14px;
-        fill: #FDE68A;
-      }
-
-      .btn-header-action {
-        padding: 10px 20px;
-        background: #FDE68A;
-        color: #78350F;
-        border: none;
-        border-radius: 10px;
-        font-size: 0.875rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-      }
-      .btn-header-action:hover {
-        background: #F59E0B;
-        color: #FFFFFF;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-      }
-
-      .btn-logout {
-        padding: 10px 18px;
-        background: rgba(255, 255, 255, 0.15);
-        color: #FFFFFF;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 10px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .btn-logout:hover {
-        background: #DC2626;
-        color: #FFFFFF;
-        border-color: #DC2626;
-      }
-
-      .profile-body {
-        padding: 32px 36px;
-      }
-
-      /* Redesigned Clean Underline Sub-Tabs Navigation */
-      .account-tabs {
-        display: flex;
-        gap: 28px;
-        border-bottom: 2px solid #E2E8F0;
-        margin-bottom: 32px;
-        overflow-x: auto;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        width: 100%;
-        box-sizing: border-box;
-      }
-      .account-tabs::-webkit-scrollbar {
-        display: none;
-      }
-      .acc-tab {
-        padding: 12px 4px 16px 4px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #64748B;
-        background: none;
-        border: none;
-        border-bottom: 3px solid transparent;
-        margin-bottom: -2px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .acc-tab svg {
-        width: 18px;
-        height: 18px;
-        stroke: currentColor;
-        transition: stroke 0.2s ease;
-      }
-      .acc-tab:hover {
-        color: #0F172A;
-      }
-      .acc-tab.active {
-        color: #064E3B;
-        border-bottom-color: #064E3B;
-        font-weight: 700;
-      }
-      .acc-tab.active svg {
-        stroke: #064E3B;
-      }
-
-      .section-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #064E3B;
-        font-family: 'Source Sans 3', sans-serif;
-        margin: 0 0 20px 0;
-      }
-
-      /* Redesigned Card Containers & Forms */
-      .settings-card {
-        background: #F8FAFC;
-        border: 1px solid #E2E8F0;
-        border-radius: 16px;
-        padding: 28px;
-      }
-
-      .profile-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-      @media (max-width: 640px) {
-        .top-bar-nav {
-          justify-content: center;
-          text-align: center;
-          padding: 12px 16px;
-        }
-        .auth-container {
-          margin: 20px auto;
-          padding: 0 16px;
-        }
-        .auth-card {
-          padding: 24px 20px;
-        }
-        .profile-grid {
-          grid-template-columns: 1fr;
-        }
-        .profile-hero-banner {
-          padding: 24px 16px;
-        }
-        .profile-body {
-          padding: 24px 16px;
-        }
-        .account-tabs {
-          gap: 16px;
-        }
-      }
-
-    </style>
-
-    <!-- Global styles for dynamically injected JS tables, badges, and mobile responsiveness -->
-    <style is:global>
-      /* Table Card Wrapper */
-      .table-card {
-        border: 1px solid #E2E8F0;
-        border-radius: 14px;
-        overflow: hidden;
-        background: #FFFFFF;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-      }
-      .table-scroll-wrapper {
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      /* Desktop & Tablet Table Styles */
-      .requests-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-        font-size: 0.9rem;
-      }
-      .requests-table th {
-        background: #F8FAFC;
-        padding: 16px 20px;
-        font-weight: 700;
-        color: #475569;
-        border-bottom: 2px solid #E2E8F0;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.06em;
-        white-space: nowrap;
-      }
-      .requests-table td {
-        padding: 16px 20px;
-        border-bottom: 1px solid #F1F5F9;
-        color: #1E293B;
-        vertical-align: middle;
-      }
-      .requests-table tr:last-child td {
-        border-bottom: none;
-      }
-      .requests-table tr:hover td {
-        background: #F8FAFC;
-      }
-
-      /* Badges & Pills */
-      .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 12px;
-        border-radius: 9999px;
-        font-size: 0.78rem;
-        font-weight: 600;
-        text-transform: capitalize;
-        white-space: nowrap;
-      }
-      .status-badge.new {
-        background: #FEF3C7;
-        color: #92400E;
-        border: 1px solid #FDE68A;
-      }
-      .status-badge.contacted, .status-badge.approved {
-        background: #D1FAE5;
-        color: #065F46;
-        border: 1px solid #A7F3D0;
-      }
-      .status-badge.closed, .status-badge.rejected {
-        background: #F1F5F9;
-        color: #475569;
-        border: 1px solid #CBD5E1;
-      }
-
-      /* Empty State Container */
-      .empty-requests {
-        padding: 56px 24px;
-        text-align: center;
-        color: #64748B;
-        background: #FFFFFF;
-        border-radius: 14px;
-      }
-      .empty-requests p {
-        margin: 0;
-        font-size: 0.95rem;
-      }
-      .empty-requests a {
-        color: var(--color-primary);
-        font-weight: 600;
-        text-decoration: underline;
-      }
-
-      /* Action Buttons */
-      .toggle-request-btn {
-        padding: 8px 16px;
-        font-size: 0.825rem;
-        font-weight: 600;
-        border-radius: 8px;
-        cursor: pointer;
-        border: 1px solid var(--color-border);
-        transition: all 0.2s ease;
-        white-space: nowrap;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-      }
-      .toggle-request-btn.complete {
-        background: #ECFDF5;
-        color: #065F46;
-        border-color: #A7F3D0;
-      }
-      .toggle-request-btn.complete:hover {
-        background: #065F46;
-        color: #FFFFFF;
-        border-color: #065F46;
-      }
-      .toggle-request-btn.reopen {
-        background: #F1F5F9;
-        color: #334155;
-        border-color: #CBD5E1;
-      }
-      .toggle-request-btn.reopen:hover {
-        background: #334155;
-        color: #FFFFFF;
-      }
-
-      /* Saved Grid & Cards */
-      .saved-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
-      }
-      .saved-card {
-        border: 1px solid #E2E8F0;
-        border-radius: 14px;
-        padding: 22px;
-        background: #FFFFFF;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-      }
-      .saved-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px -5px rgba(0,0,0,0.08);
-        border-color: #CBD5E1;
-      }
-      .saved-card-title {
-        font-weight: 700;
-        font-size: 1.1rem;
-        color: #0F172A;
-        margin: 0 0 6px 0;
-      }
-      .saved-card-sub {
-        font-size: 0.85rem;
-        color: #64748B;
-        margin-bottom: 14px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .saved-card-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 18px;
-      }
-
-      /* Mobile Responsive Table Transformation (< 640px) */
-      @media (max-width: 640px) {
-        .profile-header-content {
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-        }
-        .profile-user-info {
-          flex-direction: column;
-          align-items: center;
-          width: 100%;
-        }
-        .profile-user-details {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        .profile-user-details h2 {
-          justify-content: center;
-        }
-        .profile-header-content > div:last-child {
-          width: 100%;
-          justify-content: center;
-          flex-wrap: wrap;
-        }
-        .profile-header-actions {
-          width: 100%;
-          justify-content: center;
-        }
-        .btn-header-action, .btn-logout {
-          flex: 1 1 100%;
-          justify-content: center;
-        }
-
-        .account-tabs {
-          gap: 12px;
-          padding-bottom: 8px;
-        }
-        .acc-tab {
-          font-size: 0.875rem;
-          padding: 10px 2px 12px 2px;
-        }
-
-        .requests-table, .requests-table thead, .requests-table tbody, .requests-table th, .requests-table td, .requests-table tr {
-          display: block;
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .requests-table thead {
-          display: none; /* Hide header on mobile */
-        }
-        .requests-table tr {
-          border: 1px solid #E2E8F0;
-          border-radius: 12px;
-          padding: 18px 16px;
-          margin-bottom: 16px;
-          background: #FFFFFF;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-        }
-        .requests-table tr:last-child {
-          margin-bottom: 0;
-        }
-        .requests-table td {
-          padding: 10px 0;
-          border-bottom: 1px solid #F1F5F9;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 12px;
-          text-align: right;
-        }
-        .requests-table td::before {
-          content: attr(data-label);
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: #64748B;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          text-align: left;
-          flex-shrink: 0;
-        }
-        .requests-table td:last-child {
-          margin-top: 12px;
-          padding-bottom: 0;
-          border-bottom: none;
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .requests-table td:last-child::before {
-          display: none;
-        }
-        .toggle-request-btn {
-          width: 100%;
-          justify-content: center;
-          padding: 10px 16px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="top-bar-nav">
-      <div><strong>Trusted Neighbors</strong> &nbsp;·&nbsp; Austin, Texas</div>
-      <div><a href="/">← Back to Directories</a></div>
-    </div>
-
-    <div class="auth-container" id="mainContainer">
-      <!-- Auth Form Card (Logged Out View) -->
-      <div class="auth-card" id="authFormCard">
-        <div class="auth-brand-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
-        <div class="auth-header">
-          <h1 id="formTitle">Welcome Back</h1>
-          <p id="formSub">Manage your neighbor account & service requests</p>
-        </div>
-
-        <div id="contextualReturnBanner" class="contextual-banner" style="display:none;">
-          <span class="contextual-banner-icon">📍</span>
-          <span id="contextualReturnText">Returning to directory upon sign-in</span>
-        </div>
-
-        <div class="auth-tabs">
-          <button class="auth-tab active" id="tabLogin">Log In</button>
-          <button class="auth-tab" id="tabRegister">Register</button>
-          <button class="auth-tab" id="tabReset">Forgot Password</button>
-        </div>
-
-        <!-- Log In View -->
-        <div id="viewLogin">
-          <div class="form-group">
-            <label for="login-email">Email Address *</label>
-            <input type="email" id="login-email" placeholder="you@example.com" autocomplete="username" />
-          </div>
-          <div class="form-group">
-            <label for="login-password">Password *</label>
-            <div class="password-input-wrap">
-              <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
-              <button type="button" class="password-toggle-btn" data-target="login-password" aria-label="Toggle password visibility">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-            </div>
-          </div>
-          <button class="btn-submit" id="loginSubmitBtn">Log In</button>
-        </div>
-
-        <!-- Register View -->
-        <div id="viewRegister" style="display:none;">
-          <div class="register-perks">
-            <div class="perk-item"><span>✓</span> Post verified service requests to local pros</div>
-            <div class="perk-item"><span>✓</span> Bookmark &amp; organize favorite contractors</div>
-            <div class="perk-item"><span>✓</span> Stay connected with community events</div>
-          </div>
-          <div class="form-group">
-            <label for="reg-name">Full Name *</label>
-            <input type="text" id="reg-name" placeholder="e.g. Jane Doe" autocomplete="name" />
-          </div>
-          <div class="form-group">
-            <label for="reg-email">Email Address *</label>
-            <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="username" />
-          </div>
-          <div class="form-group">
-            <label for="reg-phone">Phone Number (Optional)</label>
-            <input type="tel" id="reg-phone" placeholder="(512) 555-0123" autocomplete="tel" />
-          </div>
-          <div class="form-group">
-            <label for="reg-password">Password *</label>
-            <div class="password-input-wrap">
-              <input type="password" id="reg-password" placeholder="At least 6 characters" autocomplete="new-password" />
-              <button type="button" class="password-toggle-btn" data-target="reg-password" aria-label="Toggle password visibility">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-            </div>
-            <p class="field-hint">Must be at least 6 characters.</p>
-          </div>
-          <div class="form-group">
-            <label for="reg-password-confirm">Confirm Password *</label>
-            <div class="password-input-wrap">
-              <input type="password" id="reg-password-confirm" placeholder="Re-enter your password" autocomplete="new-password" />
-              <button type="button" class="password-toggle-btn" data-target="reg-password-confirm" aria-label="Toggle password visibility">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-            </div>
-          </div>
-          <button class="btn-submit" id="registerSubmitBtn">Create Account</button>
-        </div>
-
-        <!-- Reset Password View -->
-        <div id="viewReset" style="display:none;">
-          <div class="form-group">
-            <label for="reset-email">Email Address *</label>
-            <input type="email" id="reset-email" placeholder="you@example.com" autocomplete="email" />
-          </div>
-          <button class="btn-submit" id="resetSubmitBtn">Send Password Reset Link</button>
-        </div>
-
-        <p class="auth-error" id="authError"></p>
-        <p class="auth-notice" id="authNotice" style="display:none;"></p>
-
-        <div class="auth-trust-footer">
-          <span class="auth-trust-item"><span>🛡️</span> 100% Free</span>
-          <span class="auth-trust-item"><span>🏡</span> Verified Residents</span>
-          <span class="auth-trust-item"><span>🔒</span> Private &amp; Secure</span>
-        </div>
-      </div>
-
-      <!-- Logged-In Profile & Dashboard View -->
-      <div class="profile-card-container" id="profileCard" style="display:none;">
-        <!-- Gradient Executive Hero Banner -->
-        <div class="profile-hero-banner">
-          <div class="profile-header-content">
-            <div class="profile-user-info">
-              <div class="avatar-wrapper" id="avatarWrapper" title="Click to upload custom avatar picture">
-                <img id="userAvatarImg" class="profile-avatar" src="/images/default-avatar.jpg" alt="User Avatar" />
-                <div class="avatar-upload-overlay">
-                  <svg viewBox="0 0 24 24"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/><path d="M9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
-                </div>
-              </div>
-              <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" />
-
-              <div class="profile-user-details">
-                <h2>
-                  <span id="profileDisplayName">Neighbor</span>
-                  <span id="neighborhoodBadge" class="resident-badge">
-                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-                    Verified Neighbor
-                  </span>
-                </h2>
-                <p id="profileDisplayEmail">user@example.com</p>
-              </div>
-            </div>
-
-            <div class="profile-header-actions">
-              <button class="btn-header-action" id="openNewRequestModalBtn">+ New Service Request</button>
-              <button class="btn-logout" id="logoutBtn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                Log Out
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="profile-body">
-          <!-- Dashboard Sub-Tabs (Segmented Controls) -->
-          <div class="account-tabs">
-            <button class="acc-tab active" id="tabMyRequests">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-              My Service Requests
-            </button>
-            <button class="acc-tab" id="tabMySaved">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-              Saved Recommendations
-            </button>
-            <button class="acc-tab" id="tabMyReferrals">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              My Referrals
-            </button>
-            <button class="acc-tab" id="tabMySettings">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              Account Settings
-            </button>
-          </div>
-
-          <!-- Sub-View 1: My Requests -->
-          <div id="accViewRequests">
-            <div class="table-card">
-              <div id="requestsTableContainer">
-                <div class="empty-requests">Loading your service requests…</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sub-View 2: Saved Favorites -->
-          <div id="accViewSaved" style="display:none;">
-            <div id="savedContainer">
-              <div class="empty-requests">Loading your saved recommendations…</div>
-            </div>
-          </div>
-
-          <!-- Sub-View 3: My Referrals -->
-          <div id="accViewReferrals" style="display:none;">
-            <div class="table-card">
-              <div id="referralsTableContainer">
-                <div class="empty-requests">Loading your referral suggestions…</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sub-View 4: Settings & Profile Details -->
-          <div id="accViewSettings" style="display:none;">
-            <div class="settings-card">
-              <div class="section-title">Profile & Neighborhood Preferences</div>
-              <form id="profileForm">
-                <div class="profile-grid">
-                  <div class="form-group">
-                    <label for="prof-name">Full Name</label>
-                    <input type="text" id="prof-name" placeholder="Full Name" />
-                  </div>
-                  <div class="form-group">
-                    <label for="prof-phone">Phone Number</label>
-                    <input type="tel" id="prof-phone" placeholder="Phone Number" />
-                  </div>
-                  <div class="form-group" style="grid-column: span 2;">
-                    <label for="prof-neighborhood">Primary Neighborhood</label>
-                    <select id="prof-neighborhood">
-                      <option value="onion-creek">Onion Creek</option>
-                      <option value="avery-ranch">Avery Ranch</option>
-                      <option value="circle-c">Circle C</option>
-                      <option value="sunfield">Sunfield, Buda</option>
-                    </select>
-                    <p class="field-hint">Setting your primary neighborhood highlights your local directory and community requests.</p>
-                  </div>
-                </div>
-                <button type="submit" class="btn-submit" id="updateProfileBtn" style="width: auto; padding: 12px 28px; margin-top:16px;">Save Profile Settings</button>
-                <p class="auth-notice" id="profileNotice" style="display:none; margin-top: 12px;"></p>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal: Post New Service Request -->
-    <div id="userNewRequestModal" class="modal-overlay">
-      <div class="modal">
-        <button class="modal-close" id="closeUserNewRequestModalTop">✕</button>
-        <h3 style="margin-top:0; color:var(--color-primary); font-family:'EB Garamond', serif; font-size:1.5rem;">+ Post New Service Request</h3>
-        <form id="userNewRequestForm">
-          <div class="form-group">
-            <label for="usrReqNeighborhood">Neighborhood *</label>
-            <select id="usrReqNeighborhood" class="input" required style="margin-bottom:0;">
-              <option value="onion-creek">Onion Creek</option>
-              <option value="avery-ranch">Avery Ranch</option>
-              <option value="circle-c">Circle C</option>
-              <option value="sunfield">Sunfield, Buda</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="usrReqCategory">Service Category *</label>
-            <input type="text" id="usrReqCategory" class="input" required placeholder="e.g. Plumber, Electrician, Landscaping" />
-          </div>
-          <div class="form-group">
-            <label for="usrReqDate">Date Needed *</label>
-            <input type="date" id="usrReqDate" class="input" required />
-          </div>
-          <div class="form-group">
-            <label for="usrReqNotes">Details / Notes *</label>
-            <input type="text" id="usrReqNotes" class="input" required placeholder="Describe what help you need..." />
-          </div>
-          <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
-            <button type="button" class="btn-logout" id="closeUserReqModalBtn" style="border-radius:8px;">Cancel</button>
-            <button type="submit" class="btn-submit" style="width:auto; margin-top:0; padding:8px 20px;">Submit Request</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <script src="../scripts/account-page.js"></script>
-  </body>
-</html>
+  <script src="../scripts/account-page.js"></script>
+</Directory>

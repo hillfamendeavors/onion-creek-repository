@@ -1,0 +1,260 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Directory CMS" activeTab="directory">
+  <!-- UI/UX Pro Max KPI Metrics Bar -->
+  <div class="admin-kpi-grid">
+    <div class="admin-kpi-card">
+      <div class="admin-kpi-icon" style="background:#EFF6FF; color:#1D4ED8;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div>
+        <div class="admin-kpi-val" id="kpiTotalListings">0</div>
+        <div class="admin-kpi-label">Total Listings</div>
+      </div>
+    </div>
+    <div class="admin-kpi-card">
+      <div class="admin-kpi-icon" style="background:#FEF3C7; color:#92400E;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div>
+        <div class="admin-kpi-val" id="kpiFeaturedListings">0</div>
+        <div class="admin-kpi-label">Featured Providers</div>
+      </div>
+    </div>
+    <div class="admin-kpi-card">
+      <div class="admin-kpi-icon" style="background:#EEF2FF; color:#4338CA;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div>
+        <div class="admin-kpi-val" id="kpiSubcategoriesCount">0</div>
+        <div class="admin-kpi-label">Active Subcategories</div>
+      </div>
+    </div>
+    <div class="admin-kpi-card">
+      <div class="admin-kpi-icon" style="background:#ECFDF5; color:#065F46;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <div>
+        <div class="admin-kpi-val" id="kpiNeighborhoodsCount">4</div>
+        <div class="admin-kpi-label">Communities</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Subtab Navigation -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+    <div style="display:flex; gap:8px;">
+      <button class="btn-secondary active" id="subTabListingsBtn">Business Listings</button>
+      <button class="btn-secondary" id="subTabCategoriesBtn">Categories &amp; Groups</button>
+    </div>
+    <div id="dirListingActions">
+      <button class="btn-primary" id="openAddListingModalBtn">
+        + Add Business Listing
+      </button>
+    </div>
+    <div id="dirCategoryActions" style="display:none;">
+      <button class="btn-primary" id="addGroupBtn">
+        + Add Group
+      </button>
+    </div>
+  </div>
+
+  <!-- Listings Subtab -->
+  <div id="dir-listings">
+    <!-- Segmented Neighborhood Switcher Bar -->
+    <div class="segmented-bar" id="neighborhoodSegmentedBar">
+      <button type="button" class="segmented-item" data-neighborhood="all">
+        All Neighborhoods <span class="segmented-badge" id="countBadge-all">0</span>
+      </button>
+      <button type="button" class="segmented-item active" data-neighborhood="onion-creek">
+        Onion Creek <span class="segmented-badge" id="countBadge-onion-creek">0</span>
+      </button>
+      <button type="button" class="segmented-item" data-neighborhood="circle-c">
+        Circle C <span class="segmented-badge" id="countBadge-circle-c">0</span>
+      </button>
+      <button type="button" class="segmented-item" data-neighborhood="avery-ranch">
+        Avery Ranch <span class="segmented-badge" id="countBadge-avery-ranch">0</span>
+      </button>
+      <button type="button" class="segmented-item" data-neighborhood="sunfield">
+        Sunfield <span class="segmented-badge" id="countBadge-sunfield">0</span>
+      </button>
+    </div>
+
+    <!-- Search & Filter Toolbar -->
+    <div class="admin-toolbar" style="margin-top:0;">
+      <div class="admin-search-wrapper">
+        <span class="admin-search-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        <input type="text" id="dirSearch" class="admin-input admin-search-input" placeholder="Search by business name, phone, or description…" />
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <select id="dirCategoryFilter" class="admin-select">
+          <option value="">All Categories</option>
+        </select>
+        <button id="toggleExpandAllBtn" class="btn-secondary" title="Expand or collapse all categories">
+          Collapse All
+        </button>
+        <button id="refreshListingsBtn" class="btn-secondary" title="Refresh directory data">
+          ↺ Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Grouped Categories Directory Container -->
+    <div id="groupedDirectoryContainer" style="display:flex; flex-direction:column; gap:20px;">
+      <div class="admin-card" style="padding:48px 20px; text-align:center; color:#64748B;">
+        Loading directory hierarchy and listings…
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories Subtab -->
+  <div id="dir-categories" style="display:none;">
+    <div class="admin-card" style="padding:24px; margin-bottom:20px;">
+      <h4 style="margin:0 0 8px 0; color:#0F172A; font-size:1.15rem; font-weight:700;">Taxonomy &amp; Subcategory Manager</h4>
+      <p style="color:#64748B; font-size:0.88rem; margin:0 0 20px 0;">
+        Manage service groups, add subcategories, and customize which categories are active across neighborhoods.
+      </p>
+      <div id="groupsList"></div>
+    </div>
+  </div>
+
+  <!-- Add Listing Modal -->
+  <div id="addListingModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2100; justify-content:center; align-items:center;">
+    <div class="admin-card" style="max-width:540px; width:92%; max-height:90vh; overflow-y:auto; padding:28px; background:white;">
+      <h3 style="margin-top:0; color:var(--color-primary); font-size:1.3rem; font-weight:700;">+ Add Business Listing</h3>
+      <form id="addListingForm">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Neighborhood *</label>
+            <select id="addListNeighborhood" class="admin-select" required style="width:100%;"></select>
+          </div>
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Subcategory *</label>
+            <select id="addListSubcat" class="admin-select" required style="width:100%;"></select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Business Name *</label>
+            <input type="text" id="addListName" class="admin-input" required placeholder="Business or provider name" />
+          </div>
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Phone Number *</label>
+            <input type="tel" id="addListPhone" class="admin-input" required placeholder="(512) 555-0199" />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Email (Optional)</label>
+            <input type="email" id="addListEmail" class="admin-input" placeholder="contact@business.com" />
+          </div>
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Website (Optional)</label>
+            <input type="url" id="addListWebsite" class="admin-input" placeholder="https://www.business.com" />
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Note / Description (Optional)</label>
+          <textarea id="addListNote" class="admin-input" rows="2" placeholder="Services offered, specialties, licenses…"></textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; background:#F8FAFC; padding:12px; border-radius:8px; border:1px solid #E2E8F0;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Arrangement Position</label>
+            <select id="addListPosition" class="admin-select" style="width:100%;">
+              <option value="top">Place at Top (1st)</option>
+              <option value="bottom">Place at Bottom</option>
+            </select>
+          </div>
+          <div style="display:flex; align-items:center; padding-top:16px;">
+            <label style="font-size:0.85rem; font-weight:700; color:#0F172A; display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="addListFeatured" />
+              ⭐ Mark as Featured (Always on Top)
+            </label>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn-secondary" id="closeAddListingModalBtn">Cancel</button>
+          <button type="submit" class="btn-primary">Save Listing</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Listing Modal -->
+  <div id="editListingModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2100; justify-content:center; align-items:center;">
+    <div class="admin-card" style="max-width:540px; width:92%; max-height:90vh; overflow-y:auto; padding:28px; background:white;">
+      <h3 style="margin-top:0; color:var(--color-primary); font-size:1.3rem; font-weight:700;">✏️ Edit Business Listing</h3>
+      <form id="editListingForm">
+        <input type="hidden" id="editListId" />
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Neighborhood *</label>
+            <select id="editListNeighborhood" class="admin-select" required style="width:100%;"></select>
+          </div>
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Subcategory *</label>
+            <select id="editListSubcat" class="admin-select" required style="width:100%;"></select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Business Name *</label>
+            <input type="text" id="editListName" class="admin-input" required />
+          </div>
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Phone Number *</label>
+            <input type="tel" id="editListPhone" class="admin-input" required />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Email (Optional)</label>
+            <input type="email" id="editListEmail" class="admin-input" />
+          </div>
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Website (Optional)</label>
+            <input type="url" id="editListWebsite" class="admin-input" />
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Note / Description (Optional)</label>
+          <textarea id="editListNote" class="admin-input" rows="2"></textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; background:#F8FAFC; padding:12px; border-radius:8px; border:1px solid #E2E8F0;">
+          <div>
+            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Custom Sort Order (Lower # = Higher)</label>
+            <input type="number" id="editListSortOrder" class="admin-input" value="0" />
+          </div>
+          <div style="display:flex; align-items:center; padding-top:16px;">
+            <label style="font-size:0.85rem; font-weight:700; color:#0F172A; display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="editListFeatured" />
+              ⭐ Mark as Featured (Always on Top)
+            </label>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn-secondary" id="closeEditListingModalBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="saveEditListingBtn">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../../scripts/admin-directory.js"></script>
+</AdminLayout>

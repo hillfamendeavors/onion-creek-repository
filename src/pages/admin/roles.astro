@@ -1,0 +1,43 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Admin Roles & Permissions" activeTab="roles">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h3 style="margin:0 0 4px 0; color:var(--color-foreground); font-size:1.2rem;">Administrator Accounts</h3>
+      <p style="margin:0; font-size:0.85rem; color:#64748B;">Users with permission to manage service requests, directory content, and platform settings.</p>
+    </div>
+
+    <form id="addAdminForm" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <input type="email" id="newAdminEmail" class="admin-input" required placeholder="admin@trustedneighbors.net" style="width:240px; margin-bottom:0;" />
+      <button type="submit" id="addAdminBtn" class="btn-primary" style="font-size:0.85rem;">
+        + Add Admin
+      </button>
+    </form>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width:280px;">Administrator</th>
+            <th style="width:140px;">Role</th>
+            <th style="width:160px;">Added Date</th>
+            <th style="width:120px; text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminsBody">
+          <tr>
+            <td colspan="4" style="text-align:center; padding:36px; color:#64748B;">
+              Loading admin accounts…
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="../../scripts/admin-roles.js"></script>
+</AdminLayout>

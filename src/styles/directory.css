@@ -930,7 +930,30 @@ button, a, input, select {
   letter-spacing: 1px;
 }
 
-.modal-sub { font-size: 0.88rem; color: var(--dark-gray); opacity: 0.85; margin-bottom: 24px; line-height: 1.4; }
+.modal-sub { font-size: 0.88rem; color: var(--dark-gray); opacity: 0.85; margin-bottom: 18px; line-height: 1.4; }
+
+.modal-resident-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #065F46;
+  font-size: 0.78rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-bottom: 18px;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 1.4;
+}
+.modal-resident-pill strong {
+  font-weight: 700;
+  color: #064E3B;
+}
+.modal-resident-pill span {
+  color: #047857;
+}
 
 /* AUTH GATE VIEW IN MODAL */
 .auth-gate-icon {
@@ -1389,6 +1412,124 @@ footer strong { color: var(--masters-yellow); }
   color: #FFFFFF;
 }
 
+.btn-owner-action.reopen {
+  background: #EFF6FF;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
+}
+
+.btn-owner-action.reopen:hover {
+  background: #2563EB;
+  color: #FFFFFF;
+}
+
+.btn-owner-action.reschedule {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+.btn-owner-action.reschedule:hover {
+  background: #1D4ED8;
+  color: #FFFFFF;
+}
+
+.btn-owner-action.admin-edit {
+  background: #EEF2FF;
+  color: #4338CA;
+  border: 1px solid #C7D2FE;
+}
+
+.btn-owner-action.admin-edit:hover {
+  background: #4338CA;
+  color: #FFFFFF;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.new {
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+
+.status-badge.past {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+}
+
+.status-badge.completed {
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+  text-decoration: none !important;
+}
+
+/* List View Section Headings */
+.requests-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 0 14px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #E2E8F0;
+  color: #064E3B;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.requests-section-heading:first-of-type {
+  margin-top: 4px;
+}
+
+.requests-section-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #F1F5F9;
+  color: #475569;
+}
+
+/* Scratched-off and Grayed-out Completed Card States */
+.request-card.is-completed {
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  opacity: 0.72 !important;
+  box-shadow: none !important;
+}
+
+.request-card.is-completed:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.strikethrough,
+.pill-strikethrough {
+  text-decoration: line-through !important;
+  text-decoration-color: #64748B !important;
+  text-decoration-thickness: 1.5px !important;
+}
+
+.request-card.is-completed strong,
+.request-card.is-completed p,
+.request-card.is-completed a,
+.request-card.is-completed .request-category-title {
+  color: #64748B !important;
+}
+
 .calendar-cell.has-my-req {
   background: #FFFDF5;
   border-left: 3px solid #F59E0B;
@@ -1399,6 +1540,20 @@ footer strong { color: var(--masters-yellow); }
   border: 1px solid #FCD34D;
   color: #92400E;
   font-weight: 700;
+}
+
+.demand-pill.is-completed {
+  background: #F1F5F9 !important;
+  border-color: #CBD5E1 !important;
+  color: #64748B !important;
+  opacity: 0.7;
+}
+
+.demand-pill.is-completed .pill-check {
+  color: #059669;
+  font-weight: 700;
+  margin-left: 2px;
+  text-decoration: none !important;
 }
 
 .calendar-controls-bar {

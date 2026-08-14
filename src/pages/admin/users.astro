@@ -1,0 +1,45 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Registered Users" activeTab="users">
+  <div class="admin-toolbar">
+    <div class="admin-search-wrapper">
+      <span class="admin-search-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input type="text" id="userSearchInput" class="admin-input admin-search-input" placeholder="Search users by name, email, phone…" />
+    </div>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button id="refreshUsersBtn" class="btn-secondary" title="Refresh user list">
+        ↺ Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width:240px;">Neighbor</th>
+            <th style="width:140px;">Contact Phone</th>
+            <th style="width:120px;">Joined</th>
+            <th>Associated Service Requests</th>
+            <th style="width:200px; text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersBody">
+          <tr>
+            <td colspan="5" style="text-align:center; padding:36px; color:#64748B;">
+              Loading registered users…
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="../../scripts/admin-users.js"></script>
+</AdminLayout>

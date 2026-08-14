@@ -1,9 +1,20 @@
 ---
-// The "Suggest a Referral" modal + floating button. The neighborhood name and
-// email subject prefix are passed through to the client via data attributes
-// on #modalOverlay (read by directory.js on submit, sent to the
-// notify-referral Netlify function). `groups` is always passed by the caller.
-const { neighborhoodName, subjectPrefix, groups } = Astro.props;
+import averyRanch from '../data/avery-ranch.json';
+import circleC from '../data/circle-c.json';
+import onionCreek from '../data/onion-creek.json';
+import sunfield from '../data/sunfield.json';
+
+const fallbackGroupsBySlug = {
+  'avery-ranch': averyRanch,
+  'circle-c': circleC,
+  'onion-creek': onionCreek,
+  'sunfield': sunfield,
+};
+
+let { neighborhoodName, subjectPrefix, groups } = Astro.props;
+if (!groups || groups.length === 0) {
+  groups = onionCreek;
+}
 ---
 
 <button class="fab" id="openModal">+ Suggest a Referral</button>

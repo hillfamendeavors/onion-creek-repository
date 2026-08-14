@@ -1,13 +1,32 @@
 ---
-// "Need a Service?" modal — visitors post a request for any listed category
-// on a given date. Submits straight to Supabase (see src/lib/supabase.js).
-const { groups, neighborhood } = Astro.props;
+import averyRanch from '../data/avery-ranch.json';
+import circleC from '../data/circle-c.json';
+import onionCreek from '../data/onion-creek.json';
+import sunfield from '../data/sunfield.json';
+
+const fallbackGroupsBySlug = {
+  'avery-ranch': averyRanch,
+  'circle-c': circleC,
+  'onion-creek': onionCreek,
+  'sunfield': sunfield,
+};
+
+let { groups, neighborhood } = Astro.props;
+
+if (!groups || groups.length === 0) {
+  const slug = neighborhood?.slug;
+  if (slug && fallbackGroupsBySlug[slug]) {
+    groups = fallbackGroupsBySlug[slug];
+  } else {
+    groups = onionCreek;
+  }
+}
 ---
 
 <button class="fab fab-request" id="openRequestModal">🛠️ Need a Service?</button>
 
 <div class="modal-overlay" id="requestModalOverlay" data-neighborhood={neighborhood.slug}>
-  <div class="modal">
+  <div class="modal" style="max-width:520px;">
     <button class="modal-close" id="closeRequestModal">✕</button>
 
     <div id="requestAuthView" style="display:none; text-align:center; padding: 8px 0;">
@@ -29,41 +48,39 @@ const { groups, neighborhood } = Astro.props;
     <div id="requestFormView" style="display:none;">
       <h3>Need a Service?</h3>
       <p class="modal-sub">Tell your neighbors what you need and when — they'll reach out.</p>
+
+      <div class="modal-resident-pill" id="requestResidentPill">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Posting as <strong id="r-display-name">Resident</strong> (<span id="r-display-contact">user@example.com</span>)</span>
+      </div>
+
       <div class="form-group">
-        <label>What do you need? *</label>
+        <label for="r-category">What do you need? *</label>
         <select id="r-category">
           <option value="">— Select a category —</option>
           {groups.map((g) => (
             <optgroup label={g.label}>
-              {g.subcategories.map((sub) => <option>{sub.name}</option>)}
+              {g.subcategories.map((sub) => <option value={sub.name}>{sub.name}</option>)}
             </optgroup>
           ))}
           <option value="Other">Other</option>
         </select>
-        <input type="text" id="r-category-other" placeholder="Enter custom category" style="display:none; margin-top:8px;" />
+        <input type="text" id="r-category-other" placeholder="Enter custom category name" style="display:none; margin-top:8px;" />
       </div>
+
       <div class="form-group">
-        <label>Date Needed *</label>
+        <label for="r-date">Date Needed *</label>
         <input type="date" id="r-date" />
       </div>
+
       <div class="form-group">
-        <label>Your Name *</label>
-        <input type="text" id="r-name" placeholder="e.g. Jamie R." />
-      </div>
-      <div class="form-group">
-        <label>Phone Number *</label>
-        <input type="tel" id="r-phone" placeholder="(512) 555-0000" inputmode="tel" maxlength="14" pattern="\(\d{3}\) \d{3}-\d{4}" />
-      </div>
-      <div class="form-group">
-        <label>Email <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
-        <input type="email" id="r-email" placeholder="you@example.com" />
-      </div>
-      <div class="form-group">
-        <label>Details <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <label for="r-notes">Details &amp; Notes</label>
         <textarea id="r-notes" placeholder="e.g. Slab leak in the front yard, need it looked at ASAP"></textarea>
       </div>
-      <button class="submit-btn" id="submitRequestBtn">Submit Request</button>
+
+      <button class="submit-btn" id="submitRequestBtn" style="margin-top:18px;">Publish to Calendar</button>
     </div>
+
     <div class="thank-you" id="requestThankYouView">
       <div class="ty-icon">🛠️</div>
       <h4>Thanks, neighbor.</h4>
