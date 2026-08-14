@@ -6,13 +6,20 @@ interface Props {
   footerLabel: string;
   theme: Record<string, string>;
   description?: string;
+  noindex?: boolean;
 }
 
-const { title, footerLabel, theme, description } = Astro.props;
+const { title, footerLabel, theme, description, noindex = false } = Astro.props;
 
-const metaDescription = description || `100% neighbor-sourced local business directory for ${title}. Discover community-recommended local service providers in Austin, TX.`;
+// Brand suffix so every tab/SERP entry is attributable, without doubling it up
+// on pages that already say "Trusted Neighbors" in their own title.
+const pageTitle = title.includes('Trusted Neighbors') ? title : `${title} | Trusted Neighbors`;
+
+const metaDescription = description || 'Neighbor-sourced local business directories for Austin-area communities. Real recommendations from residents — no sponsored ads, no fake reviews.';
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://trustedneighbors.net').href;
-const ogImageUrl = new URL('/favicon.svg', Astro.site || 'https://trustedneighbors.net').href;
+// PNG, not the SVG favicon: Facebook, LinkedIn and X all reject image/svg+xml
+// for og:image, so the SVG produced a blank card on every share.
+const ogImageUrl = new URL('/favicon.png', Astro.site || 'https://trustedneighbors.net').href;
 
 // Per-neighborhood color palette, emitted as a global :root block.
 const themeCss = `:root{${Object.entries(theme)
@@ -25,20 +32,26 @@ const themeCss = `:root{${Object.entries(theme)
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
+    <title>{pageTitle}</title>
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
 
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Trusted Neighbors" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="627" />
+    <meta property="og:image:height" content="627" />
+    <meta property="og:image:alt" content="Trusted Neighbors" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
 
@@ -47,8 +60,10 @@ const themeCss = `:root{${Object.entries(theme)
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <style is:global set:html={themeCss}></style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Chronicles&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap"
       rel="stylesheet"
     />
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-QE75YFJ2ZL"></script>

@@ -3,8 +3,11 @@ Allow: /
 
 # Private / Admin routes
 Disallow: /admin/
-Disallow: /login/
 Disallow: /reset-password/
+
+# /account/ is deliberately NOT disallowed: it is linked from the top bar of
+# every page, so it must stay crawlable for Google to see its noindex tag.
+# Blocking it here would leave it indexed as a bare URL instead.
 
 # Sitemap location
 Sitemap: https://trustedneighbors.net/sitemap-index.xml

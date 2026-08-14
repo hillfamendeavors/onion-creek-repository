@@ -27,9 +27,11 @@ export default defineConfig({
   integrations: [
     logRoutes,
     sitemap({
+      // /account/ is the login + register page (it replaced the old /login/
+      // route) — it's noindex'd, so keep it out of the sitemap too.
       filter: (page) =>
         !page.includes('/admin/') &&
-        !page.includes('/login/') &&
+        !page.includes('/account/') &&
         !page.includes('/reset-password/'),
     }),
   ],

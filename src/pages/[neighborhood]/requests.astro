@@ -11,7 +11,12 @@ export async function getStaticPaths() {
 const { neighborhood, groups } = Astro.props;
 ---
 
-<Directory title={`${neighborhood.name} Requests`} footerLabel={neighborhood.footerLabel} theme={neighborhood.theme}>
+<Directory
+  title={`${neighborhood.name} Service Request Calendar`}
+  description={`See which home services your ${neighborhood.name} neighbors need and when. Share an appointment, split a trip charge, or post your own free service request.`}
+  footerLabel={neighborhood.footerLabel}
+  theme={neighborhood.theme}
+>
   <header>
     <div class="logo-wrap">
       <h1>{neighborhood.name} <span>Service Requests</span></h1>

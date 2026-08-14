@@ -313,7 +313,9 @@ function openDetailModal(dateStr, dateData) {
       <div style="display: flex; flex-direction: column; gap: 16px;">
         ${dateData.items.map((item) => {
           const mine = isOwner(item);
-          const canManage = mine || userIsAdmin;
+          // No id means this row came from the anonymous aggregate view, not the
+          // base table — never render write actions that would target `undefined`.
+          const canManage = (mine || userIsAdmin) && item.id != null;
           const isCompleted = (item.status || '').toLowerCase() === 'completed';
           const isPast = isPastDate(item.date_needed);
 
@@ -539,7 +541,7 @@ function renderList() {
     // Unlocked List View
     requestsListContent.innerHTML = sorted.map((item) => {
       const mine = isOwner(item);
-      const canManage = mine || userIsAdmin;
+      const canManage = (mine || userIsAdmin) && item.id != null;
       const isCompleted = (item.status || '').toLowerCase() === 'completed';
       const isPast = isPastDate(item.date_needed);
 
@@ -849,40 +851,19 @@ async function reloadData() {
 
 // Data Loading Init with SWR and Concurrent Parallelization
 async function init() {
-  // 1. Instant Render from Cache (0ms latency)
-  try {
-    const cachedAnon = sessionStorage.getItem(`cal_cache_${neighborhood}_anon`);
-    const cachedAuth = sessionStorage.getItem(`cal_cache_${neighborhood}_auth`);
-    const cachedData = cachedAuth || cachedAnon;
-    if (cachedData) {
-      rawRequests = JSON.parse(cachedData);
-      updateGroupedData();
-      renderCalendar();
-      renderList();
-    } else {
-      renderCalendar();
-    }
-  } catch (e) {
-    renderCalendar();
-  }
+  renderCalendar();
 
-  // 2. Parallel fetch for session and admin verification
-  const [session] = await Promise.all([
-    getSession(),
-    reloadData()
-  ]);
-
+  // 1. Resolve the session BEFORE touching data. Both reloadData()'s query and
+  //    every render branch on `isAuthenticated`; running them in parallel with
+  //    getSession() meant reloadData() always fetched the anonymous aggregate
+  //    view (neighborhood/category/date_needed/count only), which the logged-in
+  //    template then rendered as "Neighbor" with a blank phone and no row id.
+  const session = await getSession();
   isAuthenticated = !!session;
   currentUser = session?.user || null;
 
   if (isAuthenticated && currentUser?.email) {
     if (authPrompt) authPrompt.style.display = 'none';
-    const { data: adminRow } = await supabase
-      .from('admins')
-      .select('email')
-      .eq('email', currentUser.email)
-      .maybeSingle();
-    userIsAdmin = !!adminRow;
   } else {
     userIsAdmin = false;
     if (authPrompt) authPrompt.style.display = 'flex';
@@ -891,16 +872,31 @@ async function init() {
     }
   }
 
-  // Re-verify counts and badges after session resolves
-  if (isAuthenticated && currentUser) {
-    const myCount = rawRequests.filter((it) => isOwner(it)).length;
-    if (myReqCountBadge) myReqCountBadge.textContent = myCount;
-    if (filterMyRequestsBtn) {
-      filterMyRequestsBtn.style.display = myCount > 0 ? 'inline-flex' : 'none';
+  // 2. Instant render from the cache that matches this auth state (0ms latency).
+  //    Only ever read the matching key — anonymous aggregate rows and full rows
+  //    are different shapes, so crossing them is what produced the bug above.
+  try {
+    if (!isAuthenticated) sessionStorage.removeItem(`cal_cache_${neighborhood}_auth`);
+    const cachedData = sessionStorage.getItem(
+      `cal_cache_${neighborhood}_${isAuthenticated ? 'auth' : 'anon'}`
+    );
+    if (cachedData) {
+      rawRequests = JSON.parse(cachedData);
+      updateGroupedData();
+      renderCalendar();
+      renderList();
     }
-  }
+  } catch (e) {}
 
-  updateGroupedData();
+  // 3. Fresh data and the admin check can run concurrently — the admin flag only
+  //    affects which buttons render, not which rows are fetched.
+  const adminCheck = isAuthenticated && currentUser?.email
+    ? supabase.from('admins').select('email').eq('email', currentUser.email).maybeSingle()
+    : Promise.resolve({ data: null });
+
+  const [, { data: adminRow }] = await Promise.all([reloadData(), adminCheck]);
+  userIsAdmin = !!adminRow;
+
   renderCalendar();
   renderList();
 }

@@ -17,9 +17,25 @@ const total = groups.reduce(
   (sum, g) => sum + g.subcategories.reduce((s, sub) => s + sub.listings.length, 0),
   0
 );
+
+// Real category names pulled from the live data, so the meta description stays
+// accurate as the CMS adds or renames subcategories.
+const topCategories = groups
+  .flatMap((g) => g.subcategories.map((sub) => sub.name))
+  .slice(0, 4)
+  .join(', ')
+  .toLowerCase();
+
+const metaTitle = `${neighborhood.name} Local Business Directory`;
+const metaDescription = `${total} local businesses in ${neighborhood.name} recommended by your neighbors — ${topCategories} and more. No sponsored ads, no fake reviews.`;
 ---
 
-<Directory title={neighborhood.title} footerLabel={neighborhood.footerLabel} theme={neighborhood.theme}>
+<Directory
+  title={metaTitle}
+  description={metaDescription}
+  footerLabel={neighborhood.footerLabel}
+  theme={neighborhood.theme}
+>
   <header>
     <div class="logo-wrap">
       <h1>{neighborhood.name} <span>Directory</span></h1>
