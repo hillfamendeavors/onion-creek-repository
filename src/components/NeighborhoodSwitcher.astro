@@ -1,0 +1,63 @@
+---
+import { neighborhoods } from '../data/neighborhoods.js';
+
+interface Props {
+  currentSlug: string;
+  isCalendarPage?: boolean;
+  showAllLink?: boolean;
+}
+
+const { currentSlug, isCalendarPage = false, showAllLink = true } = Astro.props;
+const current = neighborhoods.find((n) => n.slug === currentSlug) || neighborhoods[0];
+---
+
+<div class="directory-nav-cluster">
+  {showAllLink && (
+    <a class="header-link" href="/">← All Directories</a>
+  )}
+  
+  <div class="neighborhood-switcher-wrap" id="neighborhoodSwitcherWrap">
+    <button
+      type="button"
+      class="neighborhood-switcher-btn"
+      id="switchDropdownBtn"
+      aria-expanded="false"
+      aria-haspopup="true"
+      aria-label={`Current directory: ${current.name}. Click to switch directory.`}
+    >
+      <svg class="pin-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span class="switcher-btn-text">Switch Directory</span>
+      <svg class="chevron-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+
+    <div class="neighborhood-dropdown-card" id="switcherDropdownCard" style="display:none;" role="menu" aria-label="Austin Neighborhood Directories">
+      <div class="dropdown-header">
+        <span>Austin Neighborhoods</span>
+      </div>
+      <div class="dropdown-items-list">
+        {neighborhoods.map((n) => {
+          const isCurrent = n.slug === currentSlug;
+          const targetUrl = isCalendarPage ? `/${n.slug}/requests/` : `/${n.slug}/`;
+
+          return (
+            <div class={`dropdown-item-row ${isCurrent ? 'is-active' : ''}`} role="none">
+              <a href={targetUrl} class="dropdown-neigh-link" role="menuitem">
+                <span class="neigh-bullet">{isCurrent ? '✓' : '•'}</span>
+                <span class="neigh-title">{n.name}</span>
+                {isCurrent && <span class="neigh-curr-tag">Active</span>}
+              </a>
+              <div class="dropdown-quick-links">
+                <a href={`/${n.slug}/`} class={`quick-sub-link ${!isCalendarPage && isCurrent ? 'sub-active' : ''}`} title={`${n.name} Directory`}>
+                  Dir
+                </a>
+                <a href={`/${n.slug}/requests/`} class={`quick-sub-link ${isCalendarPage && isCurrent ? 'sub-active' : ''}`} title={`${n.name} Service Calendar`}>
+                  Cal ↗
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</div>

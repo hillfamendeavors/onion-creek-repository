@@ -2,6 +2,7 @@ import { supabase } from '../lib/supabase.js';
 import { getSession } from '../lib/auth.js';
 import { getMonthMatrix, aggregateRequests } from '../lib/calendar.js';
 import { trapFocus, releaseFocus } from './modal-a11y.js';
+import { showToast, confirmDialog } from './ui-feedback.js';
 
 const main = document.querySelector('main[data-neighborhood]');
 const neighborhood = main?.dataset?.neighborhood || '';
@@ -35,7 +36,7 @@ const requestsListContent = document.getElementById('requestsListContent');
 // Post Request Trigger from Calendar
 const openCalendarPostReqBtn = document.getElementById('openCalendarPostReqBtn');
 
-// Modal Elements
+// Modal Elements - Request Details
 const requestDetailModal = document.getElementById('requestDetailModal');
 const closeDetailModalBtn = document.getElementById('closeDetailModalBtn');
 const modalDateTitle = document.getElementById('modalDateTitle');
@@ -47,6 +48,22 @@ const adminRequestEditModal = document.getElementById('adminRequestEditModal');
 const adminRequestEditForm = document.getElementById('adminRequestEditForm');
 const closeAdminEditBtn = document.getElementById('closeAdminEditBtn');
 const closeAdminEditModalBtn = document.getElementById('closeAdminEditModalBtn');
+
+// "Need a Service?" Modal Elements
+const reqOverlay = document.getElementById('requestModalOverlay');
+const reqOpenFab = document.getElementById('openRequestModal');
+const reqCloseBtn = document.getElementById('closeRequestModal');
+const reqSubmitBtn = document.getElementById('submitRequestBtn');
+const reqAuthView = document.getElementById('requestAuthView');
+const reqFormView = document.getElementById('requestFormView');
+const reqThankYou = document.getElementById('requestThankYouView');
+const requestLoginLink = document.getElementById('requestLoginLink');
+const rCategorySelect = document.getElementById('r-category');
+const rCategoryOther = document.getElementById('r-category-other');
+const rDateInput = document.getElementById('r-date');
+const rNotesInput = document.getElementById('r-notes');
+const rDisplayName = document.getElementById('r-display-name');
+const rDisplayContact = document.getElementById('r-display-contact');
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -70,6 +87,19 @@ function esc(str) {
   const div = document.createElement('div');
   div.textContent = str ?? '';
   return div.innerHTML;
+}
+
+function formatNameTitle(str) {
+  if (!str) return 'Resident';
+  return str.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+function formatUSPhone(value) {
+  if (!value) return '';
+  const digits = value.replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) return digits.length ? `(${digits}` : '';
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
 function isOwner(item) {
@@ -165,18 +195,7 @@ todayBtn?.addEventListener('click', () => {
   renderCalendar();
 });
 
-// Wire Post Request Modal Trigger
-openCalendarPostReqBtn?.addEventListener('click', () => {
-  const openFab = document.getElementById('openRequestModal');
-  if (openFab) {
-    openFab.click();
-  } else {
-    const overlay = document.getElementById('requestModalOverlay');
-    if (overlay) overlay.classList.add('open');
-  }
-});
-
-// Modal Logic
+// Modal Logic - Detail Modal
 function closeModal() {
   if (requestDetailModal) requestDetailModal.style.display = 'none';
   releaseFocus();
@@ -225,12 +244,13 @@ adminRequestEditForm?.addEventListener('submit', async (e) => {
   }
 
   if (error) {
-    alert('Failed to update request: ' + error.message);
+    showToast('Failed to update request: ' + error.message, true);
     return;
   }
 
   closeAdminModal();
   closeModal();
+  showToast('Service request updated!');
   await reloadData();
 });
 
@@ -376,14 +396,14 @@ function openDetailModal(dateStr, dateData) {
         const newDate = prompt(`Select new date for this service request (YYYY-MM-DD):`, currentDate > todayStr ? currentDate : todayStr);
         if (!newDate) return;
         if (newDate < todayStr) {
-          alert('Please choose a date from today onward.');
+          showToast('Please choose a date from today onward.', true);
           return;
         }
         btn.disabled = true;
         btn.textContent = 'Rescheduling…';
         const { error } = await supabase.from('service_requests').update({ date_needed: newDate }).eq('id', id);
         if (error) {
-          alert('Failed to reschedule: ' + error.message);
+          showToast('Failed to reschedule: ' + error.message, true);
           btn.disabled = false;
           btn.textContent = '📅 Reschedule';
           return;
@@ -402,13 +422,12 @@ function openDetailModal(dateStr, dateData) {
     modalBody.querySelectorAll('.btn-owner-action.cancel').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.reqId;
-        if (confirm('Are you sure you want to cancel and remove this service request?')) {
-          btn.disabled = true;
-          btn.textContent = 'Cancelling…';
-          await supabase.from('service_requests').update({ status: 'closed' }).eq('id', id);
-          await reloadData();
-          closeModal();
-        }
+        if (!(await confirmDialog('Permanently remove this service request?'))) return;
+        btn.disabled = true;
+        btn.textContent = 'Cancelling…';
+        await supabase.from('service_requests').update({ status: 'closed' }).eq('id', id);
+        await reloadData();
+        closeModal();
       });
     });
   }
@@ -430,6 +449,7 @@ function renderCalendar() {
     const totalCount = dayData ? dayData.totalCount : 0;
     const isInteractive = totalCount > 0;
     const hasMyReq = dayData?.items?.some((item) => isOwner(item));
+    const isToday = day.isCurrentMonth && day.dateStr === todayStr;
 
     let demandHTML = '';
     if (dayData && dayData.categories) {
@@ -450,8 +470,8 @@ function renderCalendar() {
 
     const cellTag = isInteractive ? 'button' : 'div';
     const cellAttrs = isInteractive
-      ? `type="button" class="calendar-cell ${hasMyReq ? 'has-my-req' : ''} ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isToday ? 'today' : ''}" data-date="${day.dateStr}"`
-      : `class="calendar-cell not-interactive ${!day.isCurrentMonth ? 'other-month' : ''} ${day.isToday ? 'today' : ''}" data-date="${day.dateStr}"`;
+      ? `type="button" class="calendar-cell ${hasMyReq ? 'has-my-req' : ''} ${!day.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}" data-date="${day.dateStr}" aria-label="${day.dateStr}: ${totalCount} request${totalCount === 1 ? '' : 's'}"`
+      : `class="calendar-cell not-interactive ${!day.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}" data-date="${day.dateStr}"`;
 
     return `
       <${cellTag} ${cellAttrs}>
@@ -459,22 +479,24 @@ function renderCalendar() {
           <span class="date-num">${day.dayNumber}</span>
           ${totalCount > 0 ? `<span class="cell-count-badge ${hasMyReq ? 'my-badge' : ''}">${totalCount}</span>` : ''}
         </div>
-        <div class="cell-demand-list">
-          ${demandHTML}
-        </div>
+        ${demandHTML ? `<div class="cell-demand-list">${demandHTML}</div>` : ''}
       </${cellTag}>
     `;
   }).join('');
 
-  // Add Cell Click Event Listeners
+  // Wire day click
   calendarGrid.querySelectorAll('button.calendar-cell').forEach((cell) => {
-    const dateStr = cell.dataset.date;
-    const dateData = groupedMap[dateStr];
-    cell.addEventListener('click', () => openDetailModal(dateStr, dateData));
+    const handleOpen = () => {
+      const dStr = cell.dataset.date;
+      if (dStr && groupedMap[dStr]) {
+        openDetailModal(dStr, groupedMap[dStr]);
+      }
+    };
+    cell.addEventListener('click', handleOpen);
   });
 }
 
-// Render List View
+// Render Traditional List View
 function renderList() {
   if (!requestsListContent) return;
 
@@ -483,127 +505,104 @@ function renderList() {
 
   if (filtered.length === 0) {
     requestsListContent.innerHTML = `
-      <div style="text-align:center; padding: 40px 20px; background: #fff; border: 1px solid #E2E8F0; border-radius: 12px;">
-        <div style="font-size: 2.2rem; margin-bottom: 10px;">📋</div>
-        <h4 style="color: #064E3B; font-size: 1.1rem; margin-bottom: 6px;">No Service Requests Found</h4>
-        <p style="color: #64748B; font-size: 0.9rem; max-width: 360px; margin: 0 auto 16px auto;">
-          ${filterMyRequestsOnly ? "You haven't posted any service requests yet." : "No upcoming service requests match the selected filter."}
-        </p>
-        <button class="btn-post-calendar-req" onclick="document.getElementById('openCalendarPostReqBtn')?.click()">
-          + Post a Request Now
-        </button>
+      <div class="no-requests-placeholder">
+        <p>No open service requests match the selected filter in ${esc(neighborhoodName)}.</p>
       </div>
     `;
     return;
   }
 
+  // Sort by date ascending
+  const sorted = [...filtered].sort((a, b) => (a.date_needed || '').localeCompare(b.date_needed || ''));
+
   if (!isAuthenticated) {
-    // Public aggregate list
-    requestsListContent.innerHTML = filtered
-      .sort((a, b) => (a.date_needed < b.date_needed ? -1 : 1))
-      .map((r) => `
-        <div class="request-count-row">
-          <div>
-            <strong>${esc(r.category)}</strong> needed — ${esc(r.date_needed)}
+    // Locked List View
+    requestsListContent.innerHTML = sorted.map((item) => {
+      const isPast = isPastDate(item.date_needed);
+      const isCompleted = (item.status || '').toLowerCase() === 'completed';
+
+      return `
+        <div class="request-card ${isCompleted ? 'is-completed' : ''}">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <strong style="color: #064E3B; font-size: 1.05rem;">${esc(item.category)}</strong>
+            <span class="status-badge ${isCompleted ? 'completed' : (isPast ? 'past' : 'new')}">
+              ${isCompleted ? '✓ Fulfilled' : (isPast ? '⏰ Past Date' : 'Target Date: ' + esc(item.date_needed))}
+            </span>
           </div>
-          <div style="font-weight: 600; color: #064E3B;">
-            ${r.count || 1} request${(r.count || 1) === 1 ? '' : 's'}
-          </div>
+          <p style="color: #6B7280; font-size: 0.9rem; margin: 4px 0;">
+            🔒 Log in to view requester contact details and appointment notes.
+          </p>
         </div>
-      `).join('');
+      `;
+    }).join('');
   } else {
-    // Authenticated detailed list organized into Upcoming and Past
-    const upcomingList = filtered
-      .filter((r) => r.date_needed >= todayStr)
-      .sort((a, b) => a.date_needed.localeCompare(b.date_needed));
-
-    const pastList = filtered
-      .filter((r) => r.date_needed < todayStr)
-      .sort((a, b) => b.date_needed.localeCompare(a.date_needed));
-
-    const renderCard = (r) => {
-      const mine = isOwner(r);
+    // Unlocked List View
+    requestsListContent.innerHTML = sorted.map((item) => {
+      const mine = isOwner(item);
       const canManage = mine || userIsAdmin;
-      const isCompleted = (r.status || '').toLowerCase() === 'completed';
-      const isPast = r.date_needed < todayStr;
+      const isCompleted = (item.status || '').toLowerCase() === 'completed';
+      const isPast = isPastDate(item.date_needed);
 
-      let statusBadge = '';
+      let statusBadgeHTML = '';
       if (isCompleted) {
-        statusBadge = '<span class="status-badge completed">✓ Fulfilled</span>';
+        statusBadgeHTML = '<span class="status-badge completed">✓ Fulfilled</span>';
       } else if (isPast) {
-        statusBadge = '<span class="status-badge past">⏰ Past Date</span>';
+        statusBadgeHTML = '<span class="status-badge past">⏰ Past Date</span>';
       } else {
-        statusBadge = `<span class="status-badge ${esc(r.status || 'new')}">${esc(r.status || 'new')}</span>`;
+        statusBadgeHTML = `<span class="status-badge ${esc(item.status || 'new')}">${esc(item.status || 'new')}</span>`;
       }
 
       return `
         <div class="request-card ${isCompleted ? 'is-completed' : ''}" style="${mine && !isCompleted ? 'border-left: 4px solid #F59E0B; background: #FFFDF5;' : ''} ${isCompleted ? 'border-left: 4px solid #94A3B8 !important; background: #F8FAFC !important;' : ''}">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <strong class="${isCompleted ? 'strikethrough' : ''}" style="color: #064E3B; font-size: 1rem;">${esc(r.category)}</strong>
+              <strong class="${isCompleted ? 'strikethrough' : ''}" style="color: #064E3B; font-size: 1.05rem;">${esc(item.category)}</strong>
               ${mine ? `<span class="owner-badge">🌟 Your Request</span>` : ''}
               ${userIsAdmin ? `<span class="owner-badge" style="background:#EEF2FF; color:#4338CA; border-color:#C7D2FE;">🛡️ Admin</span>` : ''}
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              ${statusBadge}
-              <span style="font-size: 0.85rem; color: #64748B; font-weight: 600;">📅 ${esc(r.date_needed)}</span>
-            </div>
+            ${statusBadgeHTML}
           </div>
-          <p class="${isCompleted ? 'strikethrough' : ''}" style="margin: 4px 0 2px 0; color: #111827; font-size: 0.95rem;">
-            <strong>${esc(r.name)}</strong> — <a href="tel:${esc(r.phone)}" style="color: #047857; font-weight: 600;">${esc(r.phone)}</a>${r.email ? ` — <a href="mailto:${esc(r.email)}" style="color: #047857;">${esc(r.email)}</a>` : ''}
+          <p class="${isCompleted ? 'strikethrough' : ''}" style="margin: 4px 0; font-size: 0.95rem; color: #111827;">
+            <strong>${esc(item.name || 'Neighbor')}</strong>
           </p>
-          ${r.notes ? `<p class="${isCompleted ? 'strikethrough' : ''}" style="margin-top: 8px; font-size: 0.88rem; color: #334155; background: #F8FAFC; padding: 10px 12px; border-radius: 6px; border: 1px solid #E2E8F0;">"${esc(r.notes)}"</p>` : ''}
+          <p class="${isCompleted ? 'strikethrough' : ''}" style="margin: 4px 0; font-size: 0.9rem;">
+            📅 Target Date: <strong>${esc(item.date_needed)}</strong>
+          </p>
+          <p class="${isCompleted ? 'strikethrough' : ''}" style="margin: 4px 0; font-size: 0.9rem;">
+            📞 <a href="tel:${esc(item.phone)}" style="color: #047857; font-weight: 600;">${esc(item.phone)}</a>
+            ${item.email ? ` &nbsp;·&nbsp; ✉️ <a href="mailto:${esc(item.email)}" style="color: #047857;">${esc(item.email)}</a>` : ''}
+          </p>
+          ${item.notes ? `<p class="${isCompleted ? 'strikethrough' : ''}" style="margin: 8px 0 0 0; background: #F8FAFC; padding: 10px 12px; border-radius: 6px; font-size: 0.88rem; color: #334155; border: 1px solid #E2E8F0;">"${esc(item.notes)}"</p>` : ''}
           
           ${canManage ? `
             <div class="owner-actions-row">
               ${isCompleted ? `
-                <button class="btn-owner-action reopen" data-req-id="${r.id}" data-next-status="new" type="button" title="Reopen this service request">
+                <button class="btn-owner-action reopen list-action" data-req-id="${item.id}" data-next-status="new" type="button" title="Reopen this service request">
                   ↺ Reopen Request
                 </button>
               ` : `
-                <button class="btn-owner-action complete" data-req-id="${r.id}" data-next-status="completed" type="button">
+                <button class="btn-owner-action complete list-action" data-req-id="${item.id}" data-next-status="completed" type="button">
                   ✓ Mark as Fulfilled
                 </button>
-                <button class="btn-owner-action reschedule" data-req-id="${r.id}" data-current-date="${r.date_needed}" type="button">
+                <button class="btn-owner-action reschedule list-action" data-req-id="${item.id}" data-current-date="${item.date_needed}" type="button">
                   📅 Reschedule
                 </button>
               `}
               ${userIsAdmin ? `
-                <button class="btn-owner-action admin-edit" data-req-id="${r.id}" type="button">
+                <button class="btn-owner-action admin-edit list-action" data-req-id="${item.id}" type="button">
                   🛡️ Admin Edit
                 </button>
               ` : ''}
-              <button class="btn-owner-action cancel" data-req-id="${r.id}" type="button">
+              <button class="btn-owner-action cancel list-action" data-req-id="${item.id}" type="button">
                 ✕ Cancel Request
               </button>
             </div>
           ` : ''}
         </div>
       `;
-    };
+    }).join('');
 
-    let html = '';
-    if (upcomingList.length > 0) {
-      html += `
-        <div class="requests-section-heading">
-          <span>🌟 Upcoming Requests</span>
-          <span class="requests-section-badge">${upcomingList.length}</span>
-        </div>
-        ${upcomingList.map(renderCard).join('')}
-      `;
-    }
-    if (pastList.length > 0) {
-      html += `
-        <div class="requests-section-heading">
-          <span>📜 Past &amp; Previous Requests</span>
-          <span class="requests-section-badge">${pastList.length}</span>
-        </div>
-        ${pastList.map(renderCard).join('')}
-      `;
-    }
-    requestsListContent.innerHTML = html;
-
-    // Wire list owner buttons
+    // Wire actions in list view
     requestsListContent.querySelectorAll('.btn-owner-action.complete, .btn-owner-action.reopen').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.reqId;
@@ -623,14 +622,14 @@ function renderList() {
         const newDate = prompt(`Select new date for this service request (YYYY-MM-DD):`, currentDate > todayStr ? currentDate : todayStr);
         if (!newDate) return;
         if (newDate < todayStr) {
-          alert('Please choose a date from today onward.');
+          showToast('Please choose a date from today onward.', true);
           return;
         }
         btn.disabled = true;
         btn.textContent = 'Rescheduling…';
         const { error } = await supabase.from('service_requests').update({ date_needed: newDate }).eq('id', id);
         if (error) {
-          alert('Failed to reschedule: ' + error.message);
+          showToast('Failed to reschedule: ' + error.message, true);
           btn.disabled = false;
           btn.textContent = '📅 Reschedule';
           return;
@@ -648,39 +647,190 @@ function renderList() {
     requestsListContent.querySelectorAll('.btn-owner-action.cancel').forEach((btn) => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.reqId;
-        if (confirm('Are you sure you want to cancel and remove this service request?')) {
-          btn.disabled = true;
-          btn.textContent = 'Cancelling…';
-          await supabase.from('service_requests').update({ status: 'closed' }).eq('id', id);
-          await reloadData();
-        }
+        if (!(await confirmDialog('Permanently remove this service request?'))) return;
+        btn.disabled = true;
+        btn.textContent = 'Cancelling…';
+        await supabase.from('service_requests').update({ status: 'closed' }).eq('id', id);
+        await reloadData();
       });
     });
   }
 }
 
-// Reload Data Helper
-async function reloadData() {
-  if (isAuthenticated) {
-    const { data, error } = await supabase
-      .from('service_requests')
-      .select('*')
-      .eq('neighborhood', neighborhood)
-      .neq('status', 'closed')
-      .order('date_needed', { ascending: true });
+// ── "Need a Service?" Modal Integration for Service Calendar ──
+function openServiceRequestModal() {
+  if (!reqOverlay) return;
+  reqOverlay.classList.add('open');
 
-    if (!error && data) {
-      rawRequests = data;
+  if (!currentUser) {
+    if (reqFormView) reqFormView.style.display = 'none';
+    if (reqThankYou) reqThankYou.style.display = 'none';
+    if (reqAuthView) reqAuthView.style.display = 'block';
+    if (requestLoginLink) {
+      requestLoginLink.href = `/account/?next=${encodeURIComponent(location.pathname)}`;
     }
   } else {
-    const { data, error } = await supabase
-      .from('service_requests_public_counts')
-      .select('*')
-      .eq('neighborhood', neighborhood);
+    if (reqAuthView) reqAuthView.style.display = 'none';
+    if (reqThankYou) reqThankYou.style.display = 'none';
+    if (reqFormView) reqFormView.style.display = 'block';
 
-    if (!error && data) {
-      rawRequests = data;
+    const meta = currentUser.user_metadata || {};
+    const resName = meta.full_name || 'Verified Resident';
+    const resPhone = meta.phone || '';
+
+    if (rDisplayName) rDisplayName.textContent = formatNameTitle(resName);
+    if (rDisplayContact) {
+      rDisplayContact.textContent = resPhone ? `${formatUSPhone(resPhone)} · ${currentUser.email}` : (currentUser.email || '');
     }
+
+    const todayStr = new Date().toLocaleDateString('en-CA');
+    if (rDateInput) {
+      rDateInput.min = todayStr;
+    }
+  }
+}
+
+function closeServiceRequestModal() {
+  if (!reqOverlay) return;
+  reqOverlay.classList.remove('open');
+  setTimeout(() => {
+    if (reqThankYou) reqThankYou.style.display = 'none';
+    if (rCategorySelect) rCategorySelect.value = '';
+    if (rCategoryOther) {
+      rCategoryOther.style.display = 'none';
+      rCategoryOther.value = '';
+    }
+    if (rDateInput) rDateInput.value = '';
+    if (rNotesInput) rNotesInput.value = '';
+  }, 250);
+}
+
+// Wire modal triggers
+openCalendarPostReqBtn?.addEventListener('click', openServiceRequestModal);
+reqOpenFab?.addEventListener('click', openServiceRequestModal);
+reqCloseBtn?.addEventListener('click', closeServiceRequestModal);
+reqOverlay?.addEventListener('click', (e) => {
+  if (e.target === reqOverlay) closeServiceRequestModal();
+});
+
+if (rCategorySelect && rCategoryOther) {
+  rCategorySelect.addEventListener('change', () => {
+    if (rCategorySelect.value === 'Other') {
+      rCategoryOther.style.display = 'block';
+      rCategoryOther.required = true;
+      rCategoryOther.focus();
+    } else {
+      rCategoryOther.style.display = 'none';
+      rCategoryOther.required = false;
+      rCategoryOther.value = '';
+    }
+  });
+}
+
+// Wire Submit Service Request on Calendar
+reqSubmitBtn?.addEventListener('click', async () => {
+  if (!currentUser) {
+    showToast('You must be logged in with a verified account to submit a service request.', true);
+    if (reqFormView) reqFormView.style.display = 'none';
+    if (reqAuthView) reqAuthView.style.display = 'block';
+    return;
+  }
+
+  let category = rCategorySelect ? rCategorySelect.value : '';
+  if (category === 'Other') {
+    category = rCategoryOther ? rCategoryOther.value.trim() : '';
+  }
+
+  const date_needed = rDateInput ? rDateInput.value : '';
+  const notes = rNotesInput ? rNotesInput.value.trim() : '';
+
+  if (!category || !date_needed) {
+    showToast('Please select a service category and target date.', true);
+    return;
+  }
+
+  const todayStr = new Date().toLocaleDateString('en-CA');
+  if (date_needed < todayStr) {
+    showToast('Please choose a date from today onward.', true);
+    return;
+  }
+
+  reqSubmitBtn.disabled = true;
+  reqSubmitBtn.textContent = 'Publishing…';
+
+  const meta = currentUser.user_metadata || {};
+  const name = meta.full_name || 'Verified Resident';
+  const phone = meta.phone ? formatUSPhone(meta.phone) : '—';
+  const email = currentUser.email;
+
+  const newRecord = {
+    neighborhood,
+    category,
+    date_needed,
+    notes,
+    name,
+    email,
+    phone,
+    status: 'new'
+  };
+
+  const { data, error } = await supabase.from('service_requests').insert(newRecord).select().single();
+
+  reqSubmitBtn.disabled = false;
+  reqSubmitBtn.textContent = 'Publish to Calendar';
+
+  if (error) {
+    showToast('Failed to post request: ' + error.message, true);
+    return;
+  }
+
+  try {
+    fetch('/.netlify/functions/notify-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        category,
+        date_needed,
+        name,
+        phone,
+        email,
+        notes,
+        neighborhood
+      })
+    }).catch(() => {});
+  } catch (e) {}
+
+  window.dispatchEvent(new CustomEvent('service-request-created'));
+
+  if (reqFormView) reqFormView.style.display = 'none';
+  if (reqThankYou) reqThankYou.style.display = 'block';
+
+  // Optimistic calendar update
+  if (data) {
+    rawRequests.push(data);
+    updateGroupedData();
+    renderCalendar();
+    renderList();
+  } else {
+    reloadData();
+  }
+
+  showToast('Service request published to community calendar!');
+});
+
+// Reload Data Helper with Cache-First Performance
+async function reloadData() {
+  const query = isAuthenticated
+    ? supabase.from('service_requests').select('*').eq('neighborhood', neighborhood).neq('status', 'closed').order('date_needed', { ascending: true })
+    : supabase.from('service_requests_public_counts').select('*').eq('neighborhood', neighborhood);
+
+  const { data, error } = await query;
+
+  if (!error && data) {
+    rawRequests = data;
+    try {
+      sessionStorage.setItem(`cal_cache_${neighborhood}_${isAuthenticated ? 'auth' : 'anon'}`, JSON.stringify(data));
+    } catch (e) {}
   }
 
   // Count user's own requests
@@ -697,9 +847,31 @@ async function reloadData() {
   renderList();
 }
 
-// Data Loading Init
+// Data Loading Init with SWR and Concurrent Parallelization
 async function init() {
-  const session = await getSession();
+  // 1. Instant Render from Cache (0ms latency)
+  try {
+    const cachedAnon = sessionStorage.getItem(`cal_cache_${neighborhood}_anon`);
+    const cachedAuth = sessionStorage.getItem(`cal_cache_${neighborhood}_auth`);
+    const cachedData = cachedAuth || cachedAnon;
+    if (cachedData) {
+      rawRequests = JSON.parse(cachedData);
+      updateGroupedData();
+      renderCalendar();
+      renderList();
+    } else {
+      renderCalendar();
+    }
+  } catch (e) {
+    renderCalendar();
+  }
+
+  // 2. Parallel fetch for session and admin verification
+  const [session] = await Promise.all([
+    getSession(),
+    reloadData()
+  ]);
+
   isAuthenticated = !!session;
   currentUser = session?.user || null;
 
@@ -719,7 +891,18 @@ async function init() {
     }
   }
 
-  await reloadData();
+  // Re-verify counts and badges after session resolves
+  if (isAuthenticated && currentUser) {
+    const myCount = rawRequests.filter((it) => isOwner(it)).length;
+    if (myReqCountBadge) myReqCountBadge.textContent = myCount;
+    if (filterMyRequestsBtn) {
+      filterMyRequestsBtn.style.display = myCount > 0 ? 'inline-flex' : 'none';
+    }
+  }
+
+  updateGroupedData();
+  renderCalendar();
+  renderList();
 }
 
 init();
@@ -728,3 +911,37 @@ init();
 window.addEventListener('service-request-created', () => {
   reloadData();
 });
+
+// ── Neighborhood Switcher Dropdown Interaction ──
+function initNeighborhoodSwitcher() {
+  const btn = document.getElementById('switchDropdownBtn');
+  const card = document.getElementById('switcherDropdownCard');
+  if (!btn || !card) return;
+
+  const toggleDropdown = (show) => {
+    const isExpanded = show !== undefined ? show : card.style.display === 'none';
+    card.style.display = isExpanded ? 'block' : 'none';
+    btn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+  };
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleDropdown();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!btn.contains(e.target) && !card.contains(e.target)) {
+      toggleDropdown(false);
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && card.style.display === 'block') {
+      toggleDropdown(false);
+      btn.focus();
+    }
+  });
+}
+
+initNeighborhoodSwitcher();
+

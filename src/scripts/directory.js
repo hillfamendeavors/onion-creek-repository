@@ -565,3 +565,37 @@ if (neighborhoodSlug) {
     })
     .catch(err => console.warn('Failed to fetch request count for banner:', err));
 }
+
+// ── Neighborhood Switcher Dropdown Interaction ──
+function initNeighborhoodSwitcher() {
+  const btn = document.getElementById('switchDropdownBtn');
+  const card = document.getElementById('switcherDropdownCard');
+  if (!btn || !card) return;
+
+  const toggleDropdown = (show) => {
+    const isExpanded = show !== undefined ? show : card.style.display === 'none';
+    card.style.display = isExpanded ? 'block' : 'none';
+    btn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+  };
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleDropdown();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!btn.contains(e.target) && !card.contains(e.target)) {
+      toggleDropdown(false);
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && card.style.display === 'block') {
+      toggleDropdown(false);
+      btn.focus();
+    }
+  });
+}
+
+initNeighborhoodSwitcher();
+

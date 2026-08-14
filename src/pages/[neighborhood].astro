@@ -4,6 +4,7 @@ import ListingsTree from '../components/ListingsTree.astro';
 import ReferralModal from '../components/ReferralModal.astro';
 import RequestModal from '../components/RequestModal.astro';
 import OrderModal from '../components/OrderModal.astro';
+import NeighborhoodSwitcher from '../components/NeighborhoodSwitcher.astro';
 import { getNeighborhoodDataPaths } from '../lib/neighborhoodData.js';
 
 export async function getStaticPaths() {
@@ -22,7 +23,7 @@ const total = groups.reduce(
   <header>
     <div class="logo-wrap">
       <h1>{neighborhood.name} <span>Directory</span></h1>
-      <a class="header-link" href="/">← Back to Directories</a>
+      <NeighborhoodSwitcher currentSlug={neighborhood.slug} />
     </div>
 
     <!-- Community Action Bar Toolkit -->

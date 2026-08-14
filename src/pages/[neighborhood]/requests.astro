@@ -1,6 +1,7 @@
 ---
 import Directory from '../../layouts/Directory.astro';
 import RequestModal from '../../components/RequestModal.astro';
+import NeighborhoodSwitcher from '../../components/NeighborhoodSwitcher.astro';
 import { getNeighborhoodDataPaths } from '../../lib/neighborhoodData.js';
 
 export async function getStaticPaths() {
@@ -16,7 +17,8 @@ const { neighborhood, groups } = Astro.props;
       <h1>{neighborhood.name} <span>Service Requests</span></h1>
       <p class="header-sub">See when your neighbors need service appointments & join in</p>
       <div class="calendar-header-actions">
-        <a class="order-btn" href={`/${neighborhood.slug}/`}>← Back to Directory</a>
+        <a class="header-link" href={`/${neighborhood.slug}/`}>← Back to Directory</a>
+        <NeighborhoodSwitcher currentSlug={neighborhood.slug} isCalendarPage={true} showAllLink={false} />
         <button class="btn-post-calendar-req" id="openCalendarPostReqBtn" type="button">
           + Post Service Request
         </button>
