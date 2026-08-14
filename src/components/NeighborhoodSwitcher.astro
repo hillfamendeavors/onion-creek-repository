@@ -16,11 +16,10 @@ const current = neighborhoods.find((n) => n.slug === currentSlug) || neighborhoo
     <a class="header-link" href="/">← All Directories</a>
   )}
   
-  <div class="neighborhood-switcher-wrap" id="neighborhoodSwitcherWrap">
+  <div class="neighborhood-switcher-wrap">
     <button
       type="button"
       class="neighborhood-switcher-btn"
-      id="switchDropdownBtn"
       aria-expanded="false"
       aria-haspopup="true"
       aria-label={`Current directory: ${current.name}. Click to switch directory.`}
@@ -30,7 +29,7 @@ const current = neighborhoods.find((n) => n.slug === currentSlug) || neighborhoo
       <svg class="chevron-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
 
-    <div class="neighborhood-dropdown-card" id="switcherDropdownCard" style="display:none;" role="menu" aria-label="Austin Neighborhood Directories">
+    <div class="neighborhood-dropdown-card" style="display:none;" role="menu" aria-label="Austin Neighborhood Directories">
       <div class="dropdown-header">
         <span>Austin Neighborhoods</span>
       </div>
@@ -61,3 +60,69 @@ const current = neighborhoods.find((n) => n.slug === currentSlug) || neighborhoo
     </div>
   </div>
 </div>
+
+<script>
+  function setupNeighborhoodSwitchers() {
+    document.querySelectorAll('.neighborhood-switcher-btn').forEach((btn) => {
+      if (btn.hasAttribute('data-switcher-initialized')) return;
+      btn.setAttribute('data-switcher-initialized', 'true');
+
+      const wrap = btn.closest('.neighborhood-switcher-wrap');
+      const card = wrap ? wrap.querySelector('.neighborhood-dropdown-card') as HTMLElement : null;
+      if (!card) return;
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isCurrentlyOpen = card.style.display === 'block';
+        
+        // Close all dropdowns
+        document.querySelectorAll('.neighborhood-dropdown-card').forEach((c) => {
+          (c as HTMLElement).style.display = 'none';
+        });
+        document.querySelectorAll('.neighborhood-switcher-btn').forEach((b) => {
+          b.setAttribute('aria-expanded', 'false');
+        });
+
+        if (!isCurrentlyOpen) {
+          card.style.display = 'block';
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  }
+
+  // Global dismiss handlers (click outside + Escape key)
+  if (!(window as any).__neighborhoodSwitcherBound) {
+    (window as any).__neighborhoodSwitcherBound = true;
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.neighborhood-switcher-wrap')) {
+        document.querySelectorAll('.neighborhood-dropdown-card').forEach((c) => {
+          (c as HTMLElement).style.display = 'none';
+        });
+        document.querySelectorAll('.neighborhood-switcher-btn').forEach((b) => {
+          b.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.neighborhood-dropdown-card').forEach((c) => {
+          (c as HTMLElement).style.display = 'none';
+        });
+        document.querySelectorAll('.neighborhood-switcher-btn').forEach((b) => {
+          b.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  }
+
+  // Run on DOM ready & dynamic navigation
+  setupNeighborhoodSwitchers();
+  document.addEventListener('DOMContentLoaded', setupNeighborhoodSwitchers);
+  document.addEventListener('astro:page-load', setupNeighborhoodSwitchers);
+</script>

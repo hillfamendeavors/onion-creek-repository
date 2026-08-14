@@ -57,6 +57,7 @@ function countLabel(n) {
 }
 
 function applyFilter() {
+  if (!container) return;
   const q = searchQuery;
   let anyVisible = false;
 
@@ -101,7 +102,7 @@ function applyFilter() {
     if (showBlock) anyVisible = true;
   });
 
-  noResults.style.display = anyVisible ? 'none' : 'block';
+  if (noResults) noResults.style.display = anyVisible ? 'none' : 'block';
 }
 
 // ── Category tabs ──

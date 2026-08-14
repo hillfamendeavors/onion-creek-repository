@@ -1,5 +1,6 @@
 ---
 import Directory from '../layouts/Directory.astro';
+import NeighborhoodSwitcher from '../components/NeighborhoodSwitcher.astro';
 import { neighborhoods } from '../data/neighborhoods.js';
 import onionCreekGroups from '../data/onion-creek.json';
 
@@ -17,6 +18,7 @@ const defaultNeighborhood = neighborhoods.find((n) => n.slug === 'onion-creek') 
       <p class="header-sub">Manage your service requests, calendar appointments &amp; saved providers</p>
       <div class="header-action-links">
         <a class="header-link" href="/">← Neighborhood Directories</a>
+        <NeighborhoodSwitcher currentSlug="onion-creek" showAllLink={false} />
         <div id="headerLoggedInActions" style="display:none; gap:8px;">
           <button class="header-link" id="openNewRequestModalBtn" type="button" style="background:var(--masters-yellow); color:#111; font-weight:700; border-color:var(--masters-yellow);">
             + Post Service Request
