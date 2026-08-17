@@ -513,31 +513,6 @@ function escStatus(str) {
   return div.innerHTML;
 }
 
-const topBarAuthEl = document.getElementById('topBarAuth');
-
-getSession().then((session) => {
-  if (!topBarAuthEl) return;
-  if (session?.user?.email) {
-    const fullName = session.user.user_metadata?.full_name;
-    const firstName = fullName ? fullName.split(' ')[0] : 'Neighbor';
-    topBarAuthEl.innerHTML = `
-      <span class="top-bar-user">Hi, <strong>${escStatus(firstName)}</strong></span>
-      <span class="top-bar-sep">&middot;</span>
-      <a href="/account/" class="top-bar-link">My Account</a>
-      <span class="top-bar-sep">&middot;</span>
-      <button id="topBarLogoutBtn" class="top-bar-logout-btn" type="button">Log Out</button>
-    `;
-    document.getElementById('topBarLogoutBtn')?.addEventListener('click', async () => {
-      await supabase.auth.signOut();
-      location.reload();
-    });
-  } else {
-    topBarAuthEl.innerHTML = `
-      <a href="/account/?next=${encodeURIComponent(location.pathname)}" class="top-bar-login">Log In / Register</a>
-    `;
-  }
-});
-
 // ── Dynamic Request Badge & Live Banner ──
 const badgeBtn = document.getElementById('calendarBadgeBtn');
 const badgeCount = document.getElementById('calendarBadgeCount');

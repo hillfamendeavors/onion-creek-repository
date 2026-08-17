@@ -92,6 +92,42 @@ const themeCss = `:root{${Object.entries(theme)
       <strong>{footerLabel}</strong> &nbsp;·&nbsp; Austin, TX &nbsp;·&nbsp; trustedneighbors.net
     </footer>
 
+    <script>
+      import { supabase } from '../lib/supabase.js';
+      import { getSession } from '../lib/auth.js';
+
+      function esc(str: string | null | undefined): string {
+        const div = document.createElement('div');
+        div.textContent = str ?? '';
+        return div.innerHTML;
+      }
+
+      const topBarAuthEl = document.getElementById('topBarAuth');
+      if (topBarAuthEl) {
+        getSession().then((session) => {
+          if (session?.user?.email) {
+            const fullName = session.user.user_metadata?.full_name;
+            const firstName = fullName ? fullName.split(' ')[0] : 'Neighbor';
+            topBarAuthEl.innerHTML = `
+              <span class="top-bar-user">Hi, <strong>${esc(firstName)}</strong></span>
+              <span class="top-bar-sep">&middot;</span>
+              <a href="/account/" class="top-bar-link">My Account</a>
+              <span class="top-bar-sep">&middot;</span>
+              <button id="topBarLogoutBtn" class="top-bar-logout-btn" type="button">Log Out</button>
+            `;
+            document.getElementById('topBarLogoutBtn')?.addEventListener('click', async () => {
+              await supabase.auth.signOut();
+              location.reload();
+            });
+          } else {
+            topBarAuthEl.innerHTML = `
+              <a href="/account/?next=${encodeURIComponent(location.pathname)}" class="top-bar-login">Log In / Register</a>
+            `;
+          }
+        });
+      }
+    </script>
+
     {loadDirectoryScript && <script src="../scripts/directory.js"></script>}
   </body>
 </html>
