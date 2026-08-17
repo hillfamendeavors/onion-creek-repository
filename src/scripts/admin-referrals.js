@@ -5,9 +5,7 @@ import { showToast, confirmDialog } from './ui-feedback.js';
 let referrals = [];
 let categories = [];
 let groups = [];
-let currentViewingRef = null;
-
-const REFERRAL_STATUSES = ['new', 'approved', 'rejected'];
+let activeStatusTab = 'new'; // 'new' | 'approved' | 'rejected' | 'all'
 
 function esc(str) {
   const div = document.createElement('div');
@@ -23,7 +21,7 @@ function getInitials(name) {
 }
 
 function formatNeighborhood(slug) {
-  if (!slug) return '—';
+  if (!slug) return 'Onion Creek';
   const map = {
     'onion-creek': 'Onion Creek',
     'circle-c': 'Circle C',
@@ -34,15 +32,31 @@ function formatNeighborhood(slug) {
 }
 
 function updateKPIs() {
+  const total = referrals.length;
+  const pending = referrals.filter((r) => (r.status || 'new') === 'new').length;
+  const approved = referrals.filter((r) => r.status === 'approved').length;
+  const rejected = referrals.filter((r) => r.status === 'rejected').length;
+
   const kpiTotalReferrals = document.getElementById('kpiTotalReferrals');
   const kpiPendingReferrals = document.getElementById('kpiPendingReferrals');
   const kpiApprovedReferrals = document.getElementById('kpiApprovedReferrals');
   const kpiRejectedReferrals = document.getElementById('kpiRejectedReferrals');
 
-  if (kpiTotalReferrals) kpiTotalReferrals.textContent = referrals.length;
-  if (kpiPendingReferrals) kpiPendingReferrals.textContent = referrals.filter((r) => r.status === 'new').length;
-  if (kpiApprovedReferrals) kpiApprovedReferrals.textContent = referrals.filter((r) => r.status === 'approved').length;
-  if (kpiRejectedReferrals) kpiRejectedReferrals.textContent = referrals.filter((r) => r.status === 'rejected').length;
+  if (kpiTotalReferrals) kpiTotalReferrals.textContent = total;
+  if (kpiPendingReferrals) kpiPendingReferrals.textContent = pending;
+  if (kpiApprovedReferrals) kpiApprovedReferrals.textContent = approved;
+  if (kpiRejectedReferrals) kpiRejectedReferrals.textContent = rejected;
+
+  // Status Tab Badges
+  const badgePending = document.getElementById('badgePendingCount');
+  const badgeApproved = document.getElementById('badgeApprovedCount');
+  const badgeRejected = document.getElementById('badgeRejectedCount');
+  const badgeAll = document.getElementById('badgeAllCount');
+
+  if (badgePending) badgePending.textContent = pending;
+  if (badgeApproved) badgeApproved.textContent = approved;
+  if (badgeRejected) badgeRejected.textContent = rejected;
+  if (badgeAll) badgeAll.textContent = total;
 }
 
 async function loadTaxonomy() {
@@ -60,8 +74,8 @@ async function loadTaxonomy() {
 }
 
 function populateTaxonomySelects() {
-  const convSubcat = document.getElementById('convSubcat');
-  if (!convSubcat) return;
+  const pubSubcat = document.getElementById('pubSubcat');
+  if (!pubSubcat) return;
 
   const groupedHtml = groups.map((g) => {
     const subs = categories.filter((s) => s.group_id === g.id);
@@ -69,12 +83,12 @@ function populateTaxonomySelects() {
     return `<optgroup label="${esc(g.label)}">${subs.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join('')}</optgroup>`;
   }).join('');
 
-  convSubcat.innerHTML = groupedHtml;
+  pubSubcat.innerHTML = groupedHtml;
 }
 
 async function loadReferrals() {
-  const referralsBody = document.getElementById('referralsBody');
-  if (!referralsBody) return;
+  const container = document.getElementById('referralsContainer');
+  if (!container) return;
 
   const { data, error } = await supabase
     .from('referral_suggestions')
@@ -83,12 +97,10 @@ async function loadReferrals() {
 
   if (error) {
     console.error('Error fetching referrals:', error);
-    referralsBody.innerHTML = `
-      <tr>
-        <td colspan="8" style="text-align:center; padding:36px; color:#EF4444;">
-          Failed to load referral suggestions. (${esc(error.message)})
-        </td>
-      </tr>
+    container.innerHTML = `
+      <div style="grid-column:1 / -1; text-align:center; padding:48px 20px; color:#EF4444;">
+        Failed to load referral suggestions. (${esc(error.message)})
+      </div>
     `;
     return;
   }
@@ -115,20 +127,19 @@ function populateNeighborhoodFilter() {
 }
 
 function renderReferrals() {
-  const referralsBody = document.getElementById('referralsBody');
+  const container = document.getElementById('referralsContainer');
   const refSearchInput = document.getElementById('refSearchInput');
   const filterRefNeighborhood = document.getElementById('filterRefNeighborhood');
-  const filterRefStatus = document.getElementById('filterRefStatus');
 
-  if (!referralsBody) return;
+  if (!container) return;
 
   const searchQ = (refSearchInput?.value || '').trim().toLowerCase();
   const neighborhoodFilter = filterRefNeighborhood?.value || '';
-  const statusFilter = filterRefStatus?.value || '';
 
   const filtered = referrals.filter((r) => {
+    const status = r.status || 'new';
+    if (activeStatusTab !== 'all' && status !== activeStatusTab) return false;
     if (neighborhoodFilter && r.neighborhood !== neighborhoodFilter) return false;
-    if (statusFilter && r.status !== statusFilter) return false;
     if (searchQ) {
       const matchStr = `${r.name || ''} ${r.phone || ''} ${r.category || ''} ${r.referrer || ''} ${r.referrer_email || ''} ${r.note || ''}`.toLowerCase();
       if (!matchStr.includes(searchQ)) return false;
@@ -137,134 +148,166 @@ function renderReferrals() {
   });
 
   if (filtered.length === 0) {
-    referralsBody.innerHTML = `
-      <tr>
-        <td colspan="8" style="text-align:center; padding:48px 20px;">
-          <div style="font-size:2rem; margin-bottom:10px; color:#64748B;">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto;"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
-          </div>
-          <div style="font-weight:700; font-size:1.05rem; color:#1E293B; margin-bottom:6px;">No Referral Suggestions Found</div>
-          <div style="font-size:0.88rem; color:#64748B;">Try adjusting your search query or filters.</div>
-        </td>
-      </tr>
+    const statusLabels = {
+      new: 'No pending referral suggestions awaiting review.',
+      approved: 'No approved referrals yet.',
+      rejected: 'No rejected referrals.',
+      all: 'No referral suggestions match your search criteria.'
+    };
+    container.innerHTML = `
+      <div style="grid-column:1 / -1; text-align:center; padding:60px 20px; background:#FFFFFF; border:1px solid #E2E8F0; border-radius:12px;">
+        <div style="font-size:2.5rem; margin-bottom:12px;">🎉</div>
+        <div style="font-weight:700; font-size:1.15rem; color:#1E293B; margin-bottom:6px;">
+          ${statusLabels[activeStatusTab] || 'No suggestions found.'}
+        </div>
+        <div style="font-size:0.88rem; color:#64748B;">
+          ${activeStatusTab === 'new' ? 'You are all caught up! New neighbor recommendations will show up here.' : 'Try changing status tabs or search keywords.'}
+        </div>
+      </div>
     `;
     return;
   }
 
-  referralsBody.innerHTML = filtered.map((r) => {
+  container.innerHTML = filtered.map((r) => {
+    const status = r.status || 'new';
     const formattedDate = r.created_at
       ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
       : '—';
-
     const referrerInitials = getInitials(r.referrer);
 
+    let statusPillClass = 'status-new';
+    let statusPillText = 'Pending Review';
+    if (status === 'approved') {
+      statusPillClass = 'status-approved';
+      statusPillText = 'Approved & Published';
+    } else if (status === 'rejected') {
+      statusPillClass = 'status-rejected';
+      statusPillText = 'Rejected';
+    }
+
     return `
-      <tr data-id="${r.id}">
-        <td>
-          <span style="font-weight:600; font-size:0.82rem; color:#64748B; white-space:nowrap;">${esc(formattedDate)}</span>
-        </td>
-        <td>
-          <div style="font-weight:700; color:#0F172A; font-size:0.92rem;">${esc(r.name)}</div>
-        </td>
-        <td>
-          <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+      <div class="ref-card status-${esc(status)}" data-id="${esc(r.id)}">
+        <div class="ref-card-header">
+          <div class="ref-card-pills">
             <span class="pill-tag neighborhood">${esc(formatNeighborhood(r.neighborhood))}</span>
-            <span class="pill-tag category">${esc(r.category || 'General')}</span>
+            <span class="pill-tag category">${esc(r.category || 'General Service')}</span>
+            <span class="pill-tag ${statusPillClass}">${statusPillText}</span>
           </div>
-        </td>
-        <td>
-          <a href="tel:${esc(r.phone)}" style="font-size:0.85rem; color:#0F172A; font-weight:600; text-decoration:none; white-space:nowrap; display:inline-flex; align-items:center; gap:5px;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            ${esc(r.phone || '—')}
-          </a>
-        </td>
-        <td>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <div class="avatar-chip" style="background:#EFF6FF; color:#1D4ED8; border-color:#BFDBFE;">${esc(referrerInitials)}</div>
-            <div style="display:flex; flex-direction:column; gap:2px; min-width:0;">
-              <span style="font-weight:600; color:#1E293B; font-size:0.88rem;">${esc(r.referrer || 'Neighbor')}</span>
-              ${r.referrer_email ? `<a href="mailto:${esc(r.referrer_email)}" style="font-size:0.78rem; color:#047857; text-decoration:none; display:inline-flex; align-items:center; gap:3px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> ${esc(r.referrer_email)}</a>` : '<span style="color:#94A3B8; font-size:0.75rem;">—</span>'}
+          <span class="ref-card-date">Submitted ${esc(formattedDate)}</span>
+        </div>
+
+        <div class="ref-card-body">
+          <h4 class="ref-business-title">${esc(r.name || 'Unnamed Business')}</h4>
+
+          <div class="ref-contact-row">
+            ${r.phone ? `
+              <a href="tel:${esc(r.phone)}" class="ref-contact-link" title="Call ${esc(r.phone)}">
+                📞 ${esc(r.phone)}
+              </a>
+              <button type="button" class="btn-copy-phone" data-phone="${esc(r.phone)}" title="Copy phone number" style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:6px; padding:4px 8px; cursor:pointer; font-size:0.75rem; color:#475569;">
+                📋 Copy
+              </button>
+            ` : '<span style="color:#94A3B8; font-size:0.85rem;">No phone provided</span>'}
+          </div>
+
+          <div class="ref-quote-box">
+            “${esc(r.note || 'Recommended by a local neighbor.')}”
+            <div class="ref-referrer-tag">
+              <div class="avatar-chip" style="background:#EFF6FF; color:#1D4ED8; border-color:#BFDBFE; width:22px; height:22px; font-size:0.7rem;">${esc(referrerInitials)}</div>
+              <span>Referred by <strong>${esc(r.referrer || 'Neighbor')}</strong></span>
+              ${r.referrer_email ? `<span style="color:#64748B; font-weight:400; font-size:0.75rem;">(${esc(r.referrer_email)})</span>` : ''}
             </div>
           </div>
-        </td>
-        <td>
-          <div class="btn-open-detail" data-id="${r.id}" style="cursor:pointer; padding:4px 6px; border-radius:6px; transition:background 120ms ease;" title="Click to view full recommendation note popup">
-            <div style="max-width:240px; font-size:0.82rem; color:#334155; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
-              "${esc(r.note || 'No notes provided.')}"
-            </div>
-            <span style="font-size:0.75rem; color:#2563EB; font-weight:600; display:inline-flex; align-items:center; gap:3px; margin-top:2px;">
-              Read full note ↗
+        </div>
+
+        <div class="ref-card-actions">
+          ${status === 'new' ? `
+            <button type="button" class="btn-ref-approve btn-action-publish" data-id="${esc(r.id)}">
+              ✓ Approve &amp; Publish
+            </button>
+            <button type="button" class="btn-ref-edit btn-action-edit-ref" data-id="${esc(r.id)}" title="Edit before publishing">
+              ✏️ Edit
+            </button>
+            <button type="button" class="btn-ref-reject btn-action-reject" data-id="${esc(r.id)}" title="Reject suggestion">
+              ✕ Reject
+            </button>
+            <button type="button" class="btn-ref-delete btn-action-delete" data-id="${esc(r.id)}" title="Delete suggestion">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          ` : status === 'approved' ? `
+            <span style="font-size:0.82rem; font-weight:700; color:#059669; display:inline-flex; align-items:center; gap:5px; flex:1;">
+              ✅ Live on Directory
             </span>
-          </div>
-        </td>
-        <td>
-          <select class="admin-status-select" data-id="${r.id}" data-value="${esc(r.status || 'new')}">
-            ${REFERRAL_STATUSES.map((s) => `<option value="${s}" ${s === (r.status || 'new') ? 'selected' : ''}>${s}</option>`).join('')}
-          </select>
-        </td>
-        <td style="text-align:right;">
-          <div style="display:inline-flex; gap:6px; justify-content:flex-end; align-items:center;">
-            <button class="btn-secondary btn-open-detail" data-id="${r.id}" title="View full details" style="padding:5px 9px; font-size:0.78rem; display:inline-flex; align-items:center; gap:4px;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              View
+            <button type="button" class="btn-ref-restore btn-action-restore" data-id="${esc(r.id)}" title="Move back to pending review">
+              ↺ Revert
             </button>
-            <button class="btn-action-edit btn-convert-ref" data-id="${r.id}" title="Add this referral to directory" style="background:#ECFDF5; color:#065F46; border-color:#A7F3D0; display:inline-flex; align-items:center; gap:4px;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-              Add to Directory
+            <button type="button" class="btn-ref-edit btn-action-edit-ref" data-id="${esc(r.id)}" title="Edit details">
+              ✏️ Edit
             </button>
-            <button class="btn-action-danger btn-delete-ref" data-id="${r.id}" title="Delete referral">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-              Delete
+            <button type="button" class="btn-ref-delete btn-action-delete" data-id="${esc(r.id)}" title="Delete suggestion">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </button>
-          </div>
-        </td>
-      </tr>
+          ` : `
+            <button type="button" class="btn-ref-restore btn-action-restore" data-id="${esc(r.id)}" style="flex:1; justify-content:center;">
+              ↺ Restore to Pending
+            </button>
+            <button type="button" class="btn-ref-edit btn-action-edit-ref" data-id="${esc(r.id)}" title="Edit details">
+              ✏️ Edit
+            </button>
+            <button type="button" class="btn-ref-delete btn-action-delete" data-id="${esc(r.id)}" title="Delete permanently">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          `}
+        </div>
+      </div>
     `;
   }).join('');
 
-  // Wire Status Change
-  referralsBody.querySelectorAll('select.admin-status-select').forEach((sel) => {
-    sel.addEventListener('change', async () => {
-      const prevVal = referrals.find((r) => String(r.id) === String(sel.dataset.id))?.status || 'new';
-      sel.dataset.value = sel.value;
-      const { error } = await supabase.from('referral_suggestions').update({ status: sel.value }).eq('id', sel.dataset.id);
+  // Wire Card Actions
+  container.querySelectorAll('.btn-action-publish').forEach((btn) => {
+    btn.addEventListener('click', () => openPublishModal(btn.dataset.id));
+  });
+
+  container.querySelectorAll('.btn-action-edit-ref').forEach((btn) => {
+    btn.addEventListener('click', () => openEditModal(btn.dataset.id));
+  });
+
+  container.querySelectorAll('.btn-action-reject').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const { error } = await supabase.from('referral_suggestions').update({ status: 'rejected' }).eq('id', id);
       if (error) {
-        showToast('Failed to update referral status: ' + error.message, true);
-        sel.value = prevVal;
-        sel.dataset.value = prevVal;
+        showToast('Failed to reject referral: ' + error.message, true);
         return;
       }
-      const ref = referrals.find((r) => String(r.id) === String(sel.dataset.id));
-      if (ref) ref.status = sel.value;
+      const ref = referrals.find((r) => String(r.id) === String(id));
+      if (ref) ref.status = 'rejected';
       updateKPIs();
-      showToast('Referral marked as ' + sel.value);
+      renderReferrals();
+      showToast('Referral moved to Rejected tab.');
     });
   });
 
-  // Wire View Details Popup
-  referralsBody.querySelectorAll('.btn-open-detail').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
+  container.querySelectorAll('.btn-action-restore').forEach((btn) => {
+    btn.addEventListener('click', async () => {
       const id = btn.dataset.id;
-      openViewReferralModal(id);
+      const { error } = await supabase.from('referral_suggestions').update({ status: 'new' }).eq('id', id);
+      if (error) {
+        showToast('Failed to restore referral: ' + error.message, true);
+        return;
+      }
+      const ref = referrals.find((r) => String(r.id) === String(id));
+      if (ref) ref.status = 'new';
+      updateKPIs();
+      renderReferrals();
+      showToast('Referral restored to Pending Review.');
     });
   });
 
-  // Wire Convert / Add to Directory Button
-  referralsBody.querySelectorAll('.btn-convert-ref').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
+  container.querySelectorAll('.btn-action-delete').forEach((btn) => {
+    btn.addEventListener('click', async () => {
       const id = btn.dataset.id;
-      openConvertModal(id);
-    });
-  });
-
-  // Wire Delete Button
-  referralsBody.querySelectorAll('.btn-delete-ref').forEach((btn) => {
-    btn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      const id = btn.dataset.id;
-      if (!(await confirmDialog('Are you sure you want to delete this referral suggestion permanently?'))) {
+      if (!(await confirmDialog('Are you sure you want to permanently delete this suggestion?'))) {
         return;
       }
       const { error } = await supabase.from('referral_suggestions').delete().eq('id', id);
@@ -275,210 +318,151 @@ function renderReferrals() {
       referrals = referrals.filter((r) => String(r.id) !== String(id));
       updateKPIs();
       renderReferrals();
-      showToast('Referral deleted successfully.');
+      showToast('Referral permanently deleted.');
+    });
+  });
+
+  container.querySelectorAll('.btn-copy-phone').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const phone = btn.dataset.phone;
+      if (phone) {
+        try {
+          await navigator.clipboard.writeText(phone);
+          showToast(`Copied ${phone} to clipboard!`);
+        } catch (e) {
+          showToast(`Phone: ${phone}`);
+        }
+      }
     });
   });
 }
 
-// ── View Full Referral Details Modal Logic ──
-function openViewReferralModal(id) {
+// ── Publish to Directory Modal ──
+function openPublishModal(id) {
   const r = referrals.find((x) => String(x.id) === String(id));
-  const viewReferralModal = document.getElementById('viewReferralModal');
-  if (!r || !viewReferralModal) return;
+  const modal = document.getElementById('publishReferralModal');
+  if (!r || !modal) return;
 
-  currentViewingRef = r;
+  document.getElementById('pubReferralId').value = r.id; // Store string UUID
+  document.getElementById('pubNeighborhood').value = r.neighborhood || 'onion-creek';
+  document.getElementById('pubName').value = r.name || '';
+  document.getElementById('pubPhone').value = r.phone || '';
+  document.getElementById('pubEmail').value = '';
+  document.getElementById('pubWebsite').value = '';
+  document.getElementById('pubNote').value = r.note || '';
+  document.getElementById('pubFeatured').checked = false;
 
-  const viewRefNote = document.getElementById('viewRefNote');
-  const viewRefName = document.getElementById('viewRefName');
-  const viewRefPhone = document.getElementById('viewRefPhone');
-  const viewRefPhoneText = document.getElementById('viewRefPhoneText');
-  const viewRefNeighborhood = document.getElementById('viewRefNeighborhood');
-  const viewRefCategory = document.getElementById('viewRefCategory');
-  const viewRefReferrer = document.getElementById('viewRefReferrer');
-  const viewRefAvatar = document.getElementById('viewRefAvatar');
-  const viewRefEmail = document.getElementById('viewRefEmail');
-  const viewRefEmailText = document.getElementById('viewRefEmailText');
-  const viewRefDate = document.getElementById('viewRefDate');
-  const viewRefStatusBadge = document.getElementById('viewRefStatusBadge');
-  const viewRefStatusSelect = document.getElementById('viewRefStatusSelect');
-
-  if (viewRefNote) viewRefNote.textContent = r.note || 'No notes provided with this recommendation.';
-  if (viewRefName) viewRefName.textContent = r.name || 'Unnamed Business';
-  
-  if (viewRefPhone && viewRefPhoneText) {
-    viewRefPhone.href = r.phone ? `tel:${r.phone}` : '#';
-    viewRefPhoneText.textContent = r.phone || 'No phone provided';
-  }
-
-  if (viewRefNeighborhood) viewRefNeighborhood.textContent = formatNeighborhood(r.neighborhood);
-  if (viewRefCategory) viewRefCategory.textContent = r.category || 'General';
-
-  if (viewRefReferrer) viewRefReferrer.textContent = r.referrer || 'Neighbor';
-  if (viewRefAvatar) viewRefAvatar.textContent = getInitials(r.referrer);
-
-  if (viewRefEmail && viewRefEmailText) {
-    if (r.referrer_email) {
-      viewRefEmail.href = `mailto:${r.referrer_email}`;
-      viewRefEmailText.textContent = r.referrer_email;
-      viewRefEmail.style.display = 'inline-flex';
-    } else {
-      viewRefEmailText.textContent = 'No email provided';
-      viewRefEmail.removeAttribute('href');
+  // Smart Category Matching
+  const pubSubcat = document.getElementById('pubSubcat');
+  if (pubSubcat && r.category) {
+    const rawCat = r.category.trim().toLowerCase();
+    const match = categories.find((c) => {
+      const cName = c.name.toLowerCase();
+      return cName === rawCat || cName.startsWith(rawCat) || rawCat.startsWith(cName) || cName.includes(rawCat);
+    });
+    if (match) {
+      pubSubcat.value = match.id;
+    } else if (categories.length > 0) {
+      pubSubcat.value = categories[0].id;
     }
   }
 
-  if (viewRefDate) {
-    viewRefDate.textContent = r.created_at
-      ? `Submitted on ${new Date(r.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
-      : 'Submitted date unknown';
-  }
-
-  if (viewRefStatusBadge) {
-    viewRefStatusBadge.className = `pill-tag status-${r.status || 'new'}`;
-    viewRefStatusBadge.textContent = (r.status || 'new').toUpperCase();
-  }
-
-  if (viewRefStatusSelect) {
-    viewRefStatusSelect.value = r.status || 'new';
-  }
-
-  viewReferralModal.style.display = 'flex';
-  trapFocus(viewReferralModal, closeViewReferralModal);
+  modal.style.display = 'flex';
+  trapFocus(modal, closePublishModal);
 }
 
-function closeViewReferralModal() {
-  const viewReferralModal = document.getElementById('viewReferralModal');
-  if (viewReferralModal) viewReferralModal.style.display = 'none';
+function closePublishModal() {
+  const modal = document.getElementById('publishReferralModal');
+  if (modal) modal.style.display = 'none';
   releaseFocus();
 }
 
-// ── Convert Referral into Directory Listing Modal ──
-function closeConvertModal() {
-  const convertReferralModal = document.getElementById('convertReferralModal');
-  if (convertReferralModal) convertReferralModal.style.display = 'none';
-  releaseFocus();
-}
-
-function openConvertModal(id) {
+// ── Edit Suggestion Modal ──
+function openEditModal(id) {
   const r = referrals.find((x) => String(x.id) === String(id));
-  const convertReferralModal = document.getElementById('convertReferralModal');
-  if (!r || !convertReferralModal) return;
+  const modal = document.getElementById('editReferralModal');
+  if (!r || !modal) return;
 
-  document.getElementById('convReferralId').value = r.id;
-  document.getElementById('convNeighborhood').value = r.neighborhood || 'onion-creek';
-  document.getElementById('convName').value = r.name || '';
-  document.getElementById('convPhone').value = r.phone || '';
-  document.getElementById('convEmail').value = '';
-  document.getElementById('convWebsite').value = '';
-  document.getElementById('convNote').value = r.note || '';
-  document.getElementById('convFeatured').checked = false;
+  document.getElementById('editReferralId').value = r.id;
+  document.getElementById('editName').value = r.name || '';
+  document.getElementById('editPhone').value = r.phone || '';
+  document.getElementById('editNeighborhood').value = r.neighborhood || 'onion-creek';
+  document.getElementById('editCategory').value = r.category || '';
+  document.getElementById('editReferrer').value = r.referrer || '';
+  document.getElementById('editReferrerEmail').value = r.referrer_email || '';
+  document.getElementById('editNote').value = r.note || '';
 
-  const convSubcat = document.getElementById('convSubcat');
-  if (convSubcat && r.category) {
-    const match = categories.find((c) => c.name.toLowerCase() === r.category.toLowerCase());
-    if (match) convSubcat.value = match.id;
-  }
-
-  convertReferralModal.style.display = 'flex';
-  trapFocus(convertReferralModal, closeConvertModal);
+  modal.style.display = 'flex';
+  trapFocus(modal, closeEditModal);
 }
 
-// Wire Event Listeners in Page Scope
+function closeEditModal() {
+  const modal = document.getElementById('editReferralModal');
+  if (modal) modal.style.display = 'none';
+  releaseFocus();
+}
+
 function initReferrals() {
-  const referralsBody = document.getElementById('referralsBody');
-  if (!referralsBody) return;
+  const container = document.getElementById('referralsContainer');
+  if (!container) return;
 
   const refSearchInput = document.getElementById('refSearchInput');
   const filterRefNeighborhood = document.getElementById('filterRefNeighborhood');
-  const filterRefStatus = document.getElementById('filterRefStatus');
   const refreshRefBtn = document.getElementById('refreshRefBtn');
+  const refStatusTabs = document.getElementById('refStatusTabs');
 
-  const viewReferralModal = document.getElementById('viewReferralModal');
-  const closeViewReferralModalBtn = document.getElementById('closeViewReferralModalBtn');
-  const viewRefStatusSelect = document.getElementById('viewRefStatusSelect');
-  const viewRefDeleteBtn = document.getElementById('viewRefDeleteBtn');
-  const viewRefConvertBtn = document.getElementById('viewRefConvertBtn');
+  const publishModal = document.getElementById('publishReferralModal');
+  const closePublishModalBtn = document.getElementById('closePublishModalBtn');
+  const closePublishModalTop = document.getElementById('closePublishModalTop');
+  const publishForm = document.getElementById('publishReferralForm');
 
-  const convertReferralModal = document.getElementById('convertReferralModal');
-  const closeConvertModalBtn = document.getElementById('closeConvertModalBtn');
-  const convertReferralForm = document.getElementById('convertReferralForm');
+  const editModal = document.getElementById('editReferralModal');
+  const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+  const closeEditModalTop = document.getElementById('closeEditModalTop');
+  const editForm = document.getElementById('editReferralForm');
+
+  // Status Tabs
+  refStatusTabs?.querySelectorAll('.ref-status-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      refStatusTabs.querySelectorAll('.ref-status-tab').forEach((t) => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeStatusTab = tab.dataset.tab;
+      renderReferrals();
+    });
+  });
 
   refSearchInput?.addEventListener('input', renderReferrals);
   filterRefNeighborhood?.addEventListener('change', renderReferrals);
-  filterRefStatus?.addEventListener('change', renderReferrals);
   refreshRefBtn?.addEventListener('click', loadReferrals);
 
-  closeViewReferralModalBtn?.addEventListener('click', closeViewReferralModal);
-  viewReferralModal?.addEventListener('click', (e) => {
-    if (e.target === viewReferralModal) closeViewReferralModal();
+  // Close Publish Modal
+  closePublishModalBtn?.addEventListener('click', closePublishModal);
+  closePublishModalTop?.addEventListener('click', closePublishModal);
+  publishModal?.addEventListener('click', (e) => {
+    if (e.target === publishModal) closePublishModal();
   });
 
-  // Update Status from Modal
-  viewRefStatusSelect?.addEventListener('change', async () => {
-    if (!currentViewingRef) return;
-    const newStatus = viewRefStatusSelect.value;
-    const { error } = await supabase.from('referral_suggestions').update({ status: newStatus }).eq('id', currentViewingRef.id);
-    if (error) {
-      showToast('Failed to update status: ' + error.message, true);
-      return;
-    }
-    currentViewingRef.status = newStatus;
-    const viewRefStatusBadge = document.getElementById('viewRefStatusBadge');
-    if (viewRefStatusBadge) {
-      viewRefStatusBadge.className = `pill-tag status-${newStatus}`;
-      viewRefStatusBadge.textContent = newStatus.toUpperCase();
-    }
-    updateKPIs();
-    renderReferrals();
-    showToast(`Referral status updated to ${newStatus}`);
+  // Close Edit Modal
+  closeEditModalBtn?.addEventListener('click', closeEditModal);
+  closeEditModalTop?.addEventListener('click', closeEditModal);
+  editModal?.addEventListener('click', (e) => {
+    if (e.target === editModal) closeEditModal();
   });
 
-  // Delete from Modal
-  viewRefDeleteBtn?.addEventListener('click', async () => {
-    if (!currentViewingRef) return;
-    if (!(await confirmDialog('Are you sure you want to delete this referral suggestion permanently?'))) {
-      return;
-    }
-    const id = currentViewingRef.id;
-    const { error } = await supabase.from('referral_suggestions').delete().eq('id', id);
-    if (error) {
-      showToast('Failed to delete referral: ' + error.message, true);
-      return;
-    }
-    referrals = referrals.filter((r) => r.id !== id);
-    closeViewReferralModal();
-    updateKPIs();
-    renderReferrals();
-    showToast('Referral suggestion deleted.');
-  });
-
-  // Convert from View Modal
-  viewRefConvertBtn?.addEventListener('click', () => {
-    if (!currentViewingRef) return;
-    const id = currentViewingRef.id;
-    closeViewReferralModal();
-    openConvertModal(id);
-  });
-
-  closeConvertModalBtn?.addEventListener('click', closeConvertModal);
-  convertReferralModal?.addEventListener('click', (e) => {
-    if (e.target === convertReferralModal) closeConvertModal();
-  });
-
-  convertReferralForm?.addEventListener('submit', async (e) => {
+  // Submit Publish Form
+  publishForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const refId = Number(document.getElementById('convReferralId').value);
-    const neighborhood_slug = document.getElementById('convNeighborhood').value;
-    const subcategory_id = Number(document.getElementById('convSubcat').value);
-    const name = document.getElementById('convName').value.trim();
-    const phone = document.getElementById('convPhone').value.trim();
-    const email = document.getElementById('convEmail').value.trim() || null;
-    const website = document.getElementById('convWebsite').value.trim() || null;
-    const note = document.getElementById('convNote').value.trim() || '';
-    const featured = document.getElementById('convFeatured').checked;
-    const position = document.getElementById('convPosition').value;
+    const refId = document.getElementById('pubReferralId').value.trim(); // Preserved as string UUID
+    const neighborhood_slug = document.getElementById('pubNeighborhood').value;
+    const subcategory_id = Number(document.getElementById('pubSubcat').value);
+    const name = document.getElementById('pubName').value.trim();
+    const phone = document.getElementById('pubPhone').value.trim();
+    const email = document.getElementById('pubEmail').value.trim() || null;
+    const website = document.getElementById('pubWebsite').value.trim() || null;
+    const note = document.getElementById('pubNote').value.trim() || '';
+    const featured = document.getElementById('pubFeatured').checked;
 
-    const saveBtn = document.getElementById('saveConvertBtn');
+    const saveBtn = document.getElementById('savePublishBtn');
     if (saveBtn) {
       saveBtn.disabled = true;
       saveBtn.textContent = 'Publishing…';
@@ -493,13 +477,10 @@ function initReferrals() {
 
     if (existingListings && existingListings.length > 0) {
       const orders = existingListings.map((x) => x.sort_order ?? 0);
-      if (position === 'bottom') {
-        sort_order = Math.max(...orders, 0) + 1;
-      } else {
-        sort_order = Math.min(...orders, 0) - 1;
-      }
+      sort_order = Math.min(...orders, 0) - 1;
     }
 
+    // 1. Insert into listings table
     const { error: insertErr } = await supabase.from('listings').insert({
       neighborhood_slug,
       subcategory_id,
@@ -515,25 +496,80 @@ function initReferrals() {
     if (insertErr) {
       if (saveBtn) {
         saveBtn.disabled = false;
-        saveBtn.textContent = '✓ Publish to Directory';
+        saveBtn.textContent = '✓ Confirm & Publish';
       }
       showToast('Failed to create directory listing: ' + insertErr.message, true);
       return;
     }
 
+    // 2. Update referral status to approved using string UUID
     await supabase.from('referral_suggestions').update({ status: 'approved' }).eq('id', refId);
-    const refItem = referrals.find((x) => x.id === refId);
+    const refItem = referrals.find((x) => String(x.id) === String(refId));
     if (refItem) refItem.status = 'approved';
 
     if (saveBtn) {
       saveBtn.disabled = false;
-      saveBtn.textContent = '✓ Publish to Directory';
+      saveBtn.textContent = '✓ Confirm & Publish';
     }
 
-    closeConvertModal();
+    closePublishModal();
     updateKPIs();
     renderReferrals();
-    showToast(`Successfully published "${name}" to ${formatNeighborhood(neighborhood_slug)} directory!`);
+    showToast(`✓ Successfully published "${name}" to ${formatNeighborhood(neighborhood_slug)} directory!`);
+  });
+
+  // Submit Edit Form
+  editForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const refId = document.getElementById('editReferralId').value.trim();
+    const name = document.getElementById('editName').value.trim();
+    const phone = document.getElementById('editPhone').value.trim();
+    const neighborhood = document.getElementById('editNeighborhood').value;
+    const category = document.getElementById('editCategory').value.trim();
+    const referrer = document.getElementById('editReferrer').value.trim();
+    const referrer_email = document.getElementById('editReferrerEmail').value.trim() || null;
+    const note = document.getElementById('editNote').value.trim();
+
+    const saveBtn = document.getElementById('saveEditBtn');
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving…';
+    }
+
+    const { error } = await supabase.from('referral_suggestions').update({
+      name,
+      phone,
+      neighborhood,
+      category,
+      referrer,
+      referrer_email,
+      note
+    }).eq('id', refId);
+
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Changes';
+    }
+
+    if (error) {
+      showToast('Failed to update suggestion: ' + error.message, true);
+      return;
+    }
+
+    const ref = referrals.find((r) => String(r.id) === String(refId));
+    if (ref) {
+      ref.name = name;
+      ref.phone = phone;
+      ref.neighborhood = neighborhood;
+      ref.category = category;
+      ref.referrer = referrer;
+      ref.referrer_email = referrer_email;
+      ref.note = note;
+    }
+
+    closeEditModal();
+    renderReferrals();
+    showToast('Referral suggestion updated successfully.');
   });
 
   Promise.all([loadTaxonomy(), loadReferrals()]);
@@ -541,7 +577,7 @@ function initReferrals() {
 
 document.addEventListener('astro:page-load', initReferrals);
 window.addEventListener('admin-auth-verified', () => {
-  if (document.getElementById('referralsBody')) {
+  if (document.getElementById('referralsContainer')) {
     Promise.all([loadTaxonomy(), loadReferrals()]);
   }
 });

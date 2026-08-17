@@ -3,6 +3,7 @@ import { getSession } from '../lib/auth.js';
 import { getMonthMatrix, aggregateRequests } from '../lib/calendar.js';
 import { trapFocus, releaseFocus } from './modal-a11y.js';
 import { showToast, confirmDialog } from './ui-feedback.js';
+import { initCategoryCombobox } from './category-combobox.js';
 
 const main = document.querySelector('main[data-neighborhood]');
 const neighborhood = main?.dataset?.neighborhood || '';
@@ -58,8 +59,7 @@ const reqAuthView = document.getElementById('requestAuthView');
 const reqFormView = document.getElementById('requestFormView');
 const reqThankYou = document.getElementById('requestThankYouView');
 const requestLoginLink = document.getElementById('requestLoginLink');
-const rCategorySelect = document.getElementById('r-category');
-const rCategoryOther = document.getElementById('r-category-other');
+const reqCombobox = initCategoryCombobox();
 const rDateInput = document.getElementById('r-date');
 const rNotesInput = document.getElementById('r-notes');
 const rDisplayName = document.getElementById('r-display-name');
@@ -329,7 +329,7 @@ function openDetailModal(dateStr, dateData) {
           }
 
           return `
-            <div class="request-card ${isCompleted ? 'is-completed' : ''}" style="margin-bottom: 0; ${mine && !isCompleted ? 'border-left: 4px solid #F59E0B; background: #FFFDF5;' : ''} ${isCompleted ? 'border-left: 4px solid #94A3B8 !important; background: #F8FAFC !important;' : ''}">
+            <div class="request-card ${isCompleted ? 'is-completed' : ''}" style="margin-bottom: 0; ${mine && !isCompleted ? 'background: #FFFDF5; border-color: #FCD34D;' : ''} ${isCompleted ? 'background: #F8FAFC !important; border-color: #CBD5E1 !important;' : ''}">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <strong class="${isCompleted ? 'strikethrough' : ''}" style="color: #064E3B; font-size: 1rem;">${esc(item.category)}</strong>
@@ -438,6 +438,26 @@ function openDetailModal(dateStr, dateData) {
   trapFocus(requestDetailModal, closeModal);
 }
 
+const CATEGORY_ICONS = {
+  'Plumbing': '🪠',
+  'Electrical': '⚡',
+  'Handyman': '🔨',
+  'Landscaping & Tree Care': '🌳',
+  'Roofing & Gutters': '🏠',
+  'HVAC & AC': '❄️',
+  'House Cleaning': '🧹',
+  'Pest Control': '🐜',
+  'Painting': '🎨',
+  'Auto Care': '🚗',
+  'Pet Care': '🐾',
+  'Other': '📦'
+};
+
+function getCategoryIcon(cat) {
+  if (!cat) return '🛠️';
+  return CATEGORY_ICONS[cat] || '🛠️';
+}
+
 // Render Calendar Grid
 function renderCalendar() {
   if (!currentMonthLabel || !calendarGrid) return;
@@ -454,6 +474,7 @@ function renderCalendar() {
     const isToday = day.isCurrentMonth && day.dateStr === todayStr;
 
     let demandHTML = '';
+    let mobileDemandHTML = '';
     if (dayData && dayData.categories) {
       demandHTML = Object.entries(dayData.categories).map(([cat, count]) => {
         const isMyCat = dayData.items?.some((it) => isOwner(it) && it.category === cat);
@@ -468,11 +489,22 @@ function renderCalendar() {
           </div>
         `;
       }).join('');
+
+      if (totalCount > 0) {
+        const topCat = Object.keys(dayData.categories)[0] || '';
+        const topIcon = getCategoryIcon(topCat);
+        mobileDemandHTML = `
+          <div class="mobile-demand-indicator ${!isAuthenticated ? 'locked' : ''} ${hasMyReq ? 'is-mine' : ''}">
+            <span class="mobile-cat-icon">${topIcon}</span>
+            <span class="mobile-demand-count">${totalCount}</span>
+          </div>
+        `;
+      }
     }
 
     const cellTag = isInteractive ? 'button' : 'div';
     const cellAttrs = isInteractive
-      ? `type="button" class="calendar-cell ${hasMyReq ? 'has-my-req' : ''} ${!day.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}" data-date="${day.dateStr}" aria-label="${day.dateStr}: ${totalCount} request${totalCount === 1 ? '' : 's'}"`
+      ? `type="button" class="calendar-cell ${hasMyReq ? 'has-my-req' : ''} ${!day.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''} ${totalCount > 0 ? 'has-demand' : ''}" data-date="${day.dateStr}" aria-label="${day.dateStr}: ${totalCount} request${totalCount === 1 ? '' : 's'}"`
       : `class="calendar-cell not-interactive ${!day.isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}" data-date="${day.dateStr}"`;
 
     return `
@@ -482,6 +514,7 @@ function renderCalendar() {
           ${totalCount > 0 ? `<span class="cell-count-badge ${hasMyReq ? 'my-badge' : ''}">${totalCount}</span>` : ''}
         </div>
         ${demandHTML ? `<div class="cell-demand-list">${demandHTML}</div>` : ''}
+        ${mobileDemandHTML}
       </${cellTag}>
     `;
   }).join('');
@@ -555,7 +588,7 @@ function renderList() {
       }
 
       return `
-        <div class="request-card ${isCompleted ? 'is-completed' : ''}" style="${mine && !isCompleted ? 'border-left: 4px solid #F59E0B; background: #FFFDF5;' : ''} ${isCompleted ? 'border-left: 4px solid #94A3B8 !important; background: #F8FAFC !important;' : ''}">
+        <div class="request-card ${isCompleted ? 'is-completed' : ''}" style="${mine && !isCompleted ? 'background: #FFFDF5; border-color: #FCD34D;' : ''} ${isCompleted ? 'background: #F8FAFC !important; border-color: #CBD5E1 !important;' : ''}">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
             <div style="display: flex; align-items: center; gap: 8px;">
               <strong class="${isCompleted ? 'strikethrough' : ''}" style="color: #064E3B; font-size: 1.05rem;">${esc(item.category)}</strong>
@@ -697,37 +730,19 @@ function closeServiceRequestModal() {
   reqOverlay.classList.remove('open');
   setTimeout(() => {
     if (reqThankYou) reqThankYou.style.display = 'none';
-    if (rCategorySelect) rCategorySelect.value = '';
-    if (rCategoryOther) {
-      rCategoryOther.style.display = 'none';
-      rCategoryOther.value = '';
-    }
+    reqCombobox?.reset();
     if (rDateInput) rDateInput.value = '';
     if (rNotesInput) rNotesInput.value = '';
   }, 250);
 }
 
 // Wire modal triggers
-openCalendarPostReqBtn?.addEventListener('click', openServiceRequestModal);
-reqOpenFab?.addEventListener('click', openServiceRequestModal);
+openCalendarPostReqBtn?.addEventListener('click', () => openServiceRequestModal());
+reqOpenFab?.addEventListener('click', () => openServiceRequestModal());
 reqCloseBtn?.addEventListener('click', closeServiceRequestModal);
 reqOverlay?.addEventListener('click', (e) => {
   if (e.target === reqOverlay) closeServiceRequestModal();
 });
-
-if (rCategorySelect && rCategoryOther) {
-  rCategorySelect.addEventListener('change', () => {
-    if (rCategorySelect.value === 'Other') {
-      rCategoryOther.style.display = 'block';
-      rCategoryOther.required = true;
-      rCategoryOther.focus();
-    } else {
-      rCategoryOther.style.display = 'none';
-      rCategoryOther.required = false;
-      rCategoryOther.value = '';
-    }
-  });
-}
 
 // Wire Submit Service Request on Calendar
 reqSubmitBtn?.addEventListener('click', async () => {
@@ -738,16 +753,17 @@ reqSubmitBtn?.addEventListener('click', async () => {
     return;
   }
 
-  let category = rCategorySelect ? rCategorySelect.value : '';
+  let category = reqCombobox ? reqCombobox.getValue() : (document.getElementById('r-category')?.value || document.getElementById('r-category-input')?.value?.trim());
   if (category === 'Other') {
-    category = rCategoryOther ? rCategoryOther.value.trim() : '';
+    const otherVal = document.getElementById('r-category-other')?.value?.trim();
+    if (otherVal) category = otherVal;
   }
 
   const date_needed = rDateInput ? rDateInput.value : '';
   const notes = rNotesInput ? rNotesInput.value.trim() : '';
 
   if (!category || !date_needed) {
-    showToast('Please select a service category and target date.', true);
+    showToast('Please specify what service you need and date needed.', true);
     return;
   }
 

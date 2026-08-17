@@ -49,24 +49,24 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
       <span class="admin-search-icon">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </span>
-      <input type="text" id="reqSearchInput" class="admin-input admin-search-input" placeholder="Search by name, email, phone, notes…" />
+      <input type="text" id="reqSearchInput" class="admin-input admin-search-input" placeholder="Search by name, email, phone, notes…" aria-label="Search service requests" />
     </div>
 
     <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-      <select id="filterNeighborhood" class="admin-select">
+      <select id="filterNeighborhood" class="admin-select" aria-label="Filter by neighborhood">
         <option value="">All Neighborhoods</option>
       </select>
-      <select id="filterCategory" class="admin-select">
+      <select id="filterCategory" class="admin-select" aria-label="Filter by category">
         <option value="">All Categories</option>
       </select>
-      <select id="filterStatus" class="admin-select">
+      <select id="filterStatus" class="admin-select" aria-label="Filter by status">
         <option value="">All Statuses</option>
         <option value="new">New (Active)</option>
         <option value="contacted">Contacted (In Progress)</option>
         <option value="completed">Completed (Fulfilled)</option>
         <option value="closed">Closed (Cancelled)</option>
       </select>
-      <button id="refreshReqBtn" class="btn-secondary" title="Refresh table data">
+      <button id="refreshReqBtn" class="btn-secondary" title="Refresh table data" aria-label="Refresh table data">
         ↺ Refresh
       </button>
     </div>
@@ -100,9 +100,9 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
   </div>
 
   <!-- Edit Service Request Modal -->
-  <div id="editRequestModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2100; justify-content:center; align-items:center;">
+  <div id="editRequestModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2100; justify-content:center; align-items:center;" role="dialog" aria-modal="true" aria-labelledby="editReqModalTitle">
     <div class="admin-card" style="max-width:540px; width:92%; max-height:90vh; overflow-y:auto; padding:28px; background:white; box-shadow:var(--shadow-lg);">
-      <h3 style="margin:0 0 16px 0; color:var(--color-primary); display:flex; align-items:center; gap:8px; font-size:1.3rem;">
+      <h3 id="editReqModalTitle" style="margin:0 0 16px 0; color:var(--color-primary); display:flex; align-items:center; gap:8px; font-size:1.3rem;">
         ✏️ Edit Service Request
       </h3>
       <form id="editRequestForm">
@@ -110,7 +110,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Neighborhood *</label>
+            <label for="editReqNeighborhood" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Neighborhood *</label>
             <select id="editReqNeighborhood" class="admin-select" required style="width:100%;">
               <option value="onion-creek">Onion Creek</option>
               <option value="circle-c">Circle C</option>
@@ -119,18 +119,18 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
             </select>
           </div>
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Category *</label>
+            <label for="editReqCategory" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Category *</label>
             <input type="text" id="editReqCategory" class="admin-input" required placeholder="e.g. Handyman" />
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Date Needed *</label>
+            <label for="editReqDate" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Date Needed *</label>
             <input type="date" id="editReqDate" class="admin-input" required />
           </div>
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Status *</label>
+            <label for="editReqStatus" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Status *</label>
             <select id="editReqStatus" class="admin-select" required style="width:100%;">
               <option value="new">New (Active)</option>
               <option value="contacted">Contacted (In Progress)</option>
@@ -142,22 +142,22 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Requester Name *</label>
+            <label for="editReqName" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Requester Name *</label>
             <input type="text" id="editReqName" class="admin-input" required placeholder="Full Name" />
           </div>
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Phone Number *</label>
+            <label for="editReqPhone" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Phone Number *</label>
             <input type="tel" id="editReqPhone" class="admin-input" required placeholder="(512) 555-0000" />
           </div>
         </div>
 
         <div style="margin-bottom:12px;">
-          <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Email (Optional)</label>
+          <label for="editReqEmail" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Email (Optional)</label>
           <input type="email" id="editReqEmail" class="admin-input" placeholder="neighbor@example.com" />
         </div>
 
         <div style="margin-bottom:20px;">
-          <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Appointment Details / Notes</label>
+          <label for="editReqNotes" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Appointment Details / Notes</label>
           <textarea id="editReqNotes" class="admin-input" rows="3" placeholder="Description of the request…" style="resize:vertical;"></textarea>
         </div>
 

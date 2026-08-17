@@ -19,14 +19,14 @@ const sortFeatured = (listings) =>
       </div>
       {g.subcategories.map((sub) => (
         <div class="subcategory" data-subname={sub.name.toLowerCase()}>
-          <div class="subcat-header">
+          <button type="button" class="subcat-header" aria-expanded="true">
             <span class="subcat-icon">{sub.icon}</span>
             <span class="subcat-name">{sub.name}</span>
             <span class="subcat-count" data-full={sub.listings.length}>
               {sub.listings.length} listing{sub.listings.length !== 1 ? 's' : ''}
             </span>
-            <span class="subcat-arrow open">▼</span>
-          </div>
+            <span class="subcat-arrow open" aria-hidden="true">▼</span>
+          </button>
           <div class="listings-table" data-empty={sub.listings.length ? 'false' : 'true'}>
             {sub.listings.length ? (
               sortFeatured(sub.listings).map((l) => (

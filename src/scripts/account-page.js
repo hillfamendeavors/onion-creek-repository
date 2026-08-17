@@ -2,6 +2,7 @@ import { getSession, signIn, signUp, requestPasswordReset, updateProfile } from 
 import { supabase } from '../lib/supabase.js';
 import { trapFocus, releaseFocus } from './modal-a11y.js';
 import { showToast, confirmDialog } from './ui-feedback.js';
+import { initCategoryCombobox } from './category-combobox.js';
 
 // DOM Elements
 const authFormCard = document.getElementById('authFormCard');
@@ -100,8 +101,16 @@ const closeUserReqModalBtnTop = document.getElementById('closeUserReqModalBtnTop
 const userNewRequestModal = document.getElementById('userNewRequestModal');
 const userNewRequestForm = document.getElementById('userNewRequestForm');
 const postModalTitle = document.getElementById('postModalTitle');
-const usrReqCategorySelect = document.getElementById('usrReqCategory');
-const usrReqCategoryOther = document.getElementById('usrReqCategoryOther');
+const usrCombobox = initCategoryCombobox({
+  wrapper: document.getElementById('usrCategoryComboboxWrapper'),
+  input: document.getElementById('usrReqCategoryInput'),
+  hidden: document.getElementById('usrReqCategory'),
+  listbox: document.getElementById('usrReqCategoryListbox'),
+  toggleBtn: document.getElementById('usrCategoryToggleBtn'),
+  otherWrapper: document.getElementById('usrReqCategoryOtherWrapper'),
+  otherInput: document.getElementById('usrReqCategoryOther'),
+  catalogScriptId: 'usr-categories-catalog',
+});
 const usrReqNeighborhood = document.getElementById('usrReqNeighborhood');
 const usrReqDate = document.getElementById('usrReqDate');
 const usrReqName = document.getElementById('usrReqName');
@@ -428,26 +437,11 @@ function openNewRequestModal(prefill = null) {
     if (usrReqNeighborhood) usrReqNeighborhood.value = prefill.neighborhood || 'onion-creek';
     if (usrReqNotes) usrReqNotes.value = prefill.notes || '';
 
-    // Handle category matching
-    if (usrReqCategorySelect) {
-      let matched = false;
-      for (const opt of usrReqCategorySelect.options) {
-        if (opt.value && opt.value.toLowerCase() === (prefill.category || '').toLowerCase()) {
-          usrReqCategorySelect.value = opt.value;
-          matched = true;
-          break;
-        }
-      }
-      if (!matched && prefill.category) {
-        usrReqCategorySelect.value = 'Other';
-        if (usrReqCategoryOther) {
-          usrReqCategoryOther.style.display = 'block';
-          usrReqCategoryOther.value = prefill.category;
-        }
-      } else if (usrReqCategoryOther) {
-        usrReqCategoryOther.style.display = 'none';
-        usrReqCategoryOther.value = '';
-      }
+    // Handle category matching via combobox
+    if (prefill.category) {
+      usrCombobox?.setValue(prefill.category);
+    } else {
+      usrCombobox?.reset();
     }
 
     if (usrReqDate) {
@@ -457,11 +451,7 @@ function openNewRequestModal(prefill = null) {
     }
   } else {
     if (postModalTitle) postModalTitle.textContent = 'Post Service Request';
-    if (usrReqCategorySelect) usrReqCategorySelect.value = '';
-    if (usrReqCategoryOther) {
-      usrReqCategoryOther.style.display = 'none';
-      usrReqCategoryOther.value = '';
-    }
+    usrCombobox?.reset();
     if (usrReqNotes) usrReqNotes.value = '';
     if (usrReqDate) usrReqDate.value = '';
   }
@@ -476,6 +466,7 @@ openNewRequestModalBtn?.addEventListener('click', () => openNewRequestModal());
 
 function closeNewReqModal() {
   if (userNewRequestModal) userNewRequestModal.style.display = 'none';
+  usrCombobox?.reset();
   releaseFocus();
 }
 
@@ -490,9 +481,10 @@ userNewRequestForm?.addEventListener('submit', async (e) => {
   if (!currentUser) return;
 
   const neighborhood = usrReqNeighborhood ? usrReqNeighborhood.value : 'onion-creek';
-  let category = usrReqCategorySelect ? usrReqCategorySelect.value : '';
+  let category = usrCombobox ? usrCombobox.getValue() : (document.getElementById('usrReqCategory')?.value || document.getElementById('usrReqCategoryInput')?.value?.trim());
   if (category === 'Other') {
-    category = usrReqCategoryOther ? usrReqCategoryOther.value.trim() : '';
+    const otherVal = document.getElementById('usrReqCategoryOther')?.value?.trim();
+    if (otherVal) category = otherVal;
   }
 
   const date_needed = usrReqDate ? usrReqDate.value : '';

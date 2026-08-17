@@ -25,52 +25,76 @@ if (!groups || groups.length === 0) {
 
 <button class="fab fab-request" id="openRequestModal">🛠️ Need a Service?</button>
 
-<div class="modal-overlay" id="requestModalOverlay" data-neighborhood={neighborhood.slug}>
+<div class="modal-overlay" id="requestModalOverlay" data-neighborhood={neighborhood.slug} role="dialog" aria-modal="true" aria-labelledby="requestModalTitle">
   <div class="modal" style="max-width:520px;">
-    <button class="modal-close" id="closeRequestModal">✕</button>
+    <button class="modal-close" id="closeRequestModal" aria-label="Close service request dialog">✕</button>
 
     <div id="requestAuthView" style="display:none; text-align:center; padding: 8px 0;">
-      <div class="auth-gate-icon">🛡️</div>
-      <h3>Verified Neighbors Only</h3>
+      <div class="auth-gate-icon" aria-hidden="true">🛡️</div>
+      <h3 id="requestAuthTitle">Verified Neighbors Only</h3>
       <p class="modal-sub" style="margin-bottom: 20px;">
         To keep community requests authentic, secure, and spam-free, posting service requests is reserved for registered &amp; verified residents.
       </p>
       <div class="auth-gate-benefits">
-        <div class="benefit-item"><span>✓</span> 100% Free for neighbors</div>
-        <div class="benefit-item"><span>✓</span> Real verified accounts only</div>
-        <div class="benefit-item"><span>✓</span> Fast responses from vetted pros</div>
+        <div class="benefit-item"><span aria-hidden="true">✓</span> 100% Free for neighbors</div>
+        <div class="benefit-item"><span aria-hidden="true">✓</span> Real verified accounts only</div>
+        <div class="benefit-item"><span aria-hidden="true">✓</span> Fast responses from vetted pros</div>
       </div>
       <a href="/account/" id="requestLoginLink" class="submit-btn auth-gate-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; margin-top:10px;">
-        Log In / Register Neighbor Account <span>→</span>
+        Log In / Register Neighbor Account <span aria-hidden="true">→</span>
       </a>
     </div>
 
     <div id="requestFormView" style="display:none;">
-      <h3>Need a Service?</h3>
+      <h3 id="requestModalTitle">Need a Service?</h3>
       <p class="modal-sub">Tell your neighbors what you need and when — they'll reach out.</p>
 
       <div class="modal-resident-pill" id="requestResidentPill">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <span>Posting as <strong id="r-display-name">Resident</strong> (<span id="r-display-contact">user@example.com</span>)</span>
       </div>
 
-      <div class="form-group">
-        <label for="r-category">What do you need? *</label>
-        <select id="r-category">
-          <option value="">— Select a category —</option>
-          {groups.map((g) => (
-            <optgroup label={g.label}>
-              {g.subcategories.map((sub) => <option value={sub.name}>{sub.name}</option>)}
-            </optgroup>
-          ))}
-          <option value="Other">Other</option>
-        </select>
-        <input type="text" id="r-category-other" placeholder="Enter custom category name" style="display:none; margin-top:8px;" />
+      <div class="form-group category-combobox-group" id="rCategoryGroup">
+        <label for="r-category-input">What do you need? *</label>
+        <div class="combobox-wrapper" id="rCategoryComboboxWrapper">
+          <div class="combobox-input-shell">
+            <span class="combobox-search-icon" aria-hidden="true">🔍</span>
+            <input 
+              type="text" 
+              id="r-category-input" 
+              name="category_input"
+              class="combobox-input" 
+              placeholder="Type or search service (e.g. Plumbers, Landscaping, Handyman)…" 
+              autocomplete="off"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded="false"
+              aria-controls="r-category-listbox"
+              aria-haspopup="listbox"
+              required 
+              aria-required="true"
+            />
+            <input type="hidden" id="r-category" name="category" />
+            <button type="button" class="combobox-toggle-btn" id="rCategoryToggleBtn" aria-label="Toggle category options" tabindex="-1">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="combobox-dropdown" id="r-category-listbox" role="listbox" style="display:none;"></div>
+        </div>
+
+        <div id="r-category-other-wrapper" style="display:none; margin-top:8px;">
+          <input 
+            type="text" 
+            id="r-category-other" 
+            placeholder="Type your custom service category (e.g. Piano tuning, Solar cleaning)…" 
+            aria-label="Custom service category name" 
+          />
+        </div>
       </div>
 
       <div class="form-group">
         <label for="r-date">Date Needed *</label>
-        <input type="date" id="r-date" />
+        <input type="date" id="r-date" required aria-required="true" />
       </div>
 
       <div class="form-group">
@@ -82,9 +106,15 @@ if (!groups || groups.length === 0) {
     </div>
 
     <div class="thank-you" id="requestThankYouView">
-      <div class="ty-icon">🛠️</div>
+      <div class="ty-icon" aria-hidden="true">🛠️</div>
       <h4>Thanks, neighbor.</h4>
       <p>Your request has been posted. A local pro will be in touch.</p>
     </div>
   </div>
 </div>
+
+<script type="application/json" id="r-categories-catalog" set:html={JSON.stringify(groups.map((g) => ({
+  label: g.label,
+  icon: g.icon || '',
+  subcategories: g.subcategories.map((s) => s.name)
+})))} />

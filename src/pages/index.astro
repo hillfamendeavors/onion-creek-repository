@@ -1,3 +1,46 @@
+---
+import { supabase } from '../lib/supabase.js';
+
+let totalRecommendations = 501;
+let totalBusinesses = 373;
+let totalCategories = 34;
+let activeNeighborhoods = 4;
+let neighborhoodCounts: Record<string, number> = {
+  'onion-creek': 121,
+  'sunfield': 162,
+  'circle-c': 118,
+  'avery-ranch': 100,
+};
+
+try {
+  const { data: listings } = await supabase
+    .from('listings')
+    .select('id, name, neighborhood_slug, subcategory_id');
+
+  if (listings && listings.length > 0) {
+    totalRecommendations = listings.length;
+    const uniqueBiz = new Set(listings.map((l) => (l.name || '').trim().toLowerCase()));
+    totalBusinesses = uniqueBiz.size;
+    const uniqueCats = new Set(listings.map((l) => l.subcategory_id).filter(Boolean));
+    totalCategories = uniqueCats.size;
+
+    const counts: Record<string, number> = {
+      'onion-creek': 0,
+      'sunfield': 0,
+      'circle-c': 0,
+      'avery-ranch': 0,
+    };
+    listings.forEach((l) => {
+      if (counts[l.neighborhood_slug] !== undefined) {
+        counts[l.neighborhood_slug]++;
+      }
+    });
+    neighborhoodCounts = counts;
+  }
+} catch (e) {
+  console.warn('Fallback to static metrics:', e);
+}
+---
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,6 +75,8 @@
   <meta name="twitter:image" content="https://trustedneighbors.net/favicon.svg" />
 
   <!-- Google Fonts -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -442,10 +487,7 @@
     }
 
     .hero h2 span {
-      background: linear-gradient(to right, var(--color-accent), #f3e5ab);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--color-accent);
     }
 
     .hero-subtitle {
@@ -609,60 +651,113 @@
     }
 
     .trust-stats {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+      max-width: 1040px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .trust-stat {
-      padding: 8px 56px;
+      padding: 12px 20px;
+      position: relative;
     }
 
-    .trust-stat + .trust-stat {
-      border-left: 1px solid rgba(212, 175, 55, 0.3);
+    .trust-stat:not(:first-child)::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 15%;
+      height: 70%;
+      width: 1px;
+      background: rgba(212, 175, 55, 0.3);
     }
 
     .trust-number {
       display: block;
       font-family: 'Lexend Exa', sans-serif;
       font-weight: 800;
-      font-size: clamp(2.4rem, 5vw, 3.4rem);
+      font-size: clamp(2.2rem, 4.5vw, 3.2rem);
       line-height: 1;
       letter-spacing: -1px;
-      background: linear-gradient(to right, var(--color-accent), #f3e5ab);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--color-accent);
     }
 
     .trust-label {
       display: block;
       margin-top: 10px;
       font-family: 'Lexend Exa', sans-serif;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
-      letter-spacing: 2px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.8);
     }
 
     .trust-tagline {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 300;
       color: rgba(255, 255, 255, 0.85);
-      max-width: 560px;
+      max-width: 600px;
       margin: 0 auto;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 860px) {
+      .trust-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px 12px;
+      }
+      .trust-stat:not(:first-child)::before {
+        display: none;
+      }
+      .trust-stat:nth-child(2n)::before {
+        display: block;
+      }
+    }
+
+    @media (max-width: 520px) {
       .trust-bar { padding: 44px 20px; }
-      .trust-stat { width: 100%; padding: 16px 20px; }
+      .trust-stats {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .trust-stat { width: 100%; padding: 14px 20px; }
+      .trust-stat::before {
+        display: none !important;
+      }
       .trust-stat + .trust-stat {
-        border-left: none;
         border-top: 1px solid rgba(212, 175, 55, 0.2);
       }
+    }
+
+    /* CARD PRO BADGE PILLS */
+    .card-tag-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .card-pro-badge {
+      font-family: 'Lexend Exa', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #FFFFFF;
+      backdrop-filter: blur(4px);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
     }
 
     /* SECTION LAYOUTS */
@@ -1784,8 +1879,8 @@
                     transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
                     visibility 0s linear 0.3s;
         z-index: 101;
-        box-shadow: 0 12px 40px rgba(15, 46, 34, 0.18),
-                    0 2px 8px rgba(15, 46, 34, 0.08);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12),
+                    0 2px 8px rgba(0, 0, 0, 0.04);
         border: 1.5px solid var(--color-border);
         border-radius: 10px;
         overflow: hidden;
@@ -2083,7 +2178,7 @@
         loop
         muted
         playsinline
-        preload="auto"
+        preload="metadata"
         poster="/assets/austin_skyline_overview.jpg"
         aria-hidden="true"
       >
@@ -2125,19 +2220,23 @@
       <span class="trust-eyebrow"><span>🌿</span> Trusted by Local Neighbors</span>
       <div class="trust-stats">
         <div class="trust-stat">
-          <span class="trust-number" data-count="400" data-suffix="+">400+</span>
-          <span class="trust-label">Recommendations</span>
+          <span class="trust-number" data-stat-id="recommendations" data-count={totalRecommendations} data-suffix="+">{totalRecommendations}+</span>
+          <span class="trust-label">Verified Recommendations</span>
         </div>
         <div class="trust-stat">
-          <span class="trust-number" data-count="100" data-suffix="+">100+</span>
+          <span class="trust-number" data-stat-id="businesses" data-count={totalBusinesses} data-suffix="+">{totalBusinesses}+</span>
           <span class="trust-label">Local Businesses</span>
         </div>
         <div class="trust-stat">
-          <span class="trust-number" data-count="4" data-suffix="">4</span>
-          <span class="trust-label">Active Neighborhoods</span>
+          <span class="trust-number" data-stat-id="categories" data-count={totalCategories} data-suffix="+">{totalCategories}+</span>
+          <span class="trust-label">Service Categories</span>
+        </div>
+        <div class="trust-stat">
+          <span class="trust-number" data-stat-id="neighborhoods" data-count={activeNeighborhoods} data-suffix="">{activeNeighborhoods}</span>
+          <span class="trust-label">Active Communities</span>
         </div>
       </div>
-      <p class="trust-tagline">Discover trusted businesses recommended by people in your community.</p>
+      <p class="trust-tagline">Authentic, hand-picked recommendations sourced directly from local neighbors.</p>
     </div>
   </section>
 
@@ -2293,7 +2392,12 @@
         <a class="selector-card onion" href="/onion-creek/">
           <div class="card-top">
             <div>
-              <div class="card-tag">Austin, TX</div>
+              <div class="card-tag-row">
+                <div class="card-tag">Austin, TX</div>
+                <div class="card-pro-badge" data-neighborhood-pro-count="onion-creek">
+                  <span>🛡️</span> {neighborhoodCounts['onion-creek'] || 120}+ Verified Pros
+                </div>
+              </div>
               <h4 class="card-title">Onion Creek</h4>
             </div>
             <p class="card-desc">Featuring verified plumbers, roofers, landscapers, and tailors recommended by Onion
@@ -2309,7 +2413,12 @@
         <a class="selector-card sunfield" href="/sunfield/">
           <div class="card-top">
             <div>
-              <div class="card-tag">Buda, TX</div>
+              <div class="card-tag-row">
+                <div class="card-tag">Buda, TX</div>
+                <div class="card-pro-badge" data-neighborhood-pro-count="sunfield">
+                  <span>🛡️</span> {neighborhoodCounts['sunfield'] || 160}+ Verified Pros
+                </div>
+              </div>
               <h4 class="card-title">Sunfield</h4>
             </div>
             <p class="card-desc">Sourced directly from Buda homeowners. Safe and vetted local services for your
@@ -2325,7 +2434,12 @@
         <a class="selector-card circlec" href="/circle-c/">
           <div class="card-top">
             <div>
-              <div class="card-tag">Austin, TX</div>
+              <div class="card-tag-row">
+                <div class="card-tag">Austin, TX</div>
+                <div class="card-pro-badge" data-neighborhood-pro-count="circle-c">
+                  <span>🛡️</span> {neighborhoodCounts['circle-c'] || 115}+ Verified Pros
+                </div>
+              </div>
               <h4 class="card-title">Circle C</h4>
             </div>
             <p class="card-desc">Trusted local resources, handymen, and kids activities recommended in Circle C Austin
@@ -2341,7 +2455,12 @@
         <a class="selector-card averyranch" href="/avery-ranch/">
           <div class="card-top">
             <div>
-              <div class="card-tag">Austin, TX</div>
+              <div class="card-tag-row">
+                <div class="card-tag">Austin, TX</div>
+                <div class="card-pro-badge" data-neighborhood-pro-count="avery-ranch">
+                  <span>🛡️</span> {neighborhoodCounts['avery-ranch'] || 100}+ Verified Pros
+                </div>
+              </div>
               <h4 class="card-title">Avery Ranch</h4>
             </div>
             <p class="card-desc">Sourced directly from Avery Ranch homeowners. Vetted plumbers, landscapers, and home life services for your household.</p>
@@ -2714,6 +2833,61 @@
       btnText.style.display = 'inline-block';
       btnSpinner.style.display = 'none';
       submitBtn.style.opacity = '1';
+    }
+  </script>
+
+  <script>
+    import { supabase } from '../lib/supabase.js';
+
+    async function hydrateLiveStats() {
+      try {
+        const { data: listings, error } = await supabase
+          .from('listings')
+          .select('id, name, neighborhood_slug, subcategory_id');
+
+        if (error || !listings || listings.length === 0) return;
+
+        const totalRecs = listings.length;
+        const uniqueBiz = new Set(listings.map((l) => (l.name || '').trim().toLowerCase())).size;
+        const uniqueCats = new Set(listings.map((l) => l.subcategory_id).filter(Boolean)).size;
+
+        const counts: Record<string, number> = {
+          'onion-creek': 0,
+          'sunfield': 0,
+          'circle-c': 0,
+          'avery-ranch': 0,
+        };
+        listings.forEach((l) => {
+          if (counts[l.neighborhood_slug] !== undefined) {
+            counts[l.neighborhood_slug]++;
+          }
+        });
+
+        // Update data-count attributes for live accuracy
+        const recsEl = document.querySelector<HTMLElement>('[data-stat-id="recommendations"]');
+        const bizEl = document.querySelector<HTMLElement>('[data-stat-id="businesses"]');
+        const catEl = document.querySelector<HTMLElement>('[data-stat-id="categories"]');
+
+        if (recsEl) recsEl.dataset.count = String(totalRecs);
+        if (bizEl) bizEl.dataset.count = String(uniqueBiz);
+        if (catEl) catEl.dataset.count = String(uniqueCats);
+
+        // Update card badges dynamically
+        Object.entries(counts).forEach(([slug, count]) => {
+          const badge = document.querySelector<HTMLElement>(`[data-neighborhood-pro-count="${slug}"]`);
+          if (badge) {
+            badge.innerHTML = `<span>🛡️</span> ${count}+ Verified Pros`;
+          }
+        });
+      } catch (err) {
+        // Silently fall back to pre-rendered server metrics
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', hydrateLiveStats);
+    } else {
+      hydrateLiveStats();
     }
   </script>
 </body>

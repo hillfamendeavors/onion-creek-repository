@@ -19,57 +19,86 @@ if (!groups || groups.length === 0) {
 
 <button class="fab" id="openModal">+ Suggest a Referral</button>
 
-<div class="modal-overlay" id="modalOverlay" data-neighborhood={neighborhoodName} data-subject={subjectPrefix}>
+<div class="modal-overlay" id="modalOverlay" data-neighborhood={neighborhoodName} data-subject={subjectPrefix} role="dialog" aria-modal="true" aria-labelledby="referralModalTitle">
   <div class="modal">
-    <button class="modal-close" id="closeModal">✕</button>
+    <button class="modal-close" id="closeModal" aria-label="Close referral dialog">✕</button>
     <div id="formView">
-      <h3>Suggest a Referral</h3>
+      <h3 id="referralModalTitle">Suggest a Referral</h3>
       <p class="modal-sub">Know a great local business? Share them with the community.</p>
       <div class="form-group">
-        <label>Business or Person Name *</label>
-        <input type="text" id="f-name" placeholder="e.g. Mike's Plumbing" />
+        <label for="f-name">Business or Pro Name *</label>
+        <input type="text" id="f-name" placeholder="e.g. Mike's Plumbing" required aria-required="true" />
       </div>
       <div class="form-group">
-        <label>Phone Number *</label>
-        <input type="tel" id="f-phone" placeholder="(512) 555-0000" inputmode="tel" maxlength="14" pattern="\(\d{3}\) \d{3}-\d{4}" />
+        <label for="f-phone">Business Phone Number *</label>
+        <input type="tel" id="f-phone" placeholder="(512) 555-0000" inputmode="tel" maxlength="14" pattern="\(\d{3}\) \d{3}-\d{4}" required aria-required="true" />
+        <span class="field-hint">The phone number of the business or pro you are recommending</span>
       </div>
       <div class="form-group">
-        <label>Your Name (Referrer) *</label>
-        <input type="text" id="f-referrer" placeholder="e.g. Marconi A." />
+        <label for="f-referrer">Your Name (Referrer) *</label>
+        <input type="text" id="f-referrer" placeholder="e.g. Jane D." required aria-required="true" />
       </div>
       <div class="form-group">
-        <label>Email <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
-        <input type="email" id="f-email" placeholder="business@example.com" />
+        <label for="f-email">Business Email <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input type="email" id="f-email" placeholder="contact@business.com" />
+        <span class="field-hint">Official contact email of the business (not your personal email)</span>
       </div>
       <div class="form-group">
-        <label>Website <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
-        <input type="url" id="f-website" placeholder="https://..." />
+        <label for="f-website">Business Website <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input type="url" id="f-website" placeholder="https://businesswebsite.com" />
+        <span class="field-hint">Website, Yelp, or social link for the business</span>
+      </div>
+      <div class="form-group category-combobox-group" id="fCategoryGroup">
+        <label for="f-category-input">Category <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <div class="combobox-wrapper" id="fCategoryComboboxWrapper">
+          <div class="combobox-input-shell">
+            <span class="combobox-search-icon" aria-hidden="true">🔍</span>
+            <input 
+              type="text" 
+              id="f-category-input" 
+              name="category_input"
+              class="combobox-input" 
+              placeholder="Type or search category (e.g. Plumbers, Roofers, Electricians)…" 
+              autocomplete="off"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded="false"
+              aria-controls="f-category-listbox"
+              aria-haspopup="listbox"
+            />
+            <input type="hidden" id="f-category" name="category" />
+            <button type="button" class="combobox-toggle-btn" id="fCategoryToggleBtn" aria-label="Toggle category options" tabindex="-1">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="combobox-dropdown" id="f-category-listbox" role="listbox" style="display:none;"></div>
+        </div>
+
+        <div id="f-category-other-wrapper" style="display:none; margin-top:8px;">
+          <input 
+            type="text" 
+            id="f-category-other" 
+            placeholder="Type custom service category…" 
+            aria-label="Custom Category" 
+          />
+        </div>
       </div>
       <div class="form-group">
-        <label>Category <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
-        <select id="f-category">
-          <option value="">— Select a category —</option>
-          {groups.map((g) => (
-            <optgroup label={g.label}>
-              {g.subcategories.map((sub) => (
-                <option>{sub.name}</option>
-              ))}
-            </optgroup>
-          ))}
-          <option value="Other">Other</option>
-        </select>
-        <input type="text" id="f-category-other" placeholder="Enter custom category" style="display:none; margin-top:8px;" />
-      </div>
-      <div class="form-group">
-        <label>Why do you recommend them? *</label>
-        <textarea id="f-note" placeholder="e.g. Fixed our water heater same day, very honest pricing…"></textarea>
+        <label for="f-note">Why do you recommend them? *</label>
+        <textarea id="f-note" placeholder="e.g. Fixed our water heater same day, very honest pricing…" required aria-required="true"></textarea>
       </div>
       <button class="submit-btn" id="submitBtn">Submit Referral</button>
     </div>
     <div class="thank-you" id="thankYouView">
-      <div class="ty-icon">🌿</div>
+      <div class="ty-icon" aria-hidden="true">🌿</div>
       <h4>Thank you, neighbor.</h4>
       <p>Your referral has been submitted and will be reviewed before being added to the directory.</p>
     </div>
   </div>
 </div>
+
+<script type="application/json" id="f-categories-catalog" set:html={JSON.stringify(groups.map((g) => ({
+  label: g.label,
+  icon: g.icon || '',
+  subcategories: g.subcategories.map((s) => s.name)
+})))} />

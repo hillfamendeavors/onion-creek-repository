@@ -35,6 +35,7 @@ const metaDescription = `${total} local businesses in ${neighborhood.name} recom
   description={metaDescription}
   footerLabel={neighborhood.footerLabel}
   theme={neighborhood.theme}
+  loadDirectoryScript={true}
 >
   <header>
     <div class="logo-wrap">
@@ -77,23 +78,23 @@ const metaDescription = `${total} local businesses in ${neighborhood.name} recom
       <a class="live-req-cta" href={`/${neighborhood.slug}/requests/`}>View &amp; Help Out →</a>
     </div>
 
-    <nav class="nav-tabs" id="groupPills">
-      <button class="nav-tab active" data-gid="all">All ({total})</button>
-      {groups.map((g) => <button class="nav-tab" data-gid={g.id}>{g.label}</button>)}
+    <nav class="nav-tabs" id="groupPills" role="tablist" aria-label="Business Category Filter">
+      <button class="nav-tab active" data-gid="all" role="tab" aria-selected="true">All ({total})</button>
+      {groups.map((g) => <button class="nav-tab" data-gid={g.id} role="tab" aria-selected="false">{g.label}</button>)}
     </nav>
   </header>
 
   <div class="search-bar">
-    <input type="text" id="search" placeholder="Search by name, service, or keyword…" />
+    <input type="text" id="search" placeholder="Search by name, service, or keyword…" aria-label="Search listings by name, service, or keyword" />
   </div>
 
   <main>
     <ListingsTree groups={groups} />
   </main>
 
-  <a class="fab-calendar" id="calendarBadgeBtn" href={`/${neighborhood.slug}/requests/`} title="View Neighbors in Need">
-    ❗
-    <span class="fab-badge-count" id="calendarBadgeCount" style="display:none;"></span>
+  <a class="fab-calendar" id="calendarBadgeBtn" href={`/${neighborhood.slug}/requests/`} title="View Neighbors in Need" aria-label="View Neighbors in Need on Community Calendar">
+    <span aria-hidden="true">❗</span>
+    <span class="fab-badge-count" id="calendarBadgeCount" style="display:none;" aria-label="Active service requests count"></span>
   </a>
   <ReferralModal neighborhoodName={neighborhood.name} subjectPrefix={neighborhood.subjectPrefix} groups={groups} />
   <RequestModal groups={groups} neighborhood={neighborhood} />

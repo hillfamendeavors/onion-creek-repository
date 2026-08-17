@@ -7,6 +7,8 @@
 
 import { supabase } from '../lib/supabase.js';
 import { getSession } from '../lib/auth.js';
+import { trapFocus, releaseFocus } from './modal-a11y.js';
+import { initCategoryCombobox } from './category-combobox.js';
 
 export function showToast(message, type = 'info', duration = 4000) {
   let container = document.querySelector('.toast-container');
@@ -27,7 +29,7 @@ export function showToast(message, type = 'info', duration = 4000) {
   };
 
   toast.innerHTML = `
-    <span class="toast-icon">${iconMap[type] || 'ℹ️'}</span>
+    <span class="toast-icon" aria-hidden="true">${iconMap[type] || 'ℹ️'}</span>
     <span class="toast-body">${message}</span>
   `;
 
@@ -47,6 +49,7 @@ const noResults = document.getElementById('no-results');
 
 let activeGroup = 'all';
 let searchQuery = '';
+let searchDebounceTimer = null;
 
 function syncAllTabClass() {
   document.body.classList.toggle('all-tab-active', activeGroup === 'all');
@@ -110,19 +113,26 @@ if (pillsEl) {
   pillsEl.addEventListener('click', (e) => {
     const tab = e.target.closest('.nav-tab');
     if (!tab) return;
-    pillsEl.querySelectorAll('.nav-tab').forEach((t) => t.classList.remove('active'));
+    pillsEl.querySelectorAll('.nav-tab').forEach((t) => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
     tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
     activeGroup = tab.dataset.gid;
     syncAllTabClass();
     applyFilter();
   });
 }
 
-// ── Search ──
+// ── Search with debouncing ──
 if (searchEl) {
   searchEl.addEventListener('input', () => {
-    searchQuery = searchEl.value.toLowerCase();
-    applyFilter();
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      searchQuery = searchEl.value.toLowerCase().trim();
+      applyFilter();
+    }, 120);
   });
 }
 
@@ -136,6 +146,7 @@ if (container) {
     const isOpening = table.classList.contains('collapsed');
     table.classList.toggle('collapsed');
     if (arrow) arrow.classList.toggle('open');
+    header.setAttribute('aria-expanded', isOpening ? 'true' : 'false');
     if (isOpening) {
       setTimeout(() => header.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
     }
@@ -184,13 +195,25 @@ const closeBtn = document.getElementById('closeModal');
 const submitBtn = document.getElementById('submitBtn');
 const formView = document.getElementById('formView');
 const thankYou = document.getElementById('thankYouView');
+const refCombobox = initCategoryCombobox({
+  wrapper: document.getElementById('fCategoryComboboxWrapper'),
+  input: document.getElementById('f-category-input'),
+  hidden: document.getElementById('f-category'),
+  listbox: document.getElementById('f-category-listbox'),
+  toggleBtn: document.getElementById('fCategoryToggleBtn'),
+  otherWrapper: document.getElementById('f-category-other-wrapper'),
+  otherInput: document.getElementById('f-category-other'),
+  catalogScriptId: 'f-categories-catalog',
+});
 
 function closeModal() {
   overlay.classList.remove('open');
+  releaseFocus();
   setTimeout(() => {
     formView.style.display = 'block';
     thankYou.style.display = 'none';
-    ['f-name', 'f-phone', 'f-category', 'f-note', 'f-referrer'].forEach((id) => {
+    refCombobox?.reset();
+    ['f-name', 'f-phone', 'f-note', 'f-referrer', 'f-email', 'f-website'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -199,6 +222,7 @@ function closeModal() {
 
 function closeOtherModals() {
   document.querySelectorAll('.modal-overlay.open').forEach((m) => m.classList.remove('open'));
+  releaseFocus();
 }
 
 if (overlay && openBtn && closeBtn) {
@@ -206,6 +230,7 @@ if (overlay && openBtn && closeBtn) {
     closeOtherModals();
     overlay.classList.add('open');
     if (formView) formView.style.display = 'block';
+    trapFocus(overlay, closeModal);
     
     // Autofill name if logged in
     const session = await getSession();
@@ -223,19 +248,10 @@ if (overlay && openBtn && closeBtn) {
   closeBtn.addEventListener('click', closeModal);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
 
-  const categorySelect = document.getElementById('f-category');
-  const categoryOther = document.getElementById('f-category-other');
-  if (categorySelect && categoryOther) {
-    categorySelect.addEventListener('change', () => {
-      categoryOther.style.display = categorySelect.value === 'Other' ? 'block' : 'none';
-      if (categorySelect.value !== 'Other') categoryOther.value = '';
-    });
-  }
-
   submitBtn.addEventListener('click', async () => {
     const name = document.getElementById('f-name').value.trim();
     let phone = document.getElementById('f-phone').value.trim();
-    let category = document.getElementById('f-category').value;
+    let category = refCombobox ? refCombobox.getValue() : (document.getElementById('f-category')?.value || document.getElementById('f-category-input')?.value?.trim());
     const email = document.getElementById('f-email')?.value.trim();
     const website = document.getElementById('f-website')?.value.trim();
     const note = document.getElementById('f-note').value.trim();
@@ -347,11 +363,15 @@ function showRequestForm() {
   if(reqThankYou) reqThankYou.style.display = 'none';
 }
 
+const reqCombobox = initCategoryCombobox();
+
 function closeRequestModal() {
   reqOverlay.classList.remove('open');
+  releaseFocus();
   setTimeout(() => {
     reqThankYou.style.display = 'none';
-    ['r-category', 'r-date', 'r-name', 'r-phone', 'r-email', 'r-notes'].forEach((id) => {
+    reqCombobox?.reset();
+    ['r-date', 'r-name', 'r-phone', 'r-email', 'r-notes'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -365,6 +385,7 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
   const openRequestHandler = async () => {
     closeOtherModals();
     reqOverlay.classList.add('open');
+    trapFocus(reqOverlay, closeRequestModal);
 
     const session = await getSession();
     if (!session || !session.user) {
@@ -405,15 +426,6 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
   reqCloseBtn.addEventListener('click', closeRequestModal);
   reqOverlay.addEventListener('click', (e) => { if (e.target === reqOverlay) closeRequestModal(); });
 
-  const rCategorySelect = document.getElementById('r-category');
-  const rCategoryOther = document.getElementById('r-category-other');
-  if (rCategorySelect && rCategoryOther) {
-    rCategorySelect.addEventListener('change', () => {
-      rCategoryOther.style.display = rCategorySelect.value === 'Other' ? 'block' : 'none';
-      if (rCategorySelect.value !== 'Other') rCategoryOther.value = '';
-    });
-  }
-
   reqSubmitBtn.addEventListener('click', async () => {
     const session = await getSession();
     if (!session || !session.user) {
@@ -423,14 +435,13 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
       return;
     }
 
-    let category = document.getElementById('r-category')?.value;
-    const date_needed = document.getElementById('r-date')?.value;
-
+    let category = reqCombobox ? reqCombobox.getValue() : (document.getElementById('r-category')?.value || document.getElementById('r-category-input')?.value?.trim());
     if (category === 'Other') {
-      const otherVal = document.getElementById('r-category-other')?.value.trim();
+      const otherVal = document.getElementById('r-category-other')?.value?.trim();
       if (otherVal) category = otherVal;
     }
     
+    const date_needed = document.getElementById('r-date')?.value;
     const meta = session.user.user_metadata || {};
     const name = meta.full_name || 'Verified Resident';
     const phone = meta.phone ? formatUSPhone(meta.phone) : '—';
@@ -438,7 +449,7 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
     const notes = document.getElementById('r-notes')?.value.trim() || '';
 
     if (!category || !date_needed) {
-      showToast('Please choose a category and date needed.', 'warning');
+      showToast('Please specify what service you need and date needed.', 'warning');
       return;
     }
 

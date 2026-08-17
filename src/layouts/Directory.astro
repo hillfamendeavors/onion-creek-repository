@@ -7,9 +7,10 @@ interface Props {
   theme: Record<string, string>;
   description?: string;
   noindex?: boolean;
+  loadDirectoryScript?: boolean;
 }
 
-const { title, footerLabel, theme, description, noindex = false } = Astro.props;
+const { title, footerLabel, theme, description, noindex = false, loadDirectoryScript = false } = Astro.props;
 
 // Brand suffix so every tab/SERP entry is attributable, without doubling it up
 // on pages that already say "Trusted Neighbors" in their own title.
@@ -60,6 +61,9 @@ const themeCss = `:root{${Object.entries(theme)
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <style is:global set:html={themeCss}></style>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -88,6 +92,6 @@ const themeCss = `:root{${Object.entries(theme)
       <strong>{footerLabel}</strong> &nbsp;·&nbsp; Austin, TX &nbsp;·&nbsp; trustedneighbors.net
     </footer>
 
-    <script src="../scripts/directory.js"></script>
+    {loadDirectoryScript && <script src="../scripts/directory.js"></script>}
   </body>
 </html>

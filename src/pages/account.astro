@@ -128,7 +128,7 @@ const defaultNeighborhood = neighborhoods.find((n) => n.slug === 'onion-creek') 
         <!-- Card 1: Resident Identity -->
         <div class="resident-card-identity">
           <div class="avatar-holder" id="avatarWrapper" title="Click to change avatar photo" tabindex="0" role="button" aria-label="Change profile photo">
-            <img id="userAvatarImg" src="/images/default-avatar.jpg" alt="Resident Avatar" loading="eager" />
+            <img id="userAvatarImg" src="/images/default-avatar.jpg" alt="Resident Avatar" width="64" height="64" loading="eager" />
             <span class="avatar-camera-btn">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
             </span>
@@ -219,7 +219,7 @@ const defaultNeighborhood = neighborhoods.find((n) => n.slug === 'onion-creek') 
             <button class="tbl-filter-pill" data-filter="fulfilled">Fulfilled (<span id="filterFulfilledCount">0</span>)</button>
           </div>
           <div class="filter-search-wrap">
-            <input type="text" id="reqSearchInput" placeholder="Filter by category or note…" />
+            <input type="text" id="reqSearchInput" placeholder="Filter by category or note…" aria-label="Filter requests by category or note" />
           </div>
         </div>
 
@@ -313,19 +313,48 @@ const defaultNeighborhood = neighborhoods.find((n) => n.slug === 'onion-creek') 
             <option value="sunfield">Sunfield</option>
           </select>
         </div>
-        <div class="form-group">
-          <label for="usrReqCategory">Service Category *</label>
-          <select id="usrReqCategory" required>
-            <option value="">— Select a category —</option>
-            {onionCreekGroups.map((g) => (
-              <optgroup label={g.label}>
-                {g.subcategories.map((sub) => <option value={sub.name}>{sub.name}</option>)}
-              </optgroup>
-            ))}
-            <option value="Other">Other</option>
-          </select>
-          <input type="text" id="usrReqCategoryOther" placeholder="Enter custom category name" style="display:none; margin-top:8px;" />
+        <div class="form-group category-combobox-group" id="usrCategoryGroup">
+          <label for="usrReqCategoryInput">Service Category *</label>
+          <div class="combobox-wrapper" id="usrCategoryComboboxWrapper">
+            <div class="combobox-input-shell">
+              <span class="combobox-search-icon" aria-hidden="true">🔍</span>
+              <input 
+                type="text" 
+                id="usrReqCategoryInput" 
+                class="combobox-input" 
+                placeholder="Type or search service (e.g. Plumbers, Landscaping, Handyman)…" 
+                autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="usrReqCategoryListbox"
+                aria-haspopup="listbox"
+                required 
+                aria-required="true"
+              />
+              <input type="hidden" id="usrReqCategory" name="category" />
+              <button type="button" class="combobox-toggle-btn" id="usrCategoryToggleBtn" aria-label="Toggle category options" tabindex="-1">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+            </div>
+            <div class="combobox-dropdown" id="usrReqCategoryListbox" role="listbox" style="display:none;"></div>
+          </div>
+
+          <div id="usrReqCategoryOtherWrapper" style="display:none; margin-top:8px;">
+            <input 
+              type="text" 
+              id="usrReqCategoryOther" 
+              placeholder="Type your custom service category (e.g. Piano tuning, Solar cleaning)…" 
+              aria-label="Custom service category name" 
+            />
+          </div>
         </div>
+
+        <script type="application/json" id="usr-categories-catalog" set:html={JSON.stringify(onionCreekGroups.map((g) => ({
+          label: g.label,
+          icon: g.icon || '',
+          subcategories: g.subcategories.map((s) => s.name)
+        })))} />
         <div class="form-group">
           <label for="usrReqDate">Target Date for Service Calendar *</label>
           <input type="date" id="usrReqDate" required />
@@ -377,7 +406,6 @@ const defaultNeighborhood = neighborhoods.find((n) => n.slug === 'onion-creek') 
       margin: 40px auto;
       background: #FFFFFF;
       border: 1px solid #E2E8F0;
-      border-top: 4px solid var(--masters-green);
       border-radius: 12px;
       padding: 36px 32px;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
@@ -538,7 +566,6 @@ const defaultNeighborhood = neighborhoods.find((n) => n.slug === 'onion-creek') 
     .resident-card-identity {
       background: #FFFFFF;
       border: 1px solid #E2E8F0;
-      border-left: 4px solid var(--masters-green);
       border-radius: 10px;
       padding: 20px 22px;
       display: flex;
@@ -924,7 +951,6 @@ const defaultNeighborhood = neighborhoods.find((n) => n.slug === 'onion-creek') 
     .saved-provider-card {
       background: #FFFFFF;
       border: 1px solid #E2E8F0;
-      border-top: 3px solid var(--masters-green);
       border-radius: 8px;
       padding: 18px;
       display: flex;
@@ -1062,6 +1088,15 @@ const defaultNeighborhood = neighborhoods.find((n) => n.slug === 'onion-creek') 
       }
       .filter-search-wrap input {
         width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
       }
     }
   </style>

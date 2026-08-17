@@ -43,74 +43,68 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     </div>
   </div>
 
+  <!-- Status Filtering Tabs -->
+  <div class="ref-status-tabs" id="refStatusTabs">
+    <button class="ref-status-tab active" data-tab="new" type="button">
+      ⏳ Pending Review <span class="badge" id="badgePendingCount">0</span>
+    </button>
+    <button class="ref-status-tab" data-tab="approved" type="button">
+      ✅ Approved &amp; Published <span class="badge" id="badgeApprovedCount">0</span>
+    </button>
+    <button class="ref-status-tab" data-tab="rejected" type="button">
+      🚫 Rejected <span class="badge" id="badgeRejectedCount">0</span>
+    </button>
+    <button class="ref-status-tab" data-tab="all" type="button">
+      All <span class="badge" id="badgeAllCount">0</span>
+    </button>
+  </div>
+
   <!-- Search & Filter Toolbar -->
   <div class="admin-toolbar">
     <div class="admin-search-wrapper">
       <span class="admin-search-icon">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </span>
-      <input type="text" id="refSearchInput" class="admin-input admin-search-input" placeholder="Search referrals by name, referrer, phone…" />
+      <input type="text" id="refSearchInput" class="admin-input admin-search-input" placeholder="Search referrals by business, phone, referrer, note…" aria-label="Search referrals" />
     </div>
 
     <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-      <select id="filterRefNeighborhood" class="admin-select">
+      <select id="filterRefNeighborhood" class="admin-select" aria-label="Filter by neighborhood">
         <option value="">All Neighborhoods</option>
       </select>
-      <select id="filterRefStatus" class="admin-select">
-        <option value="">All Statuses</option>
-        <option value="new">New (Pending)</option>
-        <option value="approved">Approved</option>
-        <option value="rejected">Rejected</option>
-      </select>
-      <button id="refreshRefBtn" class="btn-secondary" title="Refresh referrals">
+      <button id="refreshRefBtn" class="btn-secondary" title="Refresh referrals" aria-label="Refresh referrals">
         ↺ Refresh
       </button>
     </div>
   </div>
 
-  <div class="admin-card">
-    <div class="admin-table-container">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th style="width:110px;">Submitted</th>
-            <th style="width:200px;">Business / Pro</th>
-            <th style="width:220px;">Neighborhood &amp; Category</th>
-            <th style="width:140px;">Contact Phone</th>
-            <th style="width:200px;">Referred By</th>
-            <th style="min-width:180px;">Recommendation Note</th>
-            <th style="width:130px;">Status</th>
-            <th style="width:220px; text-align:right;">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="referralsBody">
-          <tr>
-            <td colspan="8" style="text-align:center; padding:36px; color:#64748B;">
-              Loading referrals…
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <!-- Moderation Cards Grid Container -->
+  <div class="referral-cards-grid" id="referralsContainer">
+    <div style="grid-column:1 / -1; text-align:center; padding:48px 20px; color:#64748B;">
+      Loading referral suggestions…
     </div>
   </div>
 
-  <!-- Add Referral to Directory Modal -->
-  <div id="convertReferralModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2100; justify-content:center; align-items:center;">
-    <div class="admin-card" style="max-width:560px; width:92%; max-height:90vh; overflow-y:auto; padding:28px; background:white;">
-      <h3 style="margin-top:0; color:var(--color-primary); font-size:1.3rem; display:flex; align-items:center; gap:8px;">
-        ✨ Add Recommendation to Directory
-      </h3>
-      <p style="color:#64748B; font-size:0.85rem; margin-bottom:16px;">
-        Review details and choose which directory and category to publish this business into.
+  <!-- Quick Approve & Publish to Directory Modal -->
+  <div id="publishReferralModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2100; justify-content:center; align-items:center;" role="dialog" aria-modal="true" aria-labelledby="publishRefModalTitle">
+    <div class="admin-card" style="max-width:580px; width:92%; max-height:90vh; overflow-y:auto; padding:28px; background:white;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 id="publishRefModalTitle" style="margin:0; color:var(--color-primary); font-size:1.3rem; display:flex; align-items:center; gap:8px;">
+          ✓ Approve &amp; Publish to Directory
+        </h3>
+        <button type="button" class="btn-secondary" id="closePublishModalTop" style="padding:4px 8px;" aria-label="Close dialog">✕</button>
+      </div>
+      <p style="color:#64748B; font-size:0.85rem; margin-bottom:16px; line-height:1.4;">
+        Verify business information and publish directly into the community directory.
       </p>
 
-      <form id="convertReferralForm">
-        <input type="hidden" id="convReferralId" />
+      <form id="publishReferralForm">
+        <input type="hidden" id="pubReferralId" />
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Target Directory (Neighborhood) *</label>
-            <select id="convNeighborhood" class="admin-select" required style="width:100%;">
+            <label for="pubNeighborhood" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Target Directory *</label>
+            <select id="pubNeighborhood" class="admin-select" required style="width:100%;">
               <option value="onion-creek">Onion Creek</option>
               <option value="circle-c">Circle C</option>
               <option value="avery-ranch">Avery Ranch</option>
@@ -118,157 +112,118 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
             </select>
           </div>
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Directory Category *</label>
-            <select id="convSubcat" class="admin-select" required style="width:100%;"></select>
+            <label for="pubSubcat" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Category *</label>
+            <select id="pubSubcat" class="admin-select" required style="width:100%;"></select>
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Business / Pro Name *</label>
-            <input type="text" id="convName" class="admin-input" required placeholder="e.g. Mike's Plumbing" />
+            <label for="pubName" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Business / Pro Name *</label>
+            <input type="text" id="pubName" class="admin-input" required placeholder="e.g. Mike's Plumbing" />
           </div>
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Phone Number *</label>
-            <input type="tel" id="convPhone" class="admin-input" required placeholder="(512) 555-0199" />
+            <label for="pubPhone" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Business Phone *</label>
+            <input type="tel" id="pubPhone" class="admin-input" required placeholder="(512) 555-0199" />
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Email (Optional)</label>
-            <input type="email" id="convEmail" class="admin-input" placeholder="pro@example.com" />
+            <label for="pubEmail" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Business Email (Optional)</label>
+            <input type="email" id="pubEmail" class="admin-input" placeholder="contact@business.com" />
           </div>
           <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Website (Optional)</label>
-            <input type="url" id="convWebsite" class="admin-input" placeholder="https://..." />
+            <label for="pubWebsite" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Business Website (Optional)</label>
+            <input type="url" id="pubWebsite" class="admin-input" placeholder="https://..." />
           </div>
         </div>
 
         <div style="margin-bottom:12px;">
-          <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Recommendation Note / Description</label>
-          <textarea id="convNote" class="admin-input" rows="3" placeholder="Description of services, neighbor recommendation quote…"></textarea>
+          <label for="pubNote" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Recommendation Quote / Description</label>
+          <textarea id="pubNote" class="admin-input" rows="3" placeholder="Neighbor recommendation text and details…"></textarea>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; background:#F8FAFC; padding:12px; border-radius:8px; border:1px solid #E2E8F0;">
-          <div>
-            <label style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Listing Arrangement</label>
-            <select id="convPosition" class="admin-select" style="width:100%;">
-              <option value="top">Place at Top of Category (1st)</option>
-              <option value="bottom">Place at Bottom of Category</option>
-            </select>
-          </div>
-          <div style="display:flex; align-items:center; padding-top:16px;">
-            <label style="font-size:0.85rem; font-weight:700; color:#0F172A; display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
-              <input type="checkbox" id="convFeatured" />
-              ⭐ Mark as Featured (Always on Top)
-            </label>
-          </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; background:#F8FAFC; padding:12px; border-radius:8px; border:1px solid #E2E8F0;">
+          <label style="font-size:0.85rem; font-weight:700; color:#0F172A; display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="pubFeatured" />
+            ⭐ Feature this business (Pin to top of category)
+          </label>
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:10px;">
-          <button type="button" class="btn-secondary" id="closeConvertModalBtn">Cancel</button>
-          <button type="submit" class="btn-primary" id="saveConvertBtn" style="background:#059669; border-color:#059669;">
-            ✓ Publish to Directory
+          <button type="button" class="btn-secondary" id="closePublishModalBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="savePublishBtn" style="background:#059669; border-color:#059669;">
+            ✓ Confirm &amp; Publish
           </button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- View Full Referral Details Modal -->
-  <div id="viewReferralModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2100; justify-content:center; align-items:center;">
-    <div class="admin-card" style="max-width:620px; width:92%; max-height:90vh; overflow-y:auto; padding:32px; background:white;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #E2E8F0; padding-bottom:16px;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <h3 style="margin:0; color:var(--color-primary); font-size:1.35rem; font-family:'Source Serif 4', Georgia, serif;">
-            Referral Recommendation
-          </h3>
-          <span id="viewRefStatusBadge" class="pill-tag status-new">New</span>
-        </div>
-        <button type="button" id="closeViewReferralModalBtn" class="btn-secondary" style="padding:4px 10px; font-size:0.85rem;" title="Close popup">
-          ✕
-        </button>
+  <!-- Edit Referral Suggestion Modal -->
+  <div id="editReferralModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2100; justify-content:center; align-items:center;" role="dialog" aria-modal="true" aria-labelledby="editRefModalTitle">
+    <div class="admin-card" style="max-width:540px; width:92%; max-height:90vh; overflow-y:auto; padding:28px; background:white;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 id="editRefModalTitle" style="margin:0; color:var(--color-primary); font-size:1.3rem; display:flex; align-items:center; gap:8px;">
+          ✏️ Edit Referral Suggestion
+        </h3>
+        <button type="button" class="btn-secondary" id="closeEditModalTop" style="padding:4px 8px;" aria-label="Close dialog">✕</button>
       </div>
 
-      <!-- Recommendation Note Box -->
-      <div style="margin-bottom:24px;">
-        <label style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#64748B; display:block; margin-bottom:8px;">
-          Neighbor Recommendation Note
-        </label>
-        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:20px; font-size:1.05rem; color:#1E293B; line-height:1.6; font-style:italic; position:relative;">
-          <span style="font-size:2rem; line-height:1; color:#CBD5E1; position:absolute; top:8px; left:12px; font-family:Georgia, serif;">“</span>
-          <div id="viewRefNote" style="padding-left:18px; white-space:pre-wrap;">
-            Loading recommendation note…
-          </div>
-        </div>
-      </div>
+      <form id="editReferralForm">
+        <input type="hidden" id="editReferralId" />
 
-      <!-- Info Columns Grid -->
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
-        <!-- Pro Details -->
-        <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; padding:16px;">
-          <div style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#64748B; margin-bottom:10px;">
-            Recommended Business
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label for="editName" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Business Name *</label>
+            <input type="text" id="editName" class="admin-input" required />
           </div>
-          <div id="viewRefName" style="font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:6px;">
-            —
-          </div>
-          <div style="margin-bottom:8px;">
-            <a id="viewRefPhone" href="#" style="font-size:0.9rem; color:#0F172A; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              <span id="viewRefPhoneText">—</span>
-            </a>
-          </div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <span id="viewRefNeighborhood" class="pill-tag neighborhood">—</span>
-            <span id="viewRefCategory" class="pill-tag category">—</span>
+          <div>
+            <label for="editPhone" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Business Phone *</label>
+            <input type="tel" id="editPhone" class="admin-input" required />
           </div>
         </div>
 
-        <!-- Referrer Details -->
-        <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; padding:16px;">
-          <div style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#64748B; margin-bottom:10px;">
-            Submitted By
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label for="editNeighborhood" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Neighborhood</label>
+            <select id="editNeighborhood" class="admin-select" style="width:100%;">
+              <option value="onion-creek">Onion Creek</option>
+              <option value="circle-c">Circle C</option>
+              <option value="avery-ranch">Avery Ranch</option>
+              <option value="sunfield">Sunfield</option>
+            </select>
           </div>
-          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-            <div id="viewRefAvatar" class="avatar-chip" style="background:#EFF6FF; color:#1D4ED8; border-color:#BFDBFE;">—</div>
-            <div>
-              <div id="viewRefReferrer" style="font-weight:700; color:#0F172A; font-size:0.95rem;">—</div>
-              <a id="viewRefEmail" href="#" style="font-size:0.8rem; color:#047857; text-decoration:none; display:inline-flex; align-items:center; gap:3px;">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                <span id="viewRefEmailText">—</span>
-              </a>
-            </div>
-          </div>
-          <div id="viewRefDate" style="font-size:0.78rem; color:#64748B; margin-top:8px;">
-            Submitted on —
+          <div>
+            <label for="editCategory" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Category</label>
+            <input type="text" id="editCategory" class="admin-input" placeholder="e.g. Electrician" />
           </div>
         </div>
-      </div>
 
-      <!-- Action Footer -->
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid #E2E8F0; padding-top:16px;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <label style="font-size:0.82rem; font-weight:700; color:#334155;">Status:</label>
-          <select id="viewRefStatusSelect" class="admin-select" style="padding:6px 28px 6px 10px; font-size:0.82rem;">
-            <option value="new">New (Pending)</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
-          <button type="button" id="viewRefDeleteBtn" class="btn-action-danger" style="font-size:0.8rem; padding:6px 12px;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            Delete
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div>
+            <label for="editReferrer" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Referrer Name</label>
+            <input type="text" id="editReferrer" class="admin-input" />
+          </div>
+          <div>
+            <label for="editReferrerEmail" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Referrer Email</label>
+            <input type="email" id="editReferrerEmail" class="admin-input" />
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label for="editNote" style="font-size:0.82rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Recommendation Note</label>
+          <textarea id="editNote" class="admin-input" rows="3"></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn-secondary" id="closeEditModalBtn">Cancel</button>
+          <button type="submit" class="btn-primary" id="saveEditBtn">
+            Save Changes
           </button>
         </div>
-
-        <div style="display:flex; gap:10px;">
-          <button type="button" id="viewRefConvertBtn" class="btn-primary" style="background:#059669; border-color:#059669; font-size:0.85rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-            Add to Directory
-          </button>
-        </div>
-      </div>
+      </form>
     </div>
   </div>
 
