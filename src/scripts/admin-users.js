@@ -130,6 +130,7 @@ function renderUsersTable() {
   // Wire Password Reset
   usersBody.querySelectorAll('.send-reset-btn').forEach((btn) => {
     btn.addEventListener('click', async () => {
+      if (!(await confirmDialog(`Send a password reset link to ${btn.dataset.email}?`))) return;
       btn.disabled = true;
       btn.textContent = 'Sending…';
       const { error } = await requestPasswordReset(btn.dataset.email);
