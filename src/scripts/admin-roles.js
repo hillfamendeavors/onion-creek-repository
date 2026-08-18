@@ -120,7 +120,7 @@ function initRoles() {
       addAdminBtn.textContent = 'Adding…';
     }
 
-    const { error } = await supabase.from('admins').insert({ email, role: 'admin' });
+    const { error } = await supabase.from('admins').insert({ email });
 
     if (addAdminBtn) {
       addAdminBtn.disabled = false;

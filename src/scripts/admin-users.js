@@ -147,18 +147,20 @@ function renderUsersTable() {
   // Wire Grant Admin
   usersBody.querySelectorAll('.grant-admin-btn').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      if (!(await confirmDialog(`Grant administrator privileges to ${btn.dataset.email}?`))) return;
+      const email = (btn.dataset.email || '').trim().toLowerCase();
+      if (!email) return;
+      if (!(await confirmDialog(`Grant administrator privileges to ${email}?`))) return;
       btn.disabled = true;
       btn.textContent = 'Granting…';
-      const { error } = await supabase.from('admins').insert({ email: btn.dataset.email, role: 'admin' });
+      const { error } = await supabase.from('admins').insert({ email });
       if (error) {
         showToast('Failed to grant admin: ' + error.message, true);
         btn.disabled = false;
         btn.textContent = '+ Grant Admin';
         return;
       }
-      showToast(`Admin privileges granted to ${btn.dataset.email}`);
-      adminEmails.add(btn.dataset.email.toLowerCase());
+      showToast(`Admin privileges granted to ${email}`);
+      adminEmails.add(email);
       renderUsersTable();
     });
   });
