@@ -1112,11 +1112,6 @@ const { title, activeTab } = Astro.props;
       }
 
       async function checkAdminAuth() {
-        const cachedEmail = sessionStorage.getItem('tn_admin_verified_email');
-        if (cachedEmail) {
-          showApp(cachedEmail);
-        }
-
         const { data: { session } } = await supabase.auth.getSession();
         if (!session?.user?.email) {
           sessionStorage.removeItem('tn_admin_verified_email');
@@ -1124,20 +1119,22 @@ const { title, activeTab } = Astro.props;
           return;
         }
 
-        const { data: adminRow } = await supabase
+        const userEmail = session.user.email.trim();
+
+        const { data: adminRow, error } = await supabase
           .from('admins')
           .select('email')
-          .eq('email', session.user.email)
+          .ilike('email', userEmail)
           .maybeSingle();
 
-        if (!adminRow) {
+        if (error || !adminRow) {
           sessionStorage.removeItem('tn_admin_verified_email');
-          showLogin('Your account does not have administrator privileges.');
+          showLogin('Access restricted. Your account does not have administrator privileges.');
           return;
         }
 
-        sessionStorage.setItem('tn_admin_verified_email', session.user.email);
-        showApp(session.user.email);
+        sessionStorage.setItem('tn_admin_verified_email', userEmail);
+        showApp(userEmail);
       }
 
       function showLogin(msg = '') {

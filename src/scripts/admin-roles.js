@@ -87,17 +87,36 @@ function renderAdminsTable() {
 
   adminsBody.querySelectorAll('.btn-remove-admin').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const email = btn.dataset.email;
-      if (!(await confirmDialog(`Revoke administrator access for ${email}?`))) return;
+      const email = (btn.dataset.email || '').trim().toLowerCase();
+      if (!email) return;
+
+      const currentAdminEmail = (sessionStorage.getItem('tn_admin_verified_email') || '').trim().toLowerCase();
+      const isSelf = currentAdminEmail && currentAdminEmail === email;
+
+      const confirmMsg = isSelf
+        ? `Warning: You are revoking your own administrator access for ${email}. You will lose access to the Admin Portal upon reload. Proceed?`
+        : `Revoke administrator access for ${email}? This will restore the account to a regular user.`;
+
+      if (!(await confirmDialog(confirmMsg))) return;
       
-      const { error } = await supabase.from('admins').delete().eq('email', email);
+      btn.disabled = true;
+      btn.textContent = 'Removing…';
+
+      const { error } = await supabase.from('admins').delete().ilike('email', email);
       if (error) {
         showToast('Failed to remove admin: ' + error.message, true);
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Remove Admin`;
         return;
       }
       showToast(`Admin access revoked for ${email}`);
-      admins = admins.filter((a) => a.email !== email);
+      admins = admins.filter((a) => a.email.toLowerCase() !== email);
       renderAdminsTable();
+
+      if (isSelf) {
+        sessionStorage.removeItem('tn_admin_verified_email');
+        window.location.reload();
+      }
     });
   });
 }

@@ -118,7 +118,10 @@ function renderUsersTable() {
               Send Reset
             </button>
             ${isAdmin
-              ? '<span class="pill-tag" style="background:#EEF2FF; color:#4338CA; border:1px solid #C7D2FE; display:inline-flex; align-items:center; gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Admin</span>'
+              ? `
+                <span class="pill-tag" style="background:#EEF2FF; color:#4338CA; border:1px solid #C7D2FE; display:inline-flex; align-items:center; gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Admin</span>
+                <button class="btn-secondary revoke-admin-btn" data-email="${esc(p.email)}" style="padding:4px 9px; font-size:0.75rem; color:#DC2626; border-color:#FECACA; background:#FEF2F2;" title="Revoke administrator privileges">Revoke</button>
+              `
               : `<button class="btn-secondary grant-admin-btn" data-email="${esc(p.email)}" style="padding:4px 10px; font-size:0.75rem;">+ Grant Admin</button>`
             }
           </div>
@@ -162,6 +165,43 @@ function renderUsersTable() {
       showToast(`Admin privileges granted to ${email}`);
       adminEmails.add(email);
       renderUsersTable();
+    });
+  });
+
+  // Wire Revoke Admin
+  usersBody.querySelectorAll('.revoke-admin-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const email = (btn.dataset.email || '').trim().toLowerCase();
+      if (!email) return;
+
+      const currentAdminEmail = (sessionStorage.getItem('tn_admin_verified_email') || '').trim().toLowerCase();
+      const isSelf = currentAdminEmail && currentAdminEmail === email;
+
+      const confirmMsg = isSelf
+        ? `Warning: You are revoking your own administrator privileges for ${email}. You will lose access to the Admin Portal upon reload. Proceed?`
+        : `Revoke administrator access for ${email}? This will restore the account to a regular user.`;
+
+      if (!(await confirmDialog(confirmMsg))) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Revoking…';
+
+      const { error } = await supabase.from('admins').delete().ilike('email', email);
+      if (error) {
+        showToast('Failed to revoke admin: ' + error.message, true);
+        btn.disabled = false;
+        btn.textContent = 'Revoke';
+        return;
+      }
+
+      showToast(`Admin privileges revoked for ${email}`);
+      adminEmails.delete(email);
+      renderUsersTable();
+
+      if (isSelf) {
+        sessionStorage.removeItem('tn_admin_verified_email');
+        window.location.reload();
+      }
     });
   });
 }
