@@ -915,6 +915,9 @@ const { title, activeTab } = Astro.props;
         text-align: center;
       }
 
+      .toast.toast-error { background: #DC2626; color: #FFFFFF; }
+      .toast.toast-success { background: #059669; color: #FFFFFF; }
+
       /* Responsive */
       @media (max-width: 860px) {
         .admin-shell { flex-direction: column; }
@@ -946,13 +949,17 @@ const { title, activeTab } = Astro.props;
         <h2 style="margin: 0 0 6px 0; color: var(--color-primary); font-size: 1.75rem;">Trusted Neighbors</h2>
         <p style="margin: 0 0 24px 0; color: #64748B; font-size: 0.88rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;">Operations Portal</p>
         
+        <!-- Standard Login Form -->
         <form id="adminLoginForm">
           <div style="text-align: left; margin-bottom: 14px;">
             <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">Admin Email</label>
             <input type="email" id="adminLoginEmail" class="admin-input" required placeholder="admin@trustedneighbors.net" autocomplete="username" />
           </div>
           <div style="text-align: left; margin-bottom: 20px;">
-            <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">Password</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Password</label>
+              <button type="button" id="adminForgotPwToggle" style="background: none; border: none; padding: 0; color: var(--color-primary); font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: underline;">Forgot password?</button>
+            </div>
             <input type="password" id="adminLoginPassword" class="admin-input" required placeholder="••••••••" autocomplete="current-password" />
           </div>
           <button type="submit" id="adminLoginBtn" class="btn-primary" style="width: 100%; padding: 12px; font-size: 0.95rem;">
@@ -960,6 +967,26 @@ const { title, activeTab } = Astro.props;
           </button>
           <p id="adminLoginError" style="color: var(--color-destructive); font-size: 0.85rem; min-height: 1.2em; margin: 12px 0 0 0;"></p>
         </form>
+
+        <!-- Forgot / Reset Password Form (Initially Hidden) -->
+        <div id="adminForgotView" style="display:none; text-align: left;">
+          <h3 style="margin: 0 0 6px 0; color: var(--color-primary); font-size: 1.25rem; font-family: 'Source Serif 4', Georgia, serif; text-align: center;">Reset Admin Password</h3>
+          <p style="margin: 0 0 18px 0; color: #64748B; font-size: 0.86rem; line-height: 1.4; text-align: center;">Enter your admin email. We will send a secure confirmation link to your email to reset your password.</p>
+          
+          <form id="adminForgotForm">
+            <div style="margin-bottom: 16px;">
+              <label style="font-size: 0.82rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">Admin Email</label>
+              <input type="email" id="adminForgotEmail" class="admin-input" required placeholder="admin@trustedneighbors.net" autocomplete="email" />
+            </div>
+            <button type="submit" id="adminForgotBtn" class="btn-primary" style="width: 100%; padding: 12px; font-size: 0.95rem; margin-bottom: 12px;">
+              Send Reset Link
+            </button>
+            <div id="adminForgotNotice" style="display: none; padding: 10px 12px; border-radius: 8px; font-size: 0.84rem; line-height: 1.4; margin-bottom: 12px;"></div>
+            <button type="button" id="adminBackToLoginBtn" class="btn-secondary" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 8px;">
+              ← Back to Log In
+            </button>
+          </form>
+        </div>
       </div>
     </div>
 
@@ -1019,6 +1046,10 @@ const { title, activeTab } = Astro.props;
             </span>
           </div>
           <div id="adminUserEmail" class="admin-user-info">Loading…</div>
+          <button id="adminResetPasswordBtn" class="btn-secondary" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 6px; display: inline-flex; align-items: center; gap: 5px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-1.5 1.5L14 9m-4 4L3.5 19.5a2.121 2.121 0 0 0 3 3L13 16m2-2l3.5-3.5a2.121 2.121 0 0 0-3-3L12 11"/><circle cx="16.5" cy="7.5" r=".5"/></svg>
+            Reset Password
+          </button>
           <button id="adminLogoutBtn" class="btn-secondary" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 6px;">
             Log Out
           </button>
@@ -1047,7 +1078,7 @@ const { title, activeTab } = Astro.props;
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="toast" style="display:none; position:fixed; bottom:24px; right:24px; z-index:2200; padding:12px 20px; border-radius:8px; font-size:0.88rem; font-weight:600; box-shadow:var(--shadow-lg); color:#fff; max-width:360px;"></div>
+    <div id="toast" class="toast" style="display:none; position:fixed; bottom:24px; right:24px; z-index:2200; padding:12px 20px; border-radius:8px; font-size:0.88rem; font-weight:600; box-shadow:var(--shadow-lg); max-width:360px;"></div>
 
     <!-- Confirm Dialog -->
     <div id="confirmDialog" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2200; justify-content:center; align-items:center;">
@@ -1063,7 +1094,8 @@ const { title, activeTab } = Astro.props;
     <!-- Shared Admin Auth & Core Script -->
     <script>
       import { supabase } from '../lib/supabase.js';
-      import { signIn } from '../lib/auth.js';
+      import { signIn, requestPasswordReset } from '../lib/auth.js';
+      import { showToast, confirmDialog } from '../scripts/ui-feedback.js';
 
       function updateActiveNavLink() {
         const path = window.location.pathname.replace(/\/$/, '');
@@ -1137,6 +1169,69 @@ const { title, activeTab } = Astro.props;
         const loginPassword = document.getElementById('adminLoginPassword');
         const loginError = document.getElementById('adminLoginError');
         const logoutBtn = document.getElementById('adminLogoutBtn');
+        const forgotPwToggle = document.getElementById('adminForgotPwToggle');
+        const forgotView = document.getElementById('adminForgotView');
+        const forgotForm = document.getElementById('adminForgotForm');
+        const forgotEmail = document.getElementById('adminForgotEmail');
+        const forgotBtn = document.getElementById('adminForgotBtn');
+        const forgotNotice = document.getElementById('adminForgotNotice');
+        const backToLoginBtn = document.getElementById('adminBackToLoginBtn');
+        const resetPasswordBtn = document.getElementById('adminResetPasswordBtn');
+
+        forgotPwToggle?.addEventListener('click', () => {
+          if (loginForm) loginForm.style.display = 'none';
+          if (forgotView) forgotView.style.display = 'block';
+          if (loginEmail && forgotEmail) {
+            forgotEmail.value = loginEmail.value.trim();
+          }
+          if (forgotNotice) forgotNotice.style.display = 'none';
+          if (loginError) loginError.textContent = '';
+        });
+
+        backToLoginBtn?.addEventListener('click', () => {
+          if (forgotView) forgotView.style.display = 'none';
+          if (loginForm) loginForm.style.display = 'block';
+          if (loginEmail && forgotEmail && forgotEmail.value) {
+            loginEmail.value = forgotEmail.value.trim();
+          }
+          if (forgotNotice) forgotNotice.style.display = 'none';
+          if (loginError) loginError.textContent = '';
+        });
+
+        forgotForm?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = forgotEmail?.value.trim();
+          if (!email) return;
+
+          if (forgotBtn) {
+            forgotBtn.disabled = true;
+            forgotBtn.textContent = 'Sending…';
+          }
+          if (forgotNotice) forgotNotice.style.display = 'none';
+
+          const { error } = await requestPasswordReset(email);
+
+          if (forgotBtn) {
+            forgotBtn.disabled = false;
+            forgotBtn.textContent = 'Send Reset Link';
+          }
+
+          if (forgotNotice) {
+            if (error) {
+              forgotNotice.style.display = 'block';
+              forgotNotice.style.background = '#FEF2F2';
+              forgotNotice.style.color = '#DC2626';
+              forgotNotice.style.border = '1px solid #FECACA';
+              forgotNotice.textContent = error.message;
+            } else {
+              forgotNotice.style.display = 'block';
+              forgotNotice.style.background = '#ECFDF5';
+              forgotNotice.style.color = '#065F46';
+              forgotNotice.style.border = '1px solid #A7F3D0';
+              forgotNotice.innerHTML = `<strong>Password reset link sent!</strong><br>Please check your inbox at <em>${email}</em> and click the confirmation link to set your new password.`;
+            }
+          }
+        });
 
         loginForm?.addEventListener('submit', async (e) => {
           e.preventDefault();
@@ -1151,6 +1246,36 @@ const { title, activeTab } = Astro.props;
           }
 
           await checkAdminAuth();
+        });
+
+        resetPasswordBtn?.addEventListener('click', async () => {
+          const userEmailEl = document.getElementById('adminUserEmail');
+          const email = userEmailEl?.textContent?.trim();
+          if (!email || email === 'Loading…') return;
+
+          const confirmed = await confirmDialog(`Send a password reset link to your email (${email})?`);
+          if (!confirmed) return;
+
+          resetPasswordBtn.disabled = true;
+          resetPasswordBtn.textContent = 'Sending…';
+
+          const { error } = await requestPasswordReset(email);
+
+          setTimeout(() => {
+            if (resetPasswordBtn) {
+              resetPasswordBtn.disabled = false;
+              resetPasswordBtn.innerHTML = `
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-1.5 1.5L14 9m-4 4L3.5 19.5a2.121 2.121 0 0 0 3 3L13 16m2-2l3.5-3.5a2.121 2.121 0 0 0-3-3L12 11"/><circle cx="16.5" cy="7.5" r=".5"/></svg>
+                Reset Password
+              `;
+            }
+          }, 3000);
+
+          if (error) {
+            showToast(`Failed to send reset: ${error.message}`, true);
+          } else {
+            showToast(`Password reset link sent to ${email}`);
+          }
         });
 
         logoutBtn?.addEventListener('click', async () => {
