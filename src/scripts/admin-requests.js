@@ -10,9 +10,9 @@ let sortKey = 'date_needed';
 let sortDir = 'asc';
 
 function esc(str) {
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
-  return div.innerHTML;
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[c]);
 }
 
 function formatNeighborhood(slug) {

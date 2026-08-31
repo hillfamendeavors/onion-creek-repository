@@ -84,9 +84,9 @@ let activeCategory = 'all';
 let filterMyRequestsOnly = false;
 
 function esc(str) {
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
-  return div.innerHTML;
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[c]);
 }
 
 function formatNameTitle(str) {
@@ -357,7 +357,7 @@ function openDetailModal(dateStr, dateData) {
                     <button class="btn-owner-action complete" data-req-id="${item.id}" data-next-status="completed" type="button">
                       ✓ Mark as Fulfilled
                     </button>
-                    <button class="btn-owner-action reschedule" data-req-id="${item.id}" data-current-date="${item.date_needed}" type="button">
+                    <button class="btn-owner-action reschedule" data-req-id="${item.id}" data-current-date="${esc(item.date_needed)}" type="button">
                       📅 Reschedule
                     </button>
                   `}
@@ -619,7 +619,7 @@ function renderList() {
                 <button class="btn-owner-action complete list-action" data-req-id="${item.id}" data-next-status="completed" type="button">
                   ✓ Mark as Fulfilled
                 </button>
-                <button class="btn-owner-action reschedule list-action" data-req-id="${item.id}" data-current-date="${item.date_needed}" type="button">
+                <button class="btn-owner-action reschedule list-action" data-req-id="${item.id}" data-current-date="${esc(item.date_needed)}" type="button">
                   📅 Reschedule
                 </button>
               `}
@@ -803,9 +803,13 @@ reqSubmitBtn?.addEventListener('click', async () => {
   }
 
   try {
+    const notifySession = await getSession();
     fetch('/.netlify/functions/notify-request', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${notifySession?.access_token}`,
+      },
       body: JSON.stringify({
         category,
         date_needed,

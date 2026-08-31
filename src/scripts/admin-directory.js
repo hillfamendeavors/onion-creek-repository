@@ -18,10 +18,13 @@ let allListings = [];
 let currentNeighborhood = 'onion-creek';
 let allCollapsed = false;
 
+// A div.textContent -> innerHTML round-trip escapes &/</>  but never quotes,
+// so it's unsafe wherever the result lands inside a double-quoted HTML
+// attribute (e.g. title="${esc(...)}") -- this map-based version is safe there too.
 function esc(str) {
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
-  return div.innerHTML;
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[c]);
 }
 
 function formatNeighborhood(slug) {

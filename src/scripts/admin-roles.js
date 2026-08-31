@@ -5,9 +5,9 @@ import { bootAdminPage } from './admin-boot.js';
 let admins = [];
 
 function esc(str) {
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
-  return div.innerHTML;
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[c]);
 }
 
 function getInitials(email) {

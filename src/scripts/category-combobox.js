@@ -58,9 +58,9 @@ export function initCategoryCombobox(options = {}) {
   }
 
   function escapeHtml(str) {
-    const d = document.createElement('div');
-    d.textContent = str || '';
-    return d.innerHTML;
+    return String(str || '').replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    })[c]);
   }
 
   function renderDropdown(query = '') {

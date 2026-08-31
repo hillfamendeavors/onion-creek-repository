@@ -1,5 +1,4 @@
-const SUPABASE_URL = 'https://dktjutawxktwhuhuwbit.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_mlELgE-THem4tud6GIQaZA_NjT9D2ZM';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './_supabaseConfig.js';
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {

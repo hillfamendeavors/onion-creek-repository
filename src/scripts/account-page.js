@@ -131,9 +131,9 @@ let currentFilter = 'all';
 let currentSearchQuery = '';
 
 function esc(str) {
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
-  return div.innerHTML;
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[c]);
 }
 
 function formatNeighborhood(slug) {
@@ -392,21 +392,6 @@ function updateNeighborhoodContext(slug) {
   if (contextDirectoryLink) contextDirectoryLink.href = `/${slug}/`;
 }
 
-// Category "Other" toggle in modal
-if (usrReqCategorySelect && usrReqCategoryOther) {
-  usrReqCategorySelect.addEventListener('change', () => {
-    if (usrReqCategorySelect.value === 'Other') {
-      usrReqCategoryOther.style.display = 'block';
-      usrReqCategoryOther.required = true;
-      usrReqCategoryOther.focus();
-    } else {
-      usrReqCategoryOther.style.display = 'none';
-      usrReqCategoryOther.required = false;
-      usrReqCategoryOther.value = '';
-    }
-  });
-}
-
 // Post Service Request Modal (Automatic Profile Integration)
 function openNewRequestModal(prefill = null) {
   const todayStr = new Date().toLocaleDateString('en-CA');
@@ -539,9 +524,13 @@ userNewRequestForm?.addEventListener('submit', async (e) => {
   }
 
   try {
+    const notifySession = await getSession();
     fetch('/.netlify/functions/notify-request', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${notifySession?.access_token}`,
+      },
       body: JSON.stringify({
         category,
         date_needed,
@@ -788,7 +777,7 @@ function renderRequestsTable() {
                 </span>
               `;
               actionButtonsHtml = `
-                <button class="btn-action-pill accent reschedule-btn" data-id="${r.id}" data-date="${r.date_needed}" title="Move to a future date">
+                <button class="btn-action-pill accent reschedule-btn" data-id="${r.id}" data-date="${esc(r.date_needed)}" title="Move to a future date">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                   Set New Date
                 </button>
@@ -812,7 +801,7 @@ function renderRequestsTable() {
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   Mark Done
                 </button>
-                <button class="btn-action-pill reschedule-btn" data-id="${r.id}" data-date="${r.date_needed}" title="Reschedule date">
+                <button class="btn-action-pill reschedule-btn" data-id="${r.id}" data-date="${esc(r.date_needed)}" title="Reschedule date">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                   Reschedule
                 </button>

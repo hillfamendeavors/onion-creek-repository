@@ -188,6 +188,11 @@ function formatUSPhone(digits) {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
 }
 
+function formatNameTitle(str) {
+  if (!str) return 'Resident';
+  return str.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
 // ── Suggest-a-Referral modal ──
 const overlay = document.getElementById('modalOverlay');
 const openBtn = document.getElementById('openModal');
@@ -476,7 +481,10 @@ if (reqOverlay && reqOpenBtn && reqCloseBtn) {
     try {
       await fetch('/.netlify/functions/notify-request', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify({
           category,
           date_needed,
@@ -508,9 +516,9 @@ syncAllTabClass();
 
 // ── Top Bar Single Auth Status ──
 function escStatus(str) {
-  const div = document.createElement('div');
-  div.textContent = str ?? '';
-  return div.innerHTML;
+  return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[c]);
 }
 
 // ── Dynamic Request Badge & Live Banner ──

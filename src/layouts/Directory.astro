@@ -97,9 +97,9 @@ const themeCss = `:root{${Object.entries(theme)
       import { getSession } from '../lib/auth.js';
 
       function esc(str: string | null | undefined): string {
-        const div = document.createElement('div');
-        div.textContent = str ?? '';
-        return div.innerHTML;
+        return String(str ?? '').replace(/[&<>"']/g, (c) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+        } as Record<string, string>)[c]);
       }
 
       const topBarAuthEl = document.getElementById('topBarAuth');
