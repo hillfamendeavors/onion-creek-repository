@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabase.js';
 import { trapFocus, releaseFocus } from './modal-a11y.js';
 import { showToast, confirmDialog } from './ui-feedback.js';
+import { bootAdminPage } from './admin-boot.js';
+import { markPublishPending } from './admin-publish.js';
 
 const NEIGHBORHOODS = [
   { slug: 'onion-creek', name: 'Onion Creek' },
@@ -381,6 +383,7 @@ function wireListingInteractions() {
       if (item) item.featured = newFeatured;
       updateKPIs();
       renderGroupedListings();
+      markPublishPending();
       showToast(`Listing marked as ${newFeatured ? 'Featured (Always on Top)' : 'Standard'}`);
     });
   });
@@ -417,6 +420,7 @@ function wireListingInteractions() {
       prev.sort_order = newPrevOrder;
 
       renderGroupedListings();
+      markPublishPending();
       showToast(`Updated order for "${cur.name}"`);
     });
   });
@@ -453,6 +457,7 @@ function wireListingInteractions() {
       next.sort_order = newNextOrder;
 
       renderGroupedListings();
+      markPublishPending();
       showToast(`Updated order for "${cur.name}"`);
     });
   });
@@ -496,6 +501,7 @@ function wireListingInteractions() {
       allListings = allListings.filter((l) => l.id !== id);
       updateKPIs();
       renderGroupedListings();
+      markPublishPending();
       showToast('Listing deleted successfully.');
     });
   });
@@ -602,10 +608,7 @@ function wireGroupListeners() {
   });
 }
 
-function initDirectory() {
-  const container = document.getElementById('groupedDirectoryContainer');
-  if (!container) return;
-
+function wireDirectory() {
   const neighborhoodSegmentedBar = document.getElementById('neighborhoodSegmentedBar');
   const subTabListingsBtn = document.getElementById('subTabListingsBtn');
   const subTabCategoriesBtn = document.getElementById('subTabCategoriesBtn');
@@ -614,7 +617,7 @@ function initDirectory() {
   const dirListingActions = document.getElementById('dirListingActions');
   const dirCategoryActions = document.getElementById('dirCategoryActions');
 
-  const collapseAllBtn = document.getElementById('collapseAllGroupsBtn');
+  const collapseAllBtn = document.getElementById('toggleExpandAllBtn');
   const dirCategoryFilter = document.getElementById('dirCategoryFilter');
   const dirSearch = document.getElementById('dirSearch');
   const refreshListingsBtn = document.getElementById('refreshListingsBtn');
@@ -690,8 +693,33 @@ function initDirectory() {
     if (e.target === addListingModal) closeAddListingModal();
   });
 
+  // Guards against the double-insert bug this file used to have: the form's
+  // own listener is now bound at most once (see bootAdminPage), but this flag
+  // also stops a double-click or a slow network response from firing two
+  // inserts for one submit, and the unique index on `listings` is the final
+  // backstop if both of those somehow still race.
+  let isAddingListing = false;
+
   addListingForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (isAddingListing) return;
+    isAddingListing = true;
+
+    const submitBtn = addListingForm.querySelector('button[type="submit"]');
+    const originalLabel = submitBtn?.textContent;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving…';
+    }
+
+    const resetSubmitState = () => {
+      isAddingListing = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+      }
+    };
+
     const neighborhood_slug = document.getElementById('addListNeighborhood')?.value;
     const subcategory_id = Number(document.getElementById('addListSubcat')?.value);
     const name = document.getElementById('addListName')?.value.trim();
@@ -704,6 +732,7 @@ function initDirectory() {
 
     if (!name || !phone || !subcategory_id || !neighborhood_slug) {
       showToast('Please complete all required fields.', true);
+      resetSubmitState();
       return;
     }
 
@@ -730,8 +759,14 @@ function initDirectory() {
       sort_order
     }).select('*').single();
 
+    resetSubmitState();
+
     if (error) {
-      showToast('Failed to add business listing: ' + error.message, true);
+      if (error.code === '23505') {
+        showToast('That listing already exists in this category for this neighborhood.', true);
+      } else {
+        showToast('Failed to add business listing: ' + error.message, true);
+      }
       return;
     }
 
@@ -742,6 +777,7 @@ function initDirectory() {
     addListingForm.reset();
     updateKPIs();
     renderGroupedListings();
+    markPublishPending();
     showToast(`Added "${name}" to directory`);
   });
 
@@ -750,8 +786,13 @@ function initDirectory() {
     if (e.target === editListingModal) closeEditListingModal();
   });
 
+  let isEditingListing = false;
+
   editListingForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (isEditingListing) return;
+    isEditingListing = true;
+
     const id = Number(document.getElementById('editListId').value);
     const saveBtn = document.getElementById('saveEditListingBtn');
     if (saveBtn) {
@@ -773,13 +814,18 @@ function initDirectory() {
 
     const { data, error } = await supabase.from('listings').update(updates).eq('id', id).select('*').single();
 
+    isEditingListing = false;
     if (saveBtn) {
       saveBtn.disabled = false;
       saveBtn.textContent = 'Save Changes';
     }
 
     if (error) {
-      showToast('Failed to update listing: ' + error.message, true);
+      if (error.code === '23505') {
+        showToast('Another listing already matches that name, phone, category, and neighborhood.', true);
+      } else {
+        showToast('Failed to update listing: ' + error.message, true);
+      }
       return;
     }
 
@@ -790,26 +836,28 @@ function initDirectory() {
     closeEditListingModal();
     updateKPIs();
     renderGroupedListings();
+    markPublishPending();
     showToast('Listing updated successfully.');
-  });
-
-  Promise.all([loadDirectoryData(), loadAllListings()]).then(() => {
-    if (neighborhoodSegmentedBar) {
-      neighborhoodSegmentedBar.querySelectorAll('button.segmented-item').forEach((b) => {
-        b.classList.toggle('active', b.dataset.neighborhood === currentNeighborhood);
-      });
-    }
-    renderGroups();
-    populateNeighborhoodSelects();
-    populateCategorySelects();
-    renderGroupedListings();
   });
 }
 
-document.addEventListener('astro:page-load', initDirectory);
-window.addEventListener('admin-auth-verified', () => {
-  if (document.getElementById('groupedDirectoryContainer')) {
-    initDirectory();
+// Fetches taxonomy + listings and re-renders. Safe to call more than once
+// (e.g. once at initial load, again after admin-auth-verified) — loadDirectoryData()
+// already skips its own refetch once populated, and bootAdminPage coalesces
+// any calls that land while a previous one is still in flight.
+async function loadDirectory() {
+  await Promise.all([loadDirectoryData(), loadAllListings()]);
+
+  const neighborhoodSegmentedBar = document.getElementById('neighborhoodSegmentedBar');
+  if (neighborhoodSegmentedBar) {
+    neighborhoodSegmentedBar.querySelectorAll('button.segmented-item').forEach((b) => {
+      b.classList.toggle('active', b.dataset.neighborhood === currentNeighborhood);
+    });
   }
-});
-initDirectory();
+  renderGroups();
+  populateNeighborhoodSelects();
+  populateCategorySelects();
+  renderGroupedListings();
+}
+
+bootAdminPage('groupedDirectoryContainer', { wire: wireDirectory, load: loadDirectory });

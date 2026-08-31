@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase.js';
 import { requestPasswordReset } from '../lib/auth.js';
 import { showToast, confirmDialog } from './ui-feedback.js';
+import { bootAdminPage } from './admin-boot.js';
 
 let profiles = [];
 let requests = [];
@@ -206,21 +207,12 @@ function renderUsersTable() {
   });
 }
 
-function initUsers() {
-  const usersBody = document.getElementById('usersBody');
-  if (!usersBody) return;
-
+function wireUsers() {
   const userSearchInput = document.getElementById('userSearchInput');
   const refreshUsersBtn = document.getElementById('refreshUsersBtn');
 
   userSearchInput?.addEventListener('input', renderUsersTable);
   refreshUsersBtn?.addEventListener('click', loadUsers);
-
-  loadUsers();
 }
 
-document.addEventListener('astro:page-load', initUsers);
-window.addEventListener('admin-auth-verified', () => {
-  if (document.getElementById('usersBody')) loadUsers();
-});
-initUsers();
+bootAdminPage('usersBody', { wire: wireUsers, load: loadUsers });

@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase.js';
+import { bootAdminPage } from './admin-boot.js';
 
 async function loadOverview() {
   const statUsers = document.getElementById('statUsers');
@@ -17,12 +18,4 @@ async function loadOverview() {
   statPendingReferrals.textContent = referralsRes.count ?? '0';
 }
 
-function initOverview() {
-  if (document.getElementById('statUsers')) {
-    loadOverview();
-  }
-}
-
-document.addEventListener('astro:page-load', initOverview);
-window.addEventListener('admin-auth-verified', initOverview);
-initOverview();
+bootAdminPage('statUsers', { load: loadOverview });

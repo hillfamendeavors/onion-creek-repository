@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabase.js';
 import { trapFocus, releaseFocus } from './modal-a11y.js';
 import { showToast, confirmDialog } from './ui-feedback.js';
+import { bootAdminPage } from './admin-boot.js';
+import { markPublishPending } from './admin-publish.js';
 
 let referrals = [];
 let categories = [];
@@ -402,10 +404,7 @@ function closeEditModal() {
   releaseFocus();
 }
 
-function initReferrals() {
-  const container = document.getElementById('referralsContainer');
-  if (!container) return;
-
+function wireReferrals() {
   const refSearchInput = document.getElementById('refSearchInput');
   const filterRefNeighborhood = document.getElementById('filterRefNeighborhood');
   const refreshRefBtn = document.getElementById('refreshRefBtn');
@@ -450,8 +449,19 @@ function initReferrals() {
   });
 
   // Submit Publish Form
+  //
+  // Guards against the same double-insert bug the Directory CMS's Add
+  // Listing form had: the form's own listener is now bound at most once
+  // (see bootAdminPage), but this flag also stops a double-click or a slow
+  // network response from publishing one referral twice, and the unique
+  // index on `listings` is the final backstop if both somehow still race.
+  let isPublishingReferral = false;
+
   publishForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (isPublishingReferral) return;
+    isPublishingReferral = true;
+
     const refId = document.getElementById('pubReferralId').value.trim(); // Preserved as string UUID
     const neighborhood_slug = document.getElementById('pubNeighborhood').value;
     const subcategory_id = Number(document.getElementById('pubSubcat').value);
@@ -493,12 +503,18 @@ function initReferrals() {
       sort_order
     });
 
+    isPublishingReferral = false;
+
     if (insertErr) {
       if (saveBtn) {
         saveBtn.disabled = false;
         saveBtn.textContent = '✓ Confirm & Publish';
       }
-      showToast('Failed to create directory listing: ' + insertErr.message, true);
+      if (insertErr.code === '23505') {
+        showToast('That listing already exists in this category for this neighborhood.', true);
+      } else {
+        showToast('Failed to create directory listing: ' + insertErr.message, true);
+      }
       return;
     }
 
@@ -515,12 +531,18 @@ function initReferrals() {
     closePublishModal();
     updateKPIs();
     renderReferrals();
+    markPublishPending();
     showToast(`✓ Successfully published "${name}" to ${formatNeighborhood(neighborhood_slug)} directory!`);
   });
 
   // Submit Edit Form
+  let isSavingReferralEdit = false;
+
   editForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (isSavingReferralEdit) return;
+    isSavingReferralEdit = true;
+
     const refId = document.getElementById('editReferralId').value.trim();
     const name = document.getElementById('editName').value.trim();
     const phone = document.getElementById('editPhone').value.trim();
@@ -546,6 +568,7 @@ function initReferrals() {
       note
     }).eq('id', refId);
 
+    isSavingReferralEdit = false;
     if (saveBtn) {
       saveBtn.disabled = false;
       saveBtn.textContent = 'Save Changes';
@@ -571,14 +594,10 @@ function initReferrals() {
     renderReferrals();
     showToast('Referral suggestion updated successfully.');
   });
-
-  Promise.all([loadTaxonomy(), loadReferrals()]);
 }
 
-document.addEventListener('astro:page-load', initReferrals);
-window.addEventListener('admin-auth-verified', () => {
-  if (document.getElementById('referralsContainer')) {
-    Promise.all([loadTaxonomy(), loadReferrals()]);
-  }
-});
-initReferrals();
+function loadReferralsPage() {
+  return Promise.all([loadTaxonomy(), loadReferrals()]);
+}
+
+bootAdminPage('referralsContainer', { wire: wireReferrals, load: loadReferralsPage });

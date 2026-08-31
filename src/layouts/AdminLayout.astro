@@ -1064,6 +1064,11 @@ const { title, activeTab } = Astro.props;
             <p>Trusted Neighbors Operations Dashboard</p>
           </div>
           <div style="display:flex; gap:10px; align-items:center;">
+            <button type="button" id="publishSiteBtn" class="btn-primary" style="font-size:0.82rem; padding:6px 14px; position:relative;" title="Rebuild the live site so recent CMS changes go public">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+              Publish to Live Site
+              <span id="publishPendingDot" style="display:none; position:absolute; top:-3px; right:-3px; width:9px; height:9px; border-radius:50%; background:#F59E0B; border:2px solid #FFFFFF;" title="Unpublished changes"></span>
+            </button>
             <a href="/" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="font-size:0.82rem; padding:6px 12px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
               View Community Site ↗
@@ -1096,6 +1101,8 @@ const { title, activeTab } = Astro.props;
       import { supabase } from '../lib/supabase.js';
       import { signIn, requestPasswordReset } from '../lib/auth.js';
       import { showToast, confirmDialog } from '../scripts/ui-feedback.js';
+      import { bindOnce } from '../scripts/admin-boot.js';
+      import { wirePublishButton, refreshPublishIndicator } from '../scripts/admin-publish.js';
 
       function updateActiveNavLink() {
         const path = window.location.pathname.replace(/\/$/, '');
@@ -1109,6 +1116,19 @@ const { title, activeTab } = Astro.props;
             link.classList.remove('active');
           }
         });
+      }
+
+      // checkAdminAuth() dispatches 'admin-auth-verified' on success, which every
+      // admin page's bootstrap listens to. astro:page-load fires shortly after
+      // the initial module run (not synchronously with it), so without
+      // coalescing, a page landed on directly at load time ran the full
+      // session + admins-table lookup twice and fired that event twice —
+      // doubling every admin page's initial data load right along with it.
+      let authCheckPromise = null;
+      function checkAdminAuthOnce() {
+        if (authCheckPromise) return authCheckPromise;
+        authCheckPromise = checkAdminAuth().finally(() => { authCheckPromise = null; });
+        return authCheckPromise;
       }
 
       async function checkAdminAuth() {
@@ -1175,7 +1195,7 @@ const { title, activeTab } = Astro.props;
         const backToLoginBtn = document.getElementById('adminBackToLoginBtn');
         const resetPasswordBtn = document.getElementById('adminResetPasswordBtn');
 
-        forgotPwToggle?.addEventListener('click', () => {
+        bindOnce(forgotPwToggle, 'click', () => {
           if (loginForm) loginForm.style.display = 'none';
           if (forgotView) forgotView.style.display = 'block';
           if (loginEmail && forgotEmail) {
@@ -1185,7 +1205,7 @@ const { title, activeTab } = Astro.props;
           if (loginError) loginError.textContent = '';
         });
 
-        backToLoginBtn?.addEventListener('click', () => {
+        bindOnce(backToLoginBtn, 'click', () => {
           if (forgotView) forgotView.style.display = 'none';
           if (loginForm) loginForm.style.display = 'block';
           if (loginEmail && forgotEmail && forgotEmail.value) {
@@ -1195,7 +1215,7 @@ const { title, activeTab } = Astro.props;
           if (loginError) loginError.textContent = '';
         });
 
-        forgotForm?.addEventListener('submit', async (e) => {
+        bindOnce(forgotForm, 'submit', async (e) => {
           e.preventDefault();
           const email = forgotEmail?.value.trim();
           if (!email) return;
@@ -1230,7 +1250,7 @@ const { title, activeTab } = Astro.props;
           }
         });
 
-        loginForm?.addEventListener('submit', async (e) => {
+        bindOnce(loginForm, 'submit', async (e) => {
           e.preventDefault();
           if (loginError) loginError.textContent = '';
           const email = loginEmail?.value.trim();
@@ -1242,10 +1262,10 @@ const { title, activeTab } = Astro.props;
             return;
           }
 
-          await checkAdminAuth();
+          await checkAdminAuthOnce();
         });
 
-        resetPasswordBtn?.addEventListener('click', async () => {
+        bindOnce(resetPasswordBtn, 'click', async () => {
           const userEmailEl = document.getElementById('adminUserEmail');
           const email = userEmailEl?.textContent?.trim();
           if (!email || email === 'Loading…') return;
@@ -1275,21 +1295,28 @@ const { title, activeTab } = Astro.props;
           }
         });
 
-        logoutBtn?.addEventListener('click', async () => {
+        bindOnce(logoutBtn, 'click', async () => {
           sessionStorage.removeItem('tn_admin_verified_email');
           await supabase.auth.signOut();
           window.location.href = '/admin/';
         });
+
+        const publishSiteBtn = document.getElementById('publishSiteBtn');
+        if (publishSiteBtn && !publishSiteBtn.dataset.tnWired) {
+          publishSiteBtn.dataset.tnWired = '1';
+          wirePublishButton(publishSiteBtn);
+        }
+        refreshPublishIndicator();
       }
 
       document.addEventListener('astro:page-load', () => {
         wireAuthListeners();
-        checkAdminAuth();
+        checkAdminAuthOnce();
       });
 
       // Immediate run
       wireAuthListeners();
-      checkAdminAuth();
+      checkAdminAuthOnce();
     </script>
   </body>
 </html>

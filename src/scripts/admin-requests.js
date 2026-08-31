@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase.js';
 import { showToast, confirmDialog } from './ui-feedback.js';
 import { trapFocus, releaseFocus } from './modal-a11y.js';
+import { bootAdminPage } from './admin-boot.js';
 
 const STATUSES = ['new', 'contacted', 'completed', 'closed'];
 
@@ -284,10 +285,7 @@ function closeEditModal() {
   releaseFocus();
 }
 
-function initRequests() {
-  const requestsTableBody = document.getElementById('requestsTableBody');
-  if (!requestsTableBody) return;
-
+function wireRequests() {
   const filterNeighborhood = document.getElementById('filterNeighborhood');
   const filterCategory = document.getElementById('filterCategory');
   const filterStatus = document.getElementById('filterStatus');
@@ -310,8 +308,13 @@ function initRequests() {
     if (e.target === editRequestModal) closeEditModal();
   });
 
+  let isSavingRequest = false;
+
   editRequestForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (isSavingRequest) return;
+    isSavingRequest = true;
+
     const id = document.getElementById('editReqId').value;
     const saveBtn = document.getElementById('saveEditReqBtn');
     if (saveBtn) {
@@ -330,6 +333,7 @@ function initRequests() {
 
     const { error } = await supabase.from('service_requests').update(updates).eq('id', id);
 
+    isSavingRequest = false;
     if (saveBtn) {
       saveBtn.disabled = false;
       saveBtn.textContent = 'Save Changes';
@@ -357,12 +361,6 @@ function initRequests() {
       renderTable();
     });
   });
-
-  loadRequests();
 }
 
-document.addEventListener('astro:page-load', initRequests);
-window.addEventListener('admin-auth-verified', () => {
-  if (document.getElementById('requestsTableBody')) loadRequests();
-});
-initRequests();
+bootAdminPage('requestsTableBody', { wire: wireRequests, load: loadRequests });

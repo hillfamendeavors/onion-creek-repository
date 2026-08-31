@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase.js';
 import { showToast, confirmDialog } from './ui-feedback.js';
+import { bootAdminPage } from './admin-boot.js';
 
 let admins = [];
 
@@ -121,19 +122,23 @@ function renderAdminsTable() {
   });
 }
 
-function initRoles() {
-  const adminsBody = document.getElementById('adminsBody');
-  if (!adminsBody) return;
-
+function wireRoles() {
   const addAdminForm = document.getElementById('addAdminForm');
   const newAdminEmail = document.getElementById('newAdminEmail');
   const addAdminBtn = document.getElementById('addAdminBtn');
 
+  // Same double-insert class of bug as the Directory CMS's Add Listing form —
+  // this flag stops a double-click or slow response from firing two inserts
+  // for one submit, on top of the form itself now only ever being wired once.
+  let isAddingAdmin = false;
+
   addAdminForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (isAddingAdmin) return;
     const email = newAdminEmail.value.trim().toLowerCase();
     if (!email) return;
 
+    isAddingAdmin = true;
     if (addAdminBtn) {
       addAdminBtn.disabled = true;
       addAdminBtn.textContent = 'Adding…';
@@ -141,13 +146,18 @@ function initRoles() {
 
     const { error } = await supabase.from('admins').insert({ email });
 
+    isAddingAdmin = false;
     if (addAdminBtn) {
       addAdminBtn.disabled = false;
       addAdminBtn.textContent = '+ Add Admin';
     }
 
     if (error) {
-      showToast('Failed to add admin: ' + error.message, true);
+      if (error.code === '23505') {
+        showToast(`${email} is already an administrator.`, true);
+      } else {
+        showToast('Failed to add admin: ' + error.message, true);
+      }
       return;
     }
 
@@ -155,12 +165,6 @@ function initRoles() {
     newAdminEmail.value = '';
     await loadAdmins();
   });
-
-  loadAdmins();
 }
 
-document.addEventListener('astro:page-load', initRoles);
-window.addEventListener('admin-auth-verified', () => {
-  if (document.getElementById('adminsBody')) loadAdmins();
-});
-initRoles();
+bootAdminPage('adminsBody', { wire: wireRoles, load: loadAdmins });
